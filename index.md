@@ -1,37 +1,9 @@
-## Welcome to GitHub Pages
+## Welcome to codeflare.blogspot.com GitHub Pages
 
-You can use the [editor on GitHub](https://github.com/codeflareblogspot/codeflareblogspot/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/codeflareblogspot/codeflareblogspot/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+<span style="color:#36afff;">Code</span><span style="color:#ffb100;">Flare</span> — is a blog, a beautiful blog, an inspiration blog and full with magic. CodeFlare is not just a blog its a creative blog with usefull information and great article content.
+<br /><br />
+CodeFlare is open to the public, so anyone can visit and tell a story. Everything from this blog is beyond our imagination, some might say that it's full of wonder for its unique and interesting style art of blogging.
+<br /><br />
+So... yes CodeFlare is a blog and you can visit CodeFlare by anytime anywhere as long as you have internet connection.
+<br /><br />
+Wanna see some magic ? come and join our adventure to the world of <span style="color:#36afff;">Code</span><span style="color:#ffb100;">Flare</span>.
