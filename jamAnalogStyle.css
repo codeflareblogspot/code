@@ -1,0 +1,79 @@
+/* Analog Clock Animated 2019 */
+/* Created by CodeFlare Blogspot */
+/* More Info https://codeflare.blogspot.com */
+#notifyAnalogClock{
+width:300px;
+position:fixed;
+top:10px;left:calc(50% - 150px);
+border:5px ridge #53d4da;
+border-radius:20px;
+padding:5px;
+text-align:center;
+background-color:#ebebeb;
+z-index:+9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999;
+}
+#notifyTextAnalogClock{font-size:30px;}
+#setTimerClock{
+text-align:left;
+width:100%;
+box-sizing:border-box;
+padding:0 5px;
+}
+#setTimerClock fieldset{border-radius:4px;border:1px solid #fff;width:100%;box-sizing:border-box;padding:5px;}
+#setTimerClock legend{margin-left:10px;padding:0 5px;}
+#setTimerClock input[type=date]{width:calc(100% - 5px);font-size:16px;padding:0;height:28px;}
+#setTimerClock input[type=time]{font-size:16px;padding:0;height:28px;}
+#setTimerClock input[type=text]{width:calc(100% - 5px);font-size:16px;height:28px;}
+#setTimerClock button{font-size:14px;padding:5px 10px;border-radius:4px;}
+#notifyAnalogClockImg{max-height:200px;}
+#addtimer{
+float:left;
+padding-left:20px;
+font-size:16px;
+cursor:pointer;
+transition:color .5s ease;
+}
+#addtimer:hover{color:blue;}
+#digitalclock{
+position:relative;
+bottom:0;
+margin:0;
+font-family: 'Orbitron', sans-serif;
+font-size:30px;
+font-weight:700;
+border-radius:0 0 15px 15px;
+padding-bottom:5px;
+}
+#analogbox{
+background-color:#53d4da;
+border:5px ridge #a9e9eb;
+position:relative;
+border-radius:20px;
+padding-top:5px;
+top:0;
+display:inline-block;
+background-position:top center;
+background-repeat:no-repeat;
+}
+#analogclock{
+border-bottom:5px ridge #a9e9eb;
+width:200px;
+height:200px;
+display:inline-block;
+list-style:none;
+background-color:transparent;
+background-repeat:no-repeat;
+background-position:center center;
+background-size:100% 100%;
+}
+#analoghour,#analogmin,#analogsec{
+position:absolute;
+display:inline-block;
+background-repeat:no-repeat;
+}
+#analogsec{z-index:1;}
+#analogmin{z-index:2;}
+#analoghour{z-index:3;}
+#ACAttribute{padding-top:5px;text-align:center;font-size:12px;}
+.ACBtnElement{text-align:center;border-top:1px solid #fff;padding-top:5px;margin-top:5px;}
+.ACBtnElement button{margin-right:5px;padding:2px 20px;font-size:14px;}

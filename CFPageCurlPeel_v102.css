@@ -1,0 +1,78 @@
+/* CodeFlare curl page v1.00 */
+/* main css code */
+.curlLeft,.curlRight{
+width:var(--curl-size);
+height:var(--curl-size);
+position:absolute;
+top:0;
+z-index:+9999;
+overflow:hidden;
+display:inline-block;
+background:#fff;
+box-shadow:0 0 10px gray;
+transition:box-shadow 1s ease-in-out;
+}
+.curlLeft{left:0;}
+.curlRight{right:0}
+.curlLeft:hover,.curlRight:hover{
+box-shadow:10px 10px 50px gray;
+}
+.curlLeft:after,.curlRight:after{
+position:absolute;
+display:inline-block;
+content:'';
+width:100%;
+height:100%;
+top:0;
+background:#afafaf;
+background:-moz-linear-gradient(left,  #afafaf 0%, #ffffff 29%);
+background:-webkit-linear-gradient(left,  #afafaf 0%,#ffffff 29%);
+background:linear-gradient(to right,  #afafaf 0%,#ffffff 29%);
+filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#afafaf', endColorstr='#ffffff',GradientType=1 );
+}
+.curlLeft:after{
+left:0;
+right:auto;
+transform:rotate(45deg) translateX(70%) scale(1.4);
+}
+.curlRight:after{
+left:auto;
+right:0;
+transform:rotate(135deg) translateX(70%) scale(1.4);  
+}
+.curlLeftContent,.curlRightContent{
+width:calc(var(--curl-size) + 40px);
+}
+/* --------------- curl animation css ---------------- */
+.flip-start{animation:flipanim 10s ease-in-out infinite;}
+.flip-hover{animation:flipanimafter 1s ease-in-out;animation-fill-mode:forwards;}
+@keyframes flipanim {
+0%{width:var(--curl-size);height:var(--curl-size);box-shadow: 0px 0px 10px gray;}
+10%{width:calc(var(--curl-size) + 20px);height:calc(var(--curl-size) + 20px);box-shadow: 5px 5px 30px gray;}
+30%{width:var(--curl-size);height:var(--curl-size);box-shadow: 0px 0px 10px gray;}
+45%{width:calc(var(--curl-size) + 10px);height:calc(var(--curl-size) + 10px);box-shadow: 4px 4px 20px gray;}
+60%{width:calc(var(--curl-size) - 5px);height:calc(var(--curl-size) - 5px);box-shadow: 0px 0px 10px gray;}
+70%{width:calc(var(--curl-size) + 5px);height:calc(var(--curl-size) + 5px);box-shadow: 5px 5px 20px gray;}
+80%{width:calc(var(--curl-size) - 5px);height:calc(var(--curl-size) - 5px);box-shadow: 0px 0px 10px gray;}
+90%{width:calc(var(--curl-size) + 10px);height:calc(var(--curl-size) + 10px);box-shadow: 4px 4px 20px gray;}
+100%{width:var(--curl-size);height:var(--curl-size);box-shadow: 0px 0px 10px gray;}
+}
+@keyframes flipanimafter {
+0%{width:calc(var(--curl-size) + 20px);height:calc(var(--curl-size) + 20px);}
+100%{width:calc(var(--curl-size) + 100px);height:calc(var(--curl-size) + 100px);}
+}
+@media screen and (max-width:550px){
+.curlLeft,.curlRight{display:none;}
+}
+/* ------- curl image base css ------- */
+.imgRightCurlcontent,.imgLeftCurlcontent{
+width:calc(var(--curl-size) + 40px);
+position:absolute;
+padding:0;
+margin:0;
+cursor:pointer;
+max-width:none;
+}
+#curlToElmPos{
+position:relative;
+}

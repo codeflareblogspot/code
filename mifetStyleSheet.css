@@ -1,0 +1,363 @@
+:root {
+--mfHeaderColor:#4078bd;
+--mfPanelColor:#ebebeb;
+--mfBottomBorder:#ccc;
+--mfBtnBorder:#809bff;
+--mfTextColor:#000;
+--mfBGHovBorder:rgb(230, 236, 255,.7);
+}
+
+#frmEncoder1{
+border: 1px solid var(--mfHeaderColor);
+display:inline-block;
+width:100%;
+box-sizing:border-box;
+overflow:hidden;
+}
+.titleFormParser,.titleAboutMifet,#btnCloseAbout,#titleMifetDialogBox {color:#fff;}
+
+.titleFormParser,.titleAboutMifet,#btnCloseAbout,.titleThumbImg,#titleMifetDialogBox {
+background-color: var(--mfHeaderColor);
+}
+.mainMenuBtn,
+.mainMenuImgBtn,
+.mainMenuInputBtn,
+.frmBottomTxtArea,
+.headerAboutMifet,
+.btmAboutMifet {
+background-color:var(--mfPanelColor);
+}
+.dropbtn,
+.dropdown-content a {
+color:var(--mfTextColor);
+}
+
+.mainMenuBtn,.mainMenuImgBtn,.frmBottomTxtArea{
+border-color: var(--mfBottomBorder);
+border-style: solid;
+}
+.titleFormParser,.dropbtn,.titleAboutMifet{
+font:14px Roboto, Tahoma, Monospace;
+}
+
+#txtChkD,#txtChkLF,.mainMenuImgBtn button:hover,#btnCloseAbout,.btnTitleMifetDialogBox {cursor: pointer;}
+#thumbImg,.infoBtmBtn,.titleAboutMifet {border: 1px solid #ccc;}
+#btnCloseAbout,.titleThumbImg,.infoBtmBtn,#enableBtn {font-family: Roboto, Tahoma, Monospace;font-weight: 400;}
+#btnCloseAbout,.titleThumbImg,.infoBtmBtn,#enableBtn {font-size: 12px;}
+
+/* -------------------- */
+#frmEncoder {box-sizing:border-box;}
+.navRightPanel {
+cursor:pointer;
+margin-right:5px;
+float:left;
+width:40px;
+height:26px;
+transition:background-color .2s ease;
+}
+#minimizeBtn:hover, #windowBtn:hover {background-color:rgb(255,255,255,.2);}
+#closeBtn:hover {background-color:red;}
+.titleFormParser {
+float:left;
+width:100%;
+padding:5px;
+font-weight:400;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+}
+.mainMenuBtn {border-width: 0 0 1px 0;}
+.mainMenuImgBtn {
+margin: 0;
+padding: 2px 5px 0px 5px;
+border-width: 0 0 1px 0;
+}
+.mainMenuImgBtn button {
+border: 0;
+padding: 0;
+margin: 0;
+background-repeat: no-repeat;
+background-size: 16px 16px;
+background-position: center center;
+background-color:inherit;
+width: 24px;
+height: 24px;
+border:1px solid var(--mfPanelColor);
+}
+.mainMenuImgBtn button:hover,.dropbtn:hover {
+border: 1px solid var(--mfBtnBorder);
+background-color: var(--mfBGHovBorder) !important;
+}
+#inputFileMenu {
+display:none;
+padding:0;
+border:none;
+}
+.dropbtn,.dropbtn:active,.dropbtn:focus {
+background:inherit;
+padding: 5px;
+border:1px solid var(--mfPanelColor);
+outline: none;
+}
+.dropdown {
+position: relative;
+display: inline-block;
+}
+.dropdown-content {
+display: none;
+position: absolute;
+min-width: 150px;
+z-index: 1;
+background: #ebebeb;
+border: 1px solid #ccc;
+box-shadow: 4px 4px 10px -1px grey;
+}
+.dropdown-content a i {font-size:12px;}
+.dropdown-content a {
+padding: 2px 15px;
+text-decoration: none;
+display: block;
+}
+.dropdown-content a:hover{background-color:var(--mfHeaderColor);color:#fff;}
+.dropdown:hover .dropdown-content {
+display: block;
+}
+.txtBottomForm {
+width: 100%;
+box-sizing: border-box;
+}
+div.numberedtextarea-wrapper {
+position: relative;
+}
+div.numberedtextarea-wrapper textarea {
+display: block;
+box-sizing: border-box;
+}
+div.numberedtextarea-line-numbers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 50px;
+  color: #fff;
+  overflow: hidden;
+  background: #666;
+  border-width: 0 1px 0 0;
+  border-style: solid;
+  border-color: #ccc;
+}
+div.numberedtextarea-number {
+  padding-right: 6px;
+  text-align: right;
+}
+.txtInput {
+  margin: 0;
+  line-height: 16px;
+  padding-top: 5px;
+  padding-left: 5px;
+  font: 1em Courier New, FontAwesome, Monospace;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  resize: none;
+}
+textarea {
+border-style: none;
+border-color: Transparent;
+overflow: auto;
+outline: none;
+}
+.frmBottomTxtArea {
+  padding: 2px 5px 4px 5px;
+  border-width: 1px 0 0 0;
+}
+.frmBottomTxtArea button {
+  background: #f5f5f5;
+  padding: 2px;
+}
+#undo {
+  background: url(https://1.bp.blogspot.com/-6F3ermi67SU/XBG1e7uiyiI/AAAAAAAAAqQ/1UcEV0fxHLQst-AhY2FVv1z6FW6GahjtQCLcBGAs/s1600/undo.png)no-repeat center center / 16px 16px;
+}
+
+#redo {
+  background: url(https://3.bp.blogspot.com/-K0E5K9u0bqA/XBG1d4UeUQI/AAAAAAAAAqE/DRdCEkqsxHkx1fm4QJgyA4b97KCjept5ACLcBGAs/s1600/redo.png)no-repeat center center / 16px 16px;
+}
+
+#undo:disabled[disabled] {
+  background: url(https://4.bp.blogspot.com/-GIPC-TmC4pw/XBOwuPyOuZI/AAAAAAAAAsU/tIeoIkxStV0EIKEW6hglRXeJP9L_uZQ-gCLcBGAs/s1600/not-undo.png)no-repeat center center / 16px 16px;
+}
+
+#redo:disabled[disabled] {
+  background: url(https://4.bp.blogspot.com/-r7JyQoZIDQU/XBOwuDtgYeI/AAAAAAAAAsQ/DCXWsuBtVvMzch58q--hybUcqvkB6-0NwCLcBGAs/s1600/not-redo.png)no-repeat center center / 16px 16px;
+}
+
+#pasteclipboard {
+  background: url(https://2.bp.blogspot.com/-GNh2GyRj2rU/XBHEyXQmfTI/AAAAAAAAArM/_-H9p0NVGqAXGL2iV4ugi8Tb81l-DmgegCLcBGAs/s1600/clipboard.png)no-repeat center center / 16px 16px;
+}
+
+#pasteclipboard:disabled[disabled] {
+  background: url(https://3.bp.blogspot.com/-Be21mfSMqOo/XBOzDGG7bqI/AAAAAAAAAss/NCcuvXSpWyMAovb4aWQOtxDOIgpnZK90ACLcBGAs/s1600/no-paste.png)no-repeat center center / 16px 16px;
+}
+#thumbImg {
+  width: 200px;
+  height: 220px;
+  overflow: hidden;
+  border-radius: 4px;
+  box-shadow: 0px 0px 4px #000;
+  position: fixed;
+  top:10%;
+  left:10%;
+  cursor: move;
+  padding: 0;
+  margin: 0;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+z-index:+999;
+}
+.titleThumbImg {
+  height: 20px;
+  text-align: left;
+  padding: 0 5px;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: #ccc;
+  height: 24px;
+  transition: all 0.5s ease;
+}
+.titleThumbImg:hover {
+color: #000;
+}
+#thumbImgView1{
+position:fixed;
+top:0;left:0;
+opacity:0;
+z-index:-1;
+}
+#viewImg1{
+width:auto;
+height:auto;
+}
+#aboutMifet {
+width: 250px;
+border:1px solid var(--mfHeaderColor);
+border-radius: 4px 4px 0 0;
+padding: 0;
+z-index:+99;
+opacity:1;
+position:fixed;
+top:15%;
+left:40%;
+}
+.titleAboutMifet{text-align:center;}
+.titleAboutMifet,.headerAboutMifet,.btmAboutMifet{
+padding:5px;
+}
+.licAboutMifet{
+font-weight:400;
+background:#fff;
+text-align:left;
+padding:5px 10px;
+height:200px;
+overflow-y:auto;
+border-style:solid;
+border-width:1px 0 1px 0;
+border-color:#ccc;
+}
+#btnCloseAbout{
+border: none;
+display: block;
+padding: 5px;
+text-decoration: none;
+transition:all .5s ease;
+}
+#btnCloseAbout:hover {
+background-color: #0083da;
+}
+#btnCloseAbout:active {
+position: relative;
+top: 1px;
+}
+#enableBtn{
+background:red;
+border:1px solid #000;
+padding:2px 5px;
+border-radius:3px;
+color:#fff;
+}
+#enableBtn:hover{border:1px solid #ccc;}
+
+#mifetDialogBox{
+background-color:#fff;
+box-sizing:border-box;
+border:1px solid var(--mfHeaderColor);
+padding:0;
+display:inline-block;
+}
+#titleMifetDialogBox{
+text-align:left;
+box-sizing:border-box;
+display:block;
+width:100%;
+padding:0;
+font-weight:400;
+-webkit-user-select: none;
+-khtml-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+height:25px;
+}
+#textTitleMifetDialogBox{float:left;padding:4px 8px;}
+#closeTitleMifetDialogBox{
+background-image:url(https://3.bp.blogspot.com/-Ds9-v_pghUo/XCooRVewHjI/AAAAAAAAAuA/euHY7pzfaVso4Rc_PxWEjgRHYbv_tSHsACLcBGAs/s1600/close-white.png);
+background-repeat:no-repeat;
+background-position:center center;
+background-size:14px 14px;
+float:right;
+cursor:pointer;
+color:#fff;
+width:24px;
+height:24px;
+transition:background-color .5s ease;
+}
+#closeTitleMifetDialogBox:hover{
+background-color:red;
+}
+#contentTitleMifetDialogBox{
+margin:0 2px 0 2px;
+padding:5px 10px;
+font-size:20px;
+color:var(--mfHeaderColor);
+padding:10px 100px 30px 10px;
+background-color:#fff;
+}
+#btmPanelTitleMifetDialogBox{
+width:100%;
+box-sizing:border-box;
+padding:10px;
+background-color:#ebebeb;
+text-align:right;
+border-top:1px solid #ccc;
+}
+.btnTitleMifetDialogBox{
+margin:0 2px 0 2px;
+padding:2px 15px;
+font-size:12px;
+}
+
+
