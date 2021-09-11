@@ -1,6 +1,3 @@
-#Home
-#Files
-
 <div>Welcome to codeflare.blogspot.com GitHub Pages</div>
 <span style="color:#36afff;">Code</span><span style="color:#ffb100;">Flare</span> — is a blog, a beautiful blog, an inspiration blog and full with magic. CodeFlare is not just a blog its a creative blog with usefull information and great article content.
 <br /><br />
