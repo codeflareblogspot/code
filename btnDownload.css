@@ -1,0 +1,259 @@
+/******************************************/
+/** Start Tombol Download Icon Spin      **/
+/** Modified : (c)2019 CodeFlare Blogspot**/
+/** URL : https://codeflare.blogspot.com **/
+/******************************************/
+/* psuedo element animations */
+/* psuedo element animations */
+/* psuedo element animations */
+@-webkit-keyframes cf-btnBounce {
+to {
+-webkit-transform: translateY(0px) rotate(50deg);
+}}
+@-moz-keyframes cf-btnBounce {
+to {
+-moz-transform: translateY(0px) rotate(50deg);
+}}
+@keyframes cf-btnBounce {
+to {
+-webkit-transform: translateY(0px) rotate(50deg);
+-moz-transform: translateY(0px) rotate(50deg);
+-ms-transform: translateY(0px) rotate(50deg);
+-o-transform: translateY(0px) rotate(50deg);
+transform: translateY(0px) rotate(50deg);
+}}
+@-webkit-keyframes cf-btnBounce2 {
+to {
+-webkit-transform: translateY(0px) rotate(-50deg);
+}}
+@-moz-keyframes cf-btnBounce2 {
+to {
+-moz-transform: translateY(0px) rotate(-50deg);
+}}
+@keyframes cf-btnBounce2 {
+to {
+-webkit-transform: translateY(0px) rotate(-50deg);
+-moz-transform: translateY(0px) rotate(-50deg);
+-ms-transform: translateY(0px) rotate(-50deg);
+-o-transform: translateY(0px) rotate(-50deg);
+transform: translateY(0px) rotate(-50deg);
+}
+}
+a.cf-btn{text-decoration: none;}
+.cf-btn {
+/* rounded corner overflow mask fix */
+-webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
+overflow: hidden;
+border-radius: 5px;
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+border: 2px solid #007ccd;
+color: #fff;
+width: 220px;
+display: inline-block;
+position: relative;
+-webkit-transition: all 300ms ease;
+-moz-transition: all 300ms ease;
+transition: all 300ms ease;
+text-align: center;
+font-family: 
+-webkit-font-smoothing: antialiased;
+vertical-align:middle;
+font-family:'Roboto',Open Sans, sans-serif;
+}
+.cf-btn span {
+display: block;
+position: relative;
+z-index: 1;
+-webkit-transform: translate(0, 0);
+-moz-transform: translate(0, 0);
+-ms-transform: translate(0, 0);
+-o-transform: translate(0, 0);
+transform: translate(0, 0);
+text-shadow: -1px -1px 1px #000;
+}
+.cf-btn span:after, .cf-btn span:before {
+content: '';
+width: 1px;
+height: 16px;
+opacity: 0;
+position: absolute;
+left: 50%;
+top: 100%;
+-webkit-transition: all 10ms ease-out;
+-moz-transition: all 10ms ease-out;
+transition: all 10ms ease-out;
+-webkit-transform-origin: center bottom;
+-moz-transform-origin: center bottom;
+-ms-transform-origin: center bottom;
+-o-transform-origin: center bottom;
+transform-origin: center bottom;
+-webkit-transform: translateY(0) rotate(0deg);
+-moz-transform: translateY(0) rotate(0deg);
+-ms-transform: translateY(0) rotate(0deg);
+-o-transform: translateY(0) rotate(0deg);
+transform: translateY(0) rotate(0deg);
+-webkit-animation: 0;
+-moz-animation: 0;
+animation: 0;
+}
+.cf-btn svg {
+z-index: 0;
+fill: white;
+position: absolute;
+left: 20%;
+top: 50%;
+-webkit-transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
+-moz-transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
+-ms-transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
+-o-transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
+transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
+-webkit-transition: all 350ms ease-out;
+-moz-transition: all 350ms ease-out;
+transition: all 350ms ease-out;
+height: 700px;
+}
+.cf-btn svg#linux {
+-webkit-transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
+-moz-transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
+-ms-transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
+-o-transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
+transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
+}
+.cf-btn:hover svg {
+left: 50%;
+-webkit-transform: translate(-50%, -50%) rotate(60deg) scale(1);
+-moz-transform: translate(-50%, -50%) rotate(60deg) scale(1);
+-ms-transform: translate(-50%, -50%) rotate(60deg) scale(1);
+-o-transform: translate(-50%, -50%) rotate(60deg) scale(1);
+transform: translate(-50%, -50%) rotate(60deg) scale(1);
+}
+.cf-btn:hover svg#windows {
+-webkit-transform: translate(-50%, -10%) rotate(60deg) scale(1);
+-moz-transform: translate(-50%, -10%) rotate(60deg) scale(1);
+-ms-transform: translate(-50%, -10%) rotate(60deg) scale(1);
+-o-transform: translate(-50%, -10%) rotate(60deg) scale(1);
+transform: translate(-50%, -10%) rotate(60deg) scale(1);
+}
+.cf-btn:hover svg#linux {
+-webkit-transform: translate(-120%, -128%) rotate(60deg) scale(6);
+-moz-transform: translate(-120%, -128%) rotate(60deg) scale(6);
+-ms-transform: translate(-120%, -128%) rotate(60deg) scale(6);
+-o-transform: translate(-120%, -128%) rotate(60deg) scale(6);
+transform: translate(-120%, -128%) rotate(60deg) scale(6);
+}
+.cf-btn:hover svg#cfdownload {
+-webkit-transform: translate(-120%, -125%) rotate(60deg) scale(6);
+-moz-transform: translate(-120%, -125%) rotate(60deg) scale(6);
+-ms-transform: translate(-120%, -125%) rotate(60deg) scale(6);
+-o-transform: translate(-120%, -125%) rotate(60deg) scale(6);
+transform: translate(-120%, -125%) rotate(60deg) scale(6);
+}
+.cf-btn:hover svg#cflink {
+-webkit-transform: translate(-50%, -10%) rotate(60deg) scale(4);
+-moz-transform: translate(-50%, -10%) rotate(60deg) scale(4);
+-ms-transform: translate(-50%, -10%) rotate(60deg) scale(4);
+-o-transform: translate(-50%, -10%) rotate(60deg) scale(4);
+transform: translate(-50%, -10%) rotate(60deg) scale(4);
+}
+.cf-btn:hover span {
+-webkit-transform: translate(0, -10px) scale(1.1);
+-moz-transform: translate(0, -10px) scale(1.1);
+-ms-transform: translate(0, -10px) scale(1.1);
+-o-transform: translate(0, -10px) scale(1.1);
+transform: translate(0, -10px) scale(1.1);
+-webkit-transition: -webkit-transform 400ms ease-out 400ms;
+-moz-transition: -moz-transform 400ms ease-out 400ms;
+transition: transform 400ms ease-out 400ms;
+text-shadow: none;
+}
+.cf-btn:hover span:after, .cf-btn:hover span:before {
+opacity: 1;
+-webkit-transition: all 400ms ease-out 400ms, -webkit-transform 300ms ease-in 100ms;
+-moz-transition: all 400ms ease-out 400ms, -moz-transform 300ms ease-in 100ms;
+transition: all 400ms ease-out 400ms, transform 300ms ease-in 100ms;
+}
+.cf-btn:hover span:after {
+-webkit-transform: translateY(7px) rotate(50deg);
+-moz-transform: translateY(7px) rotate(50deg);
+-ms-transform: translateY(7px) rotate(50deg);
+-o-transform: translateY(7px) rotate(50deg);
+transform: translateY(7px) rotate(50deg);
+-webkit-animation: cf-btnBounce 800ms linear alternate infinite;
+-moz-animation: cf-btnBounce 800ms linear alternate infinite;
+animation: cf-btnBounce 800ms linear alternate infinite;
+}
+.cf-btn:hover span:before {
+-webkit-transform: translateY(7px) rotate(-50deg);
+-moz-transform: translateY(7px) rotate(-50deg);
+-ms-transform: translateY(7px) rotate(-50deg);
+-o-transform: translateY(7px) rotate(-50deg);
+transform: translateY(7px) rotate(-50deg);
+-webkit-animation: cf-btnBounce2 800ms linear alternate infinite;
+-moz-animation: cf-btnBounce2 800ms linear alternate infinite;
+animation: cf-btnBounce2 800ms linear alternate infinite;
+}
+.cf-large{padding:26px 0 26px 28px;font-size:24px;font-weight:600;width:220px;}
+.cf-medium{padding:20px 0 20px 22px;font-size:20px;font-weight:500;width:200px;}
+.cf-small{padding:12px 0 12px 22px;font-size:18px;font-weight:500;width:180px;}
+.cf-mini{padding:4px 0 4px 22px;font-size:14px;font-weight:400;width:120px;}
+.cf-large:hover {padding: 26px 0;background-color:#fff;}
+.cf-medium:hover {padding: 20px 0;background-color:#fff;}
+.cf-small:hover {padding: 12px 0;background-color:#fff;}
+.cf-mini:hover {padding: 10px 0;background-color:#fff;}
+.cf-small svg {width:500px !important;height:500px !important;}
+.cf-mini svg {width:380px !important;height:380px !important;}
+.cf-large span:after,.cf-large span:before,.cf-medium span:after,.cf-medium span:before{height:16px !important;}
+.cf-small span:after,.cf-small span:before{height:10px !important;}
+.cf-mini span:after,.cf-mini span:before{height:5px !important;}
+.cf-pulse{
+padding:0;
+margin:10px 5px;
+display:inline-block;
+border-radius:5px;
+}
+.glowing {
+display:inline-block;
+border: none;
+outline: none;
+padding:0;
+cursor: pointer;
+position: relative;
+z-index: 0;
+margin:10px 5px;
+}
+.glowing:before {
+content: '';
+background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+position: absolute;
+top: -2px;
+left:-2px;
+background-size: 400%;
+z-index: -1;
+filter: blur(5px);
+border-radius: 5px;
+width: calc(100% + 4px);
+height: calc(100% + 4px);
+animation: glowing 20s linear infinite;
+transition: opacity .3s ease-in-out;
+}
+.glowing:active {}
+.glowing:active:after {background: transparent;}
+.glowing:hover:before {}
+.glowing:after {
+z-index: -1;
+content: '';
+position: absolute;
+width: 100%;
+height: 100%;
+left: 0;
+top: 0;
+border-radius: 5px;
+}
+@keyframes glowing {
+0% { background-position: 0 0; }
+50% { background-position: 400% 0; }
+100% { background-position: 0 0; }
+}
+/* End Tombol Download Icon */
