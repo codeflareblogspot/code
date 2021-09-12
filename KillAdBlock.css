@@ -1,0 +1,135 @@
+/* Script Info Matikan AdBlock By codeflare.blogspot.com */
+#adBlockInfo {background:rgba(0,0,0,0.85);padding:0;position:fixed;bottom:0;left:0;top:-100px;right:0;z-index:1000;opacity:1;visibility:visible;height:auto;}
+#adBlockInfo svg {width:100px; height:100px;}
+#adBlockInfo svg path {fill:#fff;}
+#adBlockInfo svg:hover{animation:jello-horizontal .5s both}
+.adBlockTitle{
+display:inline-block;
+background:rgba(0,0,0,.1);
+padding:5px 25px 15px 25px;
+font-size:2.2rem;
+font-weight:600;
+margin-bottom:20px;
+border-radius:0 0 8px 8px;
+}
+.adBlockTxt{
+color:#fff;
+position:absolute;
+text-align:center;
+padding:0 30px 30px 30px;
+margin:auto;
+top:30%;left:0;
+right:0;
+font-size:1.5rem;
+font-weight:400;
+line-height:1.5em;
+font-family:monospace;
+max-width:800px;
+border-radius:8px;
+border:4px #ccc outset;
+overflow:hidden;
+opacity:1;
+transition:all 1s ease-in-out;
+animation:adBlockInfoWobble .5s;
+-moz-animation:adBlockInfoWobble .5s;
+-webkit-animation:adBlockInfoWobble .5s;
+-o-animation:adBlockInfoWobble .5s;
+background: rgb(255,48,25);
+background: -moz-linear-gradient(top,  rgb(255,48,25) 0%, rgb(207,4,4) 100%);
+background: -webkit-linear-gradient(top,  rgb(255,48,25) 0%,rgb(207,4,4) 100%);
+background: linear-gradient(to bottom,  rgb(255,48,25) 0%,rgb(207,4,4) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff3019', endColorstr='#cf0404',GradientType=0 );
+}
+.adBlockTxt:hover{border:4px gold outset;}
+@-webkit-keyframes adBlockInfoWobble {
+0% {
+-webkit-transform: translateY(600px) rotateX(30deg) scale(0);
+transform: translateY(600px) rotateX(30deg) scale(0);
+-webkit-transform-origin: 50% 100%;
+transform-origin: 50% 100%;
+opacity: 0;
+}
+100% {
+-webkit-transform: translateY(0) rotateX(0) scale(1);
+transform: translateY(0) rotateX(0) scale(1);
+-webkit-transform-origin: 50% -1400px;
+transform-origin: 50% -1400px;
+opacity: 1;
+}
+}
+@keyframes adBlockInfoWobble {
+0% {
+-webkit-transform: translateY(600px) rotateX(30deg) scale(0);
+transform: translateY(600px) rotateX(30deg) scale(0);
+-webkit-transform-origin: 50% 100%;
+transform-origin: 50% 100%;
+opacity: 0;
+}
+100% {
+-webkit-transform: translateY(0) rotateX(0) scale(1);
+transform: translateY(0) rotateX(0) scale(1);
+-webkit-transform-origin: 50% -1400px;
+transform-origin: 50% -1400px;
+opacity: 1;
+}
+}
+@-webkit-keyframes jello-horizontal {
+0% {
+-webkit-transform: scale3d(1, 1, 1);
+transform: scale3d(1, 1, 1);
+}
+30% {
+-webkit-transform: scale3d(1.25, 0.75, 1);
+transform: scale3d(1.25, 0.75, 1);
+}
+40% {
+-webkit-transform: scale3d(0.75, 1.25, 1);
+transform: scale3d(0.75, 1.25, 1);
+}
+50% {
+-webkit-transform: scale3d(1.15, 0.85, 1);
+transform: scale3d(1.15, 0.85, 1);
+}
+65% {
+-webkit-transform: scale3d(0.95, 1.05, 1);
+transform: scale3d(0.95, 1.05, 1);
+}
+75% {
+-webkit-transform: scale3d(1.05, 0.95, 1);
+transform: scale3d(1.05, 0.95, 1);
+}
+100% {
+-webkit-transform: scale3d(1, 1, 1);
+transform: scale3d(1, 1, 1);
+}
+}
+@keyframes jello-horizontal {
+0% {
+-webkit-transform: scale3d(1, 1, 1);
+transform: scale3d(1, 1, 1);
+}
+30% {
+-webkit-transform: scale3d(1.25, 0.75, 1);
+transform: scale3d(1.25, 0.75, 1);
+}
+40% {
+-webkit-transform: scale3d(0.75, 1.25, 1);
+transform: scale3d(0.75, 1.25, 1);
+}
+50% {
+-webkit-transform: scale3d(1.15, 0.85, 1);
+transform: scale3d(1.15, 0.85, 1);
+}
+65% {
+-webkit-transform: scale3d(0.95, 1.05, 1);
+transform: scale3d(0.95, 1.05, 1);
+}
+75% {
+-webkit-transform: scale3d(1.05, 0.95, 1);
+transform: scale3d(1.05, 0.95, 1);
+}
+100% {
+-webkit-transform: scale3d(1, 1, 1);
+transform: scale3d(1, 1, 1);
+}
+}
