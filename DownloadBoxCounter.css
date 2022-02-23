@@ -118,7 +118,7 @@ height:8em;
 max-height:100vh;
 margin:0;
 position:absolute;
-bottom:-10px
+bottom:-10px;
 overflow:hidden;
 }
 .wave-bg > use {
