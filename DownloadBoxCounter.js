@@ -6,6 +6,9 @@
 /******************************************/
 //<![CDATA[
 function setDlBoxCounter(){
+if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null){var useAds = "http://adf.ly/822497"+"/";}
+else{var slash = useAdsRedirect.substr(-1);
+if (slash !== '/'){var useAds = useAdsRedirect+"/";}else{var useAds = useAdsRedirect;}}
 var tmpDlBoxCounter='';
 var a = document.getElementsByClassName('dlcounterbox');
 var dlink = new Array;
@@ -132,7 +135,7 @@ window.open(document.getElementById("downloadx"+x).getAttribute("data-href"),"_b
 }
 function openDlCounterLinkFile(href){
 if($(window).width() < 500){var a=sflSetConnection[0]+"#sfl="+window.btoa(href);}
-else{var a="http://adf.ly/822497/"+href;}
+else{var a=useAds+href;}
 window.open(a,"_blank");
 }
 $(document).ready(function(){if($('.dlcounterbox')){setDlBoxCounter();}});
