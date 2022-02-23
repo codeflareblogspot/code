@@ -6,9 +6,6 @@
 /******************************************/
 //<![CDATA[
 function setDlBoxCounter(){
-if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null || useAdsRedirect === ''){var useAds = "http://adf.ly/822497/";}
-else{if(useAdsRedirect==false){var useAds='';}else{var slash = useAdsRedirect.substr(-1);
-if (slash !== '/'){var useAds = useAdsRedirect+'/';}else{var useAds = useAdsRedirect;}}}
 var tmpDlBoxCounter='';
 var a = document.getElementsByClassName('dlcounterbox');
 var dlink = new Array;
@@ -134,6 +131,9 @@ function download_myfile(x){
 window.open(document.getElementById("downloadx"+x).getAttribute("data-href"),"_blank")
 }
 function openDlCounterLinkFile(href){
+if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null || useAdsRedirect === ''){var useAds = "http://adf.ly/822497/";}
+else{if(useAdsRedirect==false){var useAds='';}else{var slash = useAdsRedirect.substr(-1);
+if (slash !== '/'){var useAds = useAdsRedirect+'/';}else{var useAds = useAdsRedirect;}}}
 if($(window).width() < 500){var a=sflSetConnection[0]+"#sfl="+window.btoa(href);}
 else{var a=useAds+href;}
 window.open(a,"_blank");
