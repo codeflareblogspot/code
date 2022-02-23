@@ -6,9 +6,9 @@
 /******************************************/
 //<![CDATA[
 function setDlBoxCounter(){
-if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null){var useAds = "http://adf.ly/822497"+"/";}
-else{var slash = useAdsRedirect.substr(-1);
-if (slash !== '/'){var useAds = useAdsRedirect+"/";}else{var useAds = useAdsRedirect;}}
+if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null || useAdsRedirect === ''){var useAds = "http://adf.ly/822497/";}
+else{if(useAdsRedirect==false){var useAds='';}else{var slash = useAdsRedirect.substr(-1);
+if (slash !== '/'){var useAds = useAdsRedirect+'/';}else{var useAds = useAdsRedirect;}}}
 var tmpDlBoxCounter='';
 var a = document.getElementsByClassName('dlcounterbox');
 var dlink = new Array;
