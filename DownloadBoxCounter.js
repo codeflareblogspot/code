@@ -132,7 +132,7 @@ window.open(document.getElementById("downloadx"+x).getAttribute("data-href"),"_b
 }
 function openDlCounterLinkFile(href){
 var useAds='';
-if (typeof useAdsRedirect === 'undefined' || useAdsRedirect === null || useAdsRedirect === ''){useAds = 'http://adf.ly/822497/';}
+if (typeof useAdsRedirect == 'undefined' || useAdsRedirect == null || useAdsRedirect == ''){useAds = 'http://adf.ly/822497/';}
 else{
 if(useAdsRedirect=='false'){useAds='';}else{
 var slash = useAdsRedirect.substr(-1);if (slash !== '/'){useAds = useAdsRedirect+'/';}else{useAds = useAdsRedirect;}
