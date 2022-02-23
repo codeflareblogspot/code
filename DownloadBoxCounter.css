@@ -119,6 +119,7 @@ max-height:100vh;
 margin:0;
 position:absolute;
 bottom:-10px
+overflow:hidden;
 }
 .wave-bg > use {
  -webkit-animation: move-forever 20s linear infinite;
