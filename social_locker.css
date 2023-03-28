@@ -332,8 +332,8 @@
     width: 118px !important;
 }
 .onp-sociallocker-secrets {
-    padding: 20px;
-    margin: 10px auto 15px auto;
+    padding: 0;
+    margin: 10px auto;
     border: 0px;
 
     background-color: transparent;
