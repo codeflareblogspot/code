@@ -24,6 +24,8 @@
     padding: 0;
     color: #fff;
     cursor: pointer;
+    height: 32px;
+    overflow: hidden;
 }
 
 .leftDateAst,.rightDateAst {
@@ -36,6 +38,7 @@
 }
 
 .leftHeaderAst,.titleHeaderAst,.rightHeaderAst,.leftDateAst,.rightDateAst {
+	font-size: 16px;
     float: left;
     box-sizing: border-box;
     padding: 5px;
