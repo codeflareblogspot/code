@@ -30,7 +30,7 @@ background:#ff0b75;
 }
 .leftHeaderJodoh,.rightHeaderJodoh{color:#333;}
 .titleHeaderJodoh{width:80%;}
-.contentFrmJodoh{position:relative;height:261px;}
+.contentFrmJodoh{position:relative;height:261px;clear:both;}
 .flip-card-back:hover{border-size:1px #ccc solid;}
 .namaFrmJodoh{display:block;margin:5px 0;height:62px;padding:5px;}
 #dataFemale{background:#ffa3cb;}
