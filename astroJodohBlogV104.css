@@ -24,11 +24,10 @@ transition: color .3s, background-color .3s linear .3s;
 .leftHeaderJodoh,.titleHeaderJodoh,.rightHeaderJodoh{
 float:left;
 box-sizing:border-box;
-padding-top:5px;
+padding:5px;
 text-align:center;
 background:#ff0b75;
 }
-.leftHeaderJodoh,.titleHeaderJodoh,.rightHeaderJodoh{height:30px;}
 .leftHeaderJodoh,.rightHeaderJodoh{color:#333;}
 .titleHeaderJodoh{width:80%;}
 .contentFrmJodoh{position:relative;height:261px;}
