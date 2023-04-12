@@ -1,17 +1,3 @@
-/* Main Setting CodeFlare SafeLink*/
-var timeleft=20;
-var sflnumofpost=3;
-var sflIdentifier="#sfl=";
-var sflElmBefore=".adsbygoogle[data-ad-slot='4118739066']";
-var sflElmAfter=".adsbygoogle[data-ad-slot='4118739066']";
-var sflElmBeforeAlt=".separator:eq(0)";
-var sflElmAfterAlt=".separator:eq(0)";
-var sflElmReady=".bottom-ads:eq(0)";
-var sflCaptchaKey="6Ld5zK8ZAAAAAL9N01Vc7dvzNxwYBWbnbDY-A4jg";
-var sflJsonUrl="";
-if(decodeURIComponent(document.location.href).match(sflIdentifier)){
-$('body').append('<div id="btnLoadSafelinkElm" style="z-index:+999;">Please wait !!!<br>scanning download link</div>');}
-/* --------------------------------------------------------*/
 /*Main Code CodeFlare SafeLink*/
 /*Write HTML Code Element*/
 var safelinkMainBGColor = getComputedStyle(document.documentElement).getPropertyValue('--main-color');
