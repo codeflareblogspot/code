@@ -4,7 +4,7 @@
 
 .mainFrmAst {
     background: #f8f8f8;
-    height: 340px;
+    height: 345px;
     line-height: inherit;
 }
 
@@ -24,7 +24,7 @@
     padding: 0;
     color: #fff;
     cursor: pointer;
-    height: 32px;
+	height: 32px;
     overflow: hidden;
 }
 
@@ -348,7 +348,7 @@
     font-weight: 600;
     background: var(--main-color);
     height: 30px;
-    padding-top: 5px;
+    padding: 5px;
     box-sizing: border-box;
     color: #fff;
     float: left;
