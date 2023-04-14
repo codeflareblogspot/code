@@ -33,7 +33,7 @@ var urlTargetSafeLink;
 function safelinkBoxGetFocus(elm,timer,delay,dif,f){var $elm=$(elm);$('html, body').delay(delay).animate({scrollTop: $elm.offset().top - dif}, timer,function(){if(f!==''){$(f).hide();}});}
 /*Defined Function reCaptcha Expired Code*/
 function recaptcha_expired(){
-safelinkBoxGetFocus('#activeCFSafeLink',900,0,10);
+safelinkBoxGetFocus('#activeCFSafeLink',900,1000,50);
 $(".cfsafelinktext").html('<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: #efff00;"></i> Your re-captcha has expired, please verify again !');
 $('#cfsafelinkicon,#cfsafelinkbtn').prop({'title':'Please use re-captcha first !','disabled':true});
 $('#cfsafelinkicon,#cfsafelinkbtn').attr({'onclick':'alert("Please use re-captcha first !")'});
@@ -89,8 +89,7 @@ $("#activeCFSafeLink").insertBefore($(sflElmReady));
 $("#countdown").hide("blind",{},1000,function(){$(this).remove();});
 $(".cfsafelinktext").html('<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: #efff00;"></i> Please use re-captcha first !');
 $('#cfsafelinkicon,#cfsafelinkbtn').prop('title', 'Please use re-captcha first !');
-$(".g-recaptcha").show("blind");
-safelinkBoxGetFocus('#activeCFSafeLink',5000,1000,200);}
+$(".g-recaptcha").show("blind",function(){safelinkBoxGetFocus('#activeCFSafeLink',5000,1000,200);}});
 $("#progressBar").css({"width":200-((timeleft/20)*200)+"px"});
 $(".countdown__text").html(timeleft);
 timeleft -= 1;}
@@ -107,7 +106,6 @@ $("#countdown").insertBefore($(sflElmBeforeAlt));
 $("#activeCFSafeLink").insertAfter($(sflElmAfterAlt));}
 downloadStartTimer=setInterval(downloadTimer,1000);
 safelinkBoxGetFocus('#countdown',900,0,10,'#btnLoadSafelinkElm');
-//$("#btnLoadSafelinkElm").hide();
 }
 /*Defined Function SafeLink Button*/
 function setBtnSafeLink(){
