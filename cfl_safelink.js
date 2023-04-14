@@ -1,6 +1,5 @@
 /*Main Code CodeFlare SafeLink*/
 /*Write HTML Code Element*/
-var safelinkMainBGColor = getComputedStyle(document.documentElement).getPropertyValue('--main-color');
 var tmpCountDownSafelink='';
 /*Countdown Element*/
 tmpCountDownSafelink+='<div id="countdown" style="display:none;">';
@@ -30,10 +29,13 @@ var sfllength=0;
 var sflflag;
 var downloadStartTimer;
 var urlTargetSafeLink;
-function safelinkBoxGetFocus(elm,timer,delay,dif,f){var $elm=$(elm);$('html, body').delay(delay).animate({scrollTop: $elm.offset().top - dif}, timer,function(){if(f!==''){$(f).hide();}});}
+function safelinkBoxGetFocus(elm,timer,delay){
+var $elm=$(elm);
+$('html, body').stop().delay(delay).animate({'scrollTop':$elm.offset().top},timer,'swing',function(){window.location.hash = elm;});
+return false;}
 /*Defined Function reCaptcha Expired Code*/
 function recaptcha_expired(){
-safelinkBoxGetFocus('#activeCFSafeLink',900,1000,50);
+safelinkBoxGetFocus('#activeCFSafeLink',900,0);
 $(".cfsafelinktext").html('<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: #efff00;"></i> Your re-captcha has expired, please verify again !');
 $('#cfsafelinkicon,#cfsafelinkbtn').prop({'title':'Please use re-captcha first !','disabled':true});
 $('#cfsafelinkicon,#cfsafelinkbtn').attr({'onclick':'alert("Please use re-captcha first !")'});
@@ -60,9 +62,9 @@ var a = isFacebookApp();
 if(!a){window.location.replace(sflSetConnection[b]);}
 else{
 if($(window).width()<500){
-var tmp='<div class="alertUrlDownloadLinkError"  style="width:100%;box-sizing:border-box;background:'+safelinkMainBGColor+';color:#fff;padding:5px;text-align:center;position:fixed;top:10%;left:0;">Please use chrome browser to download !<br><br>Click copy link button<br>to try copy download link<br><br><input id="tmpUrlDownloadLinkError" type="text" value="'+sflSetConnection[b]+'#sfl='+window.btoa(tmpUrlDownloadLinkError)+'" style="width:99%;box-sizing:border-box;padding:5px;color:#000;background:#fff;"/><br><br><button onclick="btnCopyUrlDLink()">Copy Link</button></div>';
+var tmp='<div class="alertUrlDownloadLinkError"  style="width:100%;box-sizing:border-box;background:#0083da;color:#fff;padding:5px;text-align:center;position:fixed;top:10%;left:0;">Please use chrome browser to download !<br><br>Click copy link button<br>to try copy download link<br><br><input id="tmpUrlDownloadLinkError" type="text" value="'+sflSetConnection[b]+'#sfl='+window.btoa(tmpUrlDownloadLinkError)+'" style="width:99%;box-sizing:border-box;padding:5px;color:#000;background:#fff;"/><br><br><button onclick="btnCopyUrlDLink()">Copy Link</button></div>';
 }else{
-var tmp='<div class="alertUrlDownloadLinkError"  style="width:400px;box-sizing:border-box;background:'+safelinkMainBGColor+';color:#fff;border-radius:5px;padding:5px;text-align:center;position:fixed;top:30%;left:calc(50% - 200px);">Please use chrome browser to download !<br><br>Click copy link button<br>to try copy download link<br><br><input id="tmpUrlDownloadLinkError" type="text" value="'+sflSetConnection[b]+'#sfl='+window.btoa(tmpUrlDownloadLinkError)+'" style="width:99%;box-sizing:border-box;padding:5px;color:#000;background:#fff;"/><br><br><button onclick="btnCopyUrlDLink()">Copy Link</button></div>';
+var tmp='<div class="alertUrlDownloadLinkError"  style="width:400px;box-sizing:border-box;background:#0083da;color:#fff;border-radius:5px;padding:5px;text-align:center;position:fixed;top:30%;left:calc(50% - 200px);">Please use chrome browser to download !<br><br>Click copy link button<br>to try copy download link<br><br><input id="tmpUrlDownloadLinkError" type="text" value="'+sflSetConnection[b]+'#sfl='+window.btoa(tmpUrlDownloadLinkError)+'" style="width:99%;box-sizing:border-box;padding:5px;color:#000;background:#fff;"/><br><br><button onclick="btnCopyUrlDLink()">Copy Link</button></div>';
 }
 $('body').append(tmp);
 }}
@@ -89,7 +91,8 @@ $("#activeCFSafeLink").insertBefore($(sflElmReady));
 $("#countdown").hide("blind",{},1000,function(){$(this).remove();});
 $(".cfsafelinktext").html('<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: #efff00;"></i> Please use re-captcha first !');
 $('#cfsafelinkicon,#cfsafelinkbtn').prop('title', 'Please use re-captcha first !');
-$(".g-recaptcha").show("blind",function(){safelinkBoxGetFocus('#activeCFSafeLink',5000,1000,200);}});
+$(".g-recaptcha").show("blind");
+safelinkBoxGetFocus('#activeCFSafeLink',5000,1000);}
 $("#progressBar").css({"width":200-((timeleft/20)*200)+"px"});
 $(".countdown__text").html(timeleft);
 timeleft -= 1;}
@@ -105,7 +108,8 @@ $("#activeCFSafeLink").insertAfter($(sflElmAfter));
 $("#countdown").insertBefore($(sflElmBeforeAlt));
 $("#activeCFSafeLink").insertAfter($(sflElmAfterAlt));}
 downloadStartTimer=setInterval(downloadTimer,1000);
-safelinkBoxGetFocus('#countdown',900,0,10,'#btnLoadSafelinkElm');
+safelinkBoxGetFocus('#countdown',900,0);
+$("#btnLoadSafelinkElm").hide();
 }
 /*Defined Function SafeLink Button*/
 function setBtnSafeLink(){
