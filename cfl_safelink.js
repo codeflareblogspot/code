@@ -30,7 +30,7 @@ var sfllength=0;
 var sflflag;
 var downloadStartTimer;
 var urlTargetSafeLink;
-function safelinkBoxGetFocus(elm,timer,delay,dif){var $elm=$(elm);$('html, body').delay(delay).animate({scrollTop: $elm.offset().top - dif}, timer);}
+function safelinkBoxGetFocus(elm,timer,delay,dif,f){var $elm=$(elm);$('html, body').delay(delay).animate({scrollTop: $elm.offset().top - dif}, timer,function(){if(f!==''){$(f).hide();}});}
 /*Defined Function reCaptcha Expired Code*/
 function recaptcha_expired(){
 safelinkBoxGetFocus('#activeCFSafeLink',900,0,10);
@@ -106,8 +106,8 @@ $("#activeCFSafeLink").insertAfter($(sflElmAfter));
 $("#countdown").insertBefore($(sflElmBeforeAlt));
 $("#activeCFSafeLink").insertAfter($(sflElmAfterAlt));}
 downloadStartTimer=setInterval(downloadTimer,1000);
-safelinkBoxGetFocus('#countdown',900,0,10);
-$("#btnLoadSafelinkElm").hide();
+safelinkBoxGetFocus('#countdown',900,0,10,'#btnLoadSafelinkElm');
+//$("#btnLoadSafelinkElm").hide();
 }
 /*Defined Function SafeLink Button*/
 function setBtnSafeLink(){
