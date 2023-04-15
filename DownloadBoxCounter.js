@@ -15,6 +15,7 @@ shareURL=encodeURI(shareURL);
 var DefaultWave;
 if(reportLinkURL==""||reportLinkURL=="undefined"||reportLinkURL==null){reportLinkURL="/p/contact.html"}
 for(var i = 0; i < a.length; i++){
+if(document.getElementById('boxDlWrapper'+i)==false){
 dlink[i] = a[i].getAttribute("href");
 if($(a[i]).attr('data-color')==""||$(a[i]).attr('data-color')=="undefined"||$(a[i]).attr('data-color')==null){
 DefaultWave="rgba(242,193,78,.7)";
@@ -85,7 +86,7 @@ $("#btnxShareTw"+i).attr({"href":"http://twitter.com/intent/tweet?via=codeflare1
 $("#btnxShareLd"+i).attr({"href":"https://www.linkedin.com/sharing/share-offsite/?url="+shareURL,"title":"Link this on"});
 $("#btnxShareWa"+i).attr({"href":"https://api.whatsapp.com/send?phone=&text=#Download file: "+a[i].getAttribute("data-name")+" on "+shareURL,"title":"Send this on"});
 tmpDlBoxCounter='';
-$(a[i]).empty().hide();}}
+$(a[i]).empty().hide();}}}
 function hexToRgbADlBox(hex){
 var c;
 if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
