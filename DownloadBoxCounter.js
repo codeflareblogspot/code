@@ -15,7 +15,7 @@ shareURL=encodeURI(shareURL);
 var DefaultWave;
 if(reportLinkURL==""||reportLinkURL=="undefined"||reportLinkURL==null){reportLinkURL="/p/contact.html"}
 for(var i = 0; i < a.length; i++){
-if(document.getElementById('boxDlWrapper'+i)==false){
+if(document.getElementById('boxDlWrapper'+i)==null||document.getElementById('boxDlWrapper'+i)==false){
 dlink[i] = a[i].getAttribute("href");
 if($(a[i]).attr('data-color')==""||$(a[i]).attr('data-color')=="undefined"||$(a[i]).attr('data-color')==null){
 DefaultWave="rgba(242,193,78,.7)";
