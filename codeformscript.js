@@ -84,7 +84,7 @@ hidetooltiptimer = setTimeout(function(){
 tooltip.style.opacity = 0
 tooltip.style.display='none';
 }, 1000);}
-$(document).ready(function(){createtooltip();setElementCodeForm();});
+createtooltip();setElementCodeForm();
 
 function syntaxCodeHTML(elmnt, mode) {
   var lang = (mode || "html");
