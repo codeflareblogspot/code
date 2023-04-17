@@ -24,9 +24,9 @@ elCodeClassForm += '</div>';
 $(findCodeClassForm[i]).html(elCodeClassForm);
 $('#codeForm'+(i)).attr("onmouseover","showHeaderTitleNote('"+elheaderTitleNote+"')");
 $('#codeForm'+(i)).attr("onmouseleave","hideHeaderTitleNote('"+elheaderTitleNote+"')");
-if(typeCodeClassForm=="HTML"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="CSS"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="JS"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="HTML"||typeCodeClassForm=="html"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="CSS"||typeCodeClassForm=="css"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="JS"||||typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 syntaxCodeHTML(document.getElementById('codeForm'+(i)));
 }
 }
@@ -84,7 +84,7 @@ hidetooltiptimer = setTimeout(function(){
 tooltip.style.opacity = 0
 tooltip.style.display='none';
 }, 1000);}
-createtooltip();setElementCodeForm();
+$(document).ready(function(){createtooltip();setElementCodeForm();});
 
 function syntaxCodeHTML(elmnt, mode) {
   var lang = (mode || "html");
