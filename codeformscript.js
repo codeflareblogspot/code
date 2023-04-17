@@ -19,6 +19,7 @@ var nameCodeClassForm = typeCodeClassForm;
 if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
 var elCodeClassFormGet = codesafe_tags_replace($(findCodeClassForm[i]).html());
+elCodeClassFormGet = elCodeClassFormGet.replaceAll('&lt;br /&gt;','\n').replaceAll('&lt;br/&gt;','\n').replaceAll('&lt;br&gt;','\n');
 elCodeClassForm += '<div class="bg-containerForm">';
 elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+nameCodeClassForm;
 elCodeClassForm += '<span id="'+elheaderTitleNote+'" class="headerTitleNote" style="opacity: 0;"><i class="fa fa-clipboard" aria-hidden="true" style="margin-right:5px;"></i>click form to copy to clipboard !</span></div>';
