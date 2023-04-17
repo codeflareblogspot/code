@@ -7,6 +7,9 @@
  *
  * @author: codeflare blogspot, fjr@gmail.com
  **/
+var codetagsToReplace = {'&': '&amp;','<': '&lt;','>': '&gt;'};
+function codereplaceTag(tag){return codetagsToReplace[tag]||tag;}
+function codesafe_tags_replace(str){return str.replace(/[&<>]/g,codereplaceTag);}
 function setElementCodeForm(){
 var findCodeClassForm = document.getElementsByClassName('containerForm');
 for (var i=0;i < findCodeClassForm.length;i++){
@@ -15,7 +18,7 @@ var typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getA
 var nameCodeClassForm = typeCodeClassForm;
 if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
-var elCodeClassFormGet = $(findCodeClassForm[i]).html();
+var elCodeClassFormGet = codesafe_tags_replace($(findCodeClassForm[i]).html());
 elCodeClassForm += '<div class="bg-containerForm">';
 elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+nameCodeClassForm;
 elCodeClassForm += '<span id="'+elheaderTitleNote+'" class="headerTitleNote" style="opacity: 0;"><i class="fa fa-clipboard" aria-hidden="true" style="margin-right:5px;"></i>click form to copy to clipboard !</span></div>';
@@ -26,7 +29,7 @@ $('#codeForm'+(i)).attr("onmouseover","showHeaderTitleNote('"+elheaderTitleNote+
 $('#codeForm'+(i)).attr("onmouseleave","hideHeaderTitleNote('"+elheaderTitleNote+"')");
 if(typeCodeClassForm=="HTML"||typeCodeClassForm=="html"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 if(typeCodeClassForm=="CSS"||typeCodeClassForm=="css"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="JS"||||typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="JS"||typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 syntaxCodeHTML(document.getElementById('codeForm'+(i)));
 }
 }
