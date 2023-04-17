@@ -15,7 +15,7 @@ var typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getA
 var nameCodeClassForm = typeCodeClassForm;
 if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
-var elCodeClassFormGet = $(findCodeClassForm[i]).html();
+var elCodeClassFormGet = $(findCodeClassForm[i]).text();
 elCodeClassForm += '<div class="bg-containerForm">';
 elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+nameCodeClassForm;
 elCodeClassForm += '<span id="'+elheaderTitleNote+'" class="headerTitleNote" style="opacity: 0;"><i class="fa fa-clipboard" aria-hidden="true" style="margin-right:5px;"></i>click form to copy to clipboard !</span></div>';
