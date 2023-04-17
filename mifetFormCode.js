@@ -132,7 +132,6 @@ return this;
 }
 
 function addWrapper(element, settings) {
-if($('.numberedtextarea-wrapper').length==true){return;}
 var wrapper = $('<div class="numberedtextarea-wrapper"></div>').insertAfter(element);
 $(element).detach().appendTo(wrapper);
 }
