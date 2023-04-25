@@ -11,22 +11,22 @@ function setElementCodeForm(){
 var findCodeClassForm = document.getElementsByClassName('containerForm');
 for (var i=0;i < findCodeClassForm.length;i++){
 var elCodeClassForm="";var typeCodeClassForm="";
-if(document.getElementsByClassName('containerForm')[i].hasAttribute('data-codetype')==true){typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype');}
-else{typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('type');}
-if(typeCodeClassForm=="JS"){typeCodeClassForm = "JavaScript"}
+if(document.getElementsByClassName('containerForm')[i].hasAttribute('data-codetype')==true){typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype').toLowerCase();}
+else{typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('type').toLowerCase();}
+if(typeCodeClassForm=="js"||typeCodeClassForm=="javascript"||typeCodeClassForm=="script"){typeCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
 var elCodeClassFormGet = $(findCodeClassForm[i]).html();
 elCodeClassForm += '<div class="bg-containerForm">';
-elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+typeCodeClassForm;
+elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm.toUpperCase()+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+typeCodeClassForm;
 elCodeClassForm += '<span id="'+elheaderTitleNote+'" class="headerTitleNote" style="opacity: 0;"><i class="fa fa-clipboard" aria-hidden="true" style="margin-right:5px;"></i>click form to copy to clipboard !</span></div>';
 elCodeClassForm += '<div id="codeForm'+(i)+'" class="codeForm codeForm-1 codeForm-1b" onclick="copyfieldvalue(event, this.id);return false" title="Click to copy">'+elCodeClassFormGet+'</div>';
 elCodeClassForm += '</div>';
 $(findCodeClassForm[i]).html(elCodeClassForm);
 $('#codeForm'+(i)).attr("onmouseover","showHeaderTitleNote('"+elheaderTitleNote+"')");
 $('#codeForm'+(i)).attr("onmouseleave","hideHeaderTitleNote('"+elheaderTitleNote+"')");
-if(typeCodeClassForm=="HTML"||typeCodeClassForm=="html"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="CSS"||typeCodeClassForm=="css"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="JS"||typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="html"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="css"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 syntaxCodeHTML(document.getElementById('codeForm'+(i)));
 }
 }
