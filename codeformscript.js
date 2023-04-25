@@ -11,15 +11,13 @@ function setElementCodeForm(){
 var findCodeClassForm = document.getElementsByClassName('containerForm');
 for (var i=0;i < findCodeClassForm.length;i++){
 var elCodeClassForm="";var typeCodeClassForm="";
-var chkTypeCodeClassForm = document.getElementsByClassName('containerForm')[i];
-if(chkTypeCodeClassForm.hasAttribute('data-codetype')){typeCodeClassForm = chkTypeCodeClassForm.getAttribute('data-codetype');}
-else{typeCodeClassForm = chkTypeCodeClassForm.getAttribute('type');}
-var nameCodeClassForm = typeCodeClassForm;
-if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
+if(document.getElementsByClassName('containerForm')[i].hasAttribute('data-codetype')==true){typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype');}
+else{typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('type');}
+if(typeCodeClassForm=="JS"){typeCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
 var elCodeClassFormGet = $(findCodeClassForm[i]).html();
 elCodeClassForm += '<div class="bg-containerForm">';
-elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+nameCodeClassForm;
+elCodeClassForm += '<div class="headerTitleCode" data-codetype="'+typeCodeClassForm+'"><i class="fa fa-bars" aria-hidden="true" style="margin-right:5px;"></i>'+typeCodeClassForm;
 elCodeClassForm += '<span id="'+elheaderTitleNote+'" class="headerTitleNote" style="opacity: 0;"><i class="fa fa-clipboard" aria-hidden="true" style="margin-right:5px;"></i>click form to copy to clipboard !</span></div>';
 elCodeClassForm += '<div id="codeForm'+(i)+'" class="codeForm codeForm-1 codeForm-1b" onclick="copyfieldvalue(event, this.id);return false" title="Click to copy">'+elCodeClassFormGet+'</div>';
 elCodeClassForm += '</div>';
