@@ -26,7 +26,7 @@ $('#codeForm'+(i)).attr("onmouseover","showHeaderTitleNote('"+elheaderTitleNote+
 $('#codeForm'+(i)).attr("onmouseleave","hideHeaderTitleNote('"+elheaderTitleNote+"')");
 if(typeCodeClassForm=="html"){$('#codeForm'+(i)).css({"border-color":"#0099cc","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 if(typeCodeClassForm=="css"){$('#codeForm'+(i)).css({"border-color":"rgb(143,200,0)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
-if(typeCodeClassForm=="js"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
+if(typeCodeClassForm=="javascript"){$('#codeForm'+(i)).css({"border-color":"rgb(234,185,45)","border-width":"0px 1px 1px 1px","border-style":"solid"});}
 syntaxCodeHTML(document.getElementById('codeForm'+(i)));
 }
 }
