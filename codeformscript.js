@@ -11,7 +11,7 @@ function setElementCodeForm(){
 var findCodeClassForm = document.getElementsByClassName('containerForm');
 for (var i=0;i < findCodeClassForm.length;i++){
 var elCodeClassForm="";
-var typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype');
+var typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype')|document.getElementsByClassName('containerForm')[i].getAttribute('type');
 var nameCodeClassForm = typeCodeClassForm;
 if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
