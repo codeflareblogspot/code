@@ -10,8 +10,10 @@
 function setElementCodeForm(){
 var findCodeClassForm = document.getElementsByClassName('containerForm');
 for (var i=0;i < findCodeClassForm.length;i++){
-var elCodeClassForm="";
-var typeCodeClassForm = document.getElementsByClassName('containerForm')[i].getAttribute('data-codetype')||document.getElementsByClassName('containerForm')[i].getAttribute('type');
+var elCodeClassForm="";var typeCodeClassForm="";
+var chkTypeCodeClassForm = document.getElementsByClassName('containerForm')[i];
+if(chkTypeCodeClassForm.hasAttribute('data-codetype')){typeCodeClassForm = chkTypeCodeClassForm.getAttribute('data-codetype');}
+else{typeCodeClassForm = chkTypeCodeClassForm.getAttribute('type');}
 var nameCodeClassForm = typeCodeClassForm;
 if(typeCodeClassForm=="JS"){nameCodeClassForm = "JavaScript"}
 var elheaderTitleNote="headerTitleNote"+(i);
