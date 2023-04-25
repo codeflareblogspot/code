@@ -57,28 +57,28 @@ background: rgb(137,137,186);
 background: -moz-linear-gradient(top, rgba(137,137,186,1) 0%, rgba(137,137,186,1) 100%);
 background: -webkit-linear-gradient(top, rgba(137,137,186,1) 0%,rgba(137,137,186,1) 100%);
 background: linear-gradient(to bottom, rgba(137,137,186,1) 0%,rgba(137,137,186,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=&#39;#8989ba&#39;, endColorstr=&#39;#8989ba&#39;,GradientType=0 );
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8989ba', endColorstr='#8989ba',GradientType=0 );
 }
 .headerTitleCode[data-codetype="HTML"],.headerTitleCode[type="html"] {
 background: rgb(53,106,160);
 background: -moz-linear-gradient(top, rgba(53,106,160,1) 0%, rgba(53,106,160,1) 100%);
 background: -webkit-linear-gradient(top, rgba(53,106,160,1) 0%,rgba(53,106,160,1) 100%);
 background: linear-gradient(to bottom, rgba(53,106,160,1) 0%,rgba(53,106,160,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=&#39;#356aa0&#39;, endColorstr=&#39;#356aa0&#39;,GradientType=0 );
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#356aa0', endColorstr='#356aa0',GradientType=0 );
 }
 .headerTitleCode[data-codetype="CSS"],.headerTitleCode[type="css"]{
 background: rgb(143,200,0);
 background: -moz-linear-gradient(top, rgba(143,200,0,1) 0%, rgba(143,200,0,1) 100%);
 background: -webkit-linear-gradient(top, rgba(143,200,0,1) 0%,rgba(143,200,0,1) 100%);
 background: linear-gradient(to bottom, rgba(143,200,0,1) 0%,rgba(143,200,0,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=&#39;#8fc800&#39;, endColorstr=&#39;#8fc800&#39;,GradientType=0 );
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#8fc800', endColorstr='#8fc800',GradientType=0 );
 }
 .headerTitleCode[data-codetype="JAVASCRIPT"],.headerTitleCode[type="javascript"]{
 background: rgb(234,185,45);
 background: -moz-linear-gradient(top, rgba(234,185,45,1) 0%, rgba(199,152,16,1) 100%);
 background: -webkit-linear-gradient(top, rgba(234,185,45,1) 0%,rgba(199,152,16,1) 100%);
 background: linear-gradient(to bottom, rgba(234,185,45,1) 0%,rgba(199,152,16,1) 100%);
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=&#39;#eab92d&#39;, endColorstr=&#39;#c79810&#39;,GradientType=0 );
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eab92d', endColorstr='#c79810',GradientType=0 );
 }
 .headerTitleNote {
 opacity:0;
