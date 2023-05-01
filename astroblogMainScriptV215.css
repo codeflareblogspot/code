@@ -24,7 +24,7 @@
     padding: 0;
     color: #fff;
     cursor: pointer;
-	height: 32px;
+    height: 32px;
     overflow: hidden;
 }
 
@@ -43,7 +43,7 @@
     font-size: 16px;
     float: left;
     box-sizing: border-box;
-    padding: 5px;
+    line-height: 32px;
     text-align: center;
     background: var(--main-color);
 }
@@ -51,7 +51,6 @@
 .menuHeaderAst {
     float: left;
     background: var(--main-color);
-    display: block;
     vertical-align: middle;
     width: 10%;
     height: 32px;
