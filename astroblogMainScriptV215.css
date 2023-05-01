@@ -26,6 +26,7 @@
     cursor: pointer;
     height: 32px;
     overflow: hidden;
+    background: var(--main-color);
 }
 
 .leftDateAst,.rightDateAst {
@@ -45,7 +46,6 @@
     box-sizing: border-box;
     line-height: 32px;
     text-align: center;
-    background: var(--main-color);
 }
 
 .menuHeaderAst {
