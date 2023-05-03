@@ -33,6 +33,10 @@
     cursor: pointer;
     padding: 5px;
     font-size: 14px;
+    background: var(--main-color);
+    float: left;
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .leftDateAst,.rightDateAst,.leftHeaderAst,.rightHeaderAst,.menuHeaderAst {
@@ -40,7 +44,7 @@
     transition: color .3s,background-color .3s linear .3s;
 }
 
-.leftHeaderAst,.titleHeaderAst,.rightHeaderAst,.leftDateAst,.rightDateAst {
+.leftHeaderAst,.titleHeaderAst,.rightHeaderAst {
     font-size: 16px;
     float: left;
     box-sizing: border-box;
@@ -164,7 +168,7 @@
     text-align: center;
     width: 80%;
     background: var(--main-color);
-    padding: 6px;
+    padding: 5px;
     box-sizing: border-box;
     color: #fff;
 }
