@@ -137,7 +137,7 @@ a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dl
 if(dlink[i].match(sflIdentifier)){
 a[i].setAttribute('onclick','window.open("'+dlink[i]+slink[i]+'")');
 }else{
-a[i].setAttribute('onclick','window.open("'+document.location.href+sflIdentifier+dlink[i]+slink[i]+'")');
+a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dlink[i]+slink[i]+'")');
 }}
 a[i].setAttribute('href','javascript:{}');
 a[i].removeAttribute('data-sfl');
