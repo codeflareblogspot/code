@@ -162,9 +162,9 @@ var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+url);}});
+$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
 }else{
-$.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+url);}});
+$.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
 }}
 if(str.match(sflIdentifier)){
 $("#countdown,#activeCFSafeLink").show();
