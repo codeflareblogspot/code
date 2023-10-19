@@ -174,4 +174,3 @@ urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIde
 setElmSafeLink();
 }else{$("#countdown,#activeCFSafeLink").remove();}}
 $(document).ready(function(){initSafelinkCode();});
-});
