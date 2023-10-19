@@ -156,21 +156,3 @@ for(k=0; k < entry.link.length; k++){
 if(entry.link[k].rel=='alternate'){sflSetConnection[n]=entry.link[k].href;}}}
 setBtnSafeLink();
 }
-/*Defined Function for Initialize*/
-function initSafelinkCode(){
-var str=decodeURIComponent(document.location.href);
-/*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
-if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
-if(sflJsonUrl == ""){
-$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
-}else{
-$.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
-}}
-if(str.match(sflIdentifier)){
-$("#countdown,#activeCFSafeLink").show();
-/*reCaptcha Script*/
-$.ajax({url: "https://www.google.com/recaptcha/api.js",dataType: "script"});
-urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIdentifier.length,str.length);
-setElmSafeLink();
-}else{$("#countdown,#activeCFSafeLink").remove();}}
-$(document).ready(function(){initSafelinkCode();});
