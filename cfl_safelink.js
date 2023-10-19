@@ -137,7 +137,7 @@ a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dl
 if(dlink[i].match(sflIdentifier)){
 a[i].setAttribute('onclick','window.open("'+dlink[i]+slink[i]+'")');
 }else{
-a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dlink[i]+slink[i]+'")');
+a[i].setAttribute('onclick','window.open("'+document.location.href+sflIdentifier+dlink[i]+slink[i]+'")');
 }}
 a[i].setAttribute('href','javascript:{}');
 a[i].removeAttribute('data-sfl');
@@ -162,7 +162,7 @@ var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
+$.ajax({url: "https://"+window.location.hostname+"/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }else{
 $.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }}
