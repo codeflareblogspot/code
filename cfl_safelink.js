@@ -124,7 +124,7 @@ for(var i=0;i<a.length;i++){
 var b = Math.floor(Math.random()*sflnumofpost);
 if(decodeURIComponent(document.location.href).match(".blogspot.")){
 if(slink[i].length>0&&slink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick','window.open(\''+sflSetConnection[b]+slink[i]+'\')');
+a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+slink[i]+"')");
 }else{
 if(slink[i].length>0){
 a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+slink[i]+'")');
