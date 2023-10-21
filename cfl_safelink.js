@@ -157,7 +157,6 @@ if(entry.link[k].rel=='alternate'){sflSetConnection[n]=entry.link[k].href;}}}
 setBtnSafeLink();
 }
 /*Defined Function for Initialize*/
-function initSafelinkCode(){
 var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
@@ -173,5 +172,4 @@ $("#countdown,#activeCFSafeLink").show();
 $.ajax({url: "https://www.google.com/recaptcha/api.js",dataType: "script"});
 urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIdentifier.length,str.length);
 setElmSafeLink();
-}else{$("#countdown,#activeCFSafeLink").remove();}}
-initSafelinkCode();
+}else{$("#countdown,#activeCFSafeLink").remove();}
