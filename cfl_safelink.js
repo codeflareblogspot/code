@@ -152,7 +152,7 @@ if(sflflag==0&&sfllength!=0){sflrandarray[i++]=sfllength;}}
 for(n in sflrandarray){
 var path='https://'+window.location.hostname+'/feeds/posts/default?start-index='+sflrandarray[n]+'&max-results=1&orderby=published&alt=json-in-script&callback=setSFLButton';
 if(n==(sflrandarray.length - 1)){
-$.ajax({url: path,dataType: "script",success:function(){setBtnSafeLink()},error: function (){console.log("Error JSON | "+this.url);}});
+$.ajax({url: path,dataType: "script",success: function (){setBtnSafeLink();},error: function (){console.log("Error JSON | "+this.url);}});
 }
 $.ajax({url: path,dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
 }}
