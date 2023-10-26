@@ -31,7 +31,7 @@ var downloadStartTimer;
 var urlTargetSafeLink;
 function safelinkBoxGetFocus(elm,timer,delay){
 var $elm=$(elm);
-$('html, body').stop().delay(delay).animate({'scrollTop':$elm.offset().top},timer,'swing',function(){window.location.hash = elm;});
+$('html, body').stop().delay(delay).animate({'scrollTop':$elm.offset({top:0})},timer,'swing',function(){window.location.hash = elm;});
 return false;}
 /*Defined Function reCaptcha Expired Code*/
 function recaptcha_expired(){
