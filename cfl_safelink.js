@@ -172,6 +172,7 @@ if(document.location.href.match(sflIdentifier)){
 $("#countdown,#activeCFSafeLink").show();
 /*reCaptcha Script*/
 $.ajax({url: "https://www.google.com/recaptcha/api.js",dataType: "script"});
+var str=document.location.href;
 urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIdentifier.length,str.length);
 setElmSafeLink();
 }else{$("#countdown,#activeCFSafeLink").remove();}
