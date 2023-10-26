@@ -122,22 +122,22 @@ dlink[i] = a[i].getAttribute("href");
 if($(".btn-safelink").eq(i).is("[data-sfl]")&&a[i].getAttribute("data-sfl").length>0){slink[i] = a[i].getAttribute("data-sfl");}else{slink[i]="";}}
 for(var i=0;i<a.length;i++){
 var b = Math.floor(Math.random()*sflnumofpost);
-if(decodeURIComponent(document.location.href).match(".blogspot.")){
+if(sflSetConnection[b]!=''){
 if(slink[i].length>0&&slink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+slink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+slink[i]+"')");
 }else{
 if(slink[i].length>0){
-a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+slink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+sflIdentifier+slink[i]+"')");
 }else{
 if(dlink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick','window.open("'+dlink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+dlink[i]+"')");
 }else{
-a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dlink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+sflIdentifier+dlink[i]+"')");
 }}}}else{
 if(dlink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick','window.open("'+dlink[i]+slink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+dlink[i]+slink[i]+"')");
 }else{
-a[i].setAttribute('onclick','window.open("'+document.location.href+sflIdentifier+dlink[i]+slink[i]+'")');
+a[i].setAttribute('onclick',"window.open('"+document.location.href+sflIdentifier+dlink[i]+slink[i]+"')");
 }}
 a[i].setAttribute('href','javascript:{}');
 a[i].removeAttribute('data-sfl');
