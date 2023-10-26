@@ -153,9 +153,9 @@ for(n in sflrandarray){
 var path='https://'+window.location.hostname+'/feeds/posts/default?start-index='+sflrandarray[n]+'&max-results=1&orderby=published&alt=json-in-script&callback=setSFLButton';
 if(n==(sflrandarray.length - 1)){
 $.ajax({url: path,dataType: "script",success: function (){setBtnSafeLink();},error: function (){console.log("Error JSON | "+this.url);}});
-}
+}else{
 $.ajax({url: path,dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
-}}
+}}}
 function setSFLButton(json){
 var entry=json.feed.entry[0];
 for(k=0; k < entry.link.length; k++){
