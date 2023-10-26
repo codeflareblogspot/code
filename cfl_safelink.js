@@ -31,7 +31,7 @@ var downloadStartTimer;
 var urlTargetSafeLink;
 function safelinkBoxGetFocus(elm,timer,delay){
 var $elm=$(elm);
-$('html, body').stop().delay(delay).animate({'scrollTop':$elm.offset({top:0})},timer,'swing',function(){window.location.hash = elm;});
+$('html, body').stop().delay(delay).animate({'scrollTop':$elm.offset().top},timer,'swing',function(){window.location.hash = elm;});
 return false;}
 /*Defined Function reCaptcha Expired Code*/
 function recaptcha_expired(){
@@ -122,57 +122,55 @@ dlink[i] = a[i].getAttribute("href");
 if($(".btn-safelink").eq(i).is("[data-sfl]")&&a[i].getAttribute("data-sfl").length>0){slink[i] = a[i].getAttribute("data-sfl");}else{slink[i]="";}}
 for(var i=0;i<a.length;i++){
 var b = Math.floor(Math.random()*sflnumofpost);
-if(sflSetConnection[b]!=''){
+if(decodeURIComponent(document.location.href).match(".blogspot.")){
 if(slink[i].length>0&&slink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+slink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+slink[i]+'")');
 }else{
 if(slink[i].length>0){
-a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+sflIdentifier+slink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+slink[i]+'")');
 }else{
 if(dlink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick',"window.open('"+dlink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+dlink[i]+'")');
 }else{
-a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+sflIdentifier+dlink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+sflSetConnection[b]+sflIdentifier+dlink[i]+'")');
 }}}}else{
 if(dlink[i].match(sflIdentifier)){
-a[i].setAttribute('onclick',"window.open('"+dlink[i]+slink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+dlink[i]+slink[i]+'")');
 }else{
-a[i].setAttribute('onclick',"window.open('"+document.location.href+sflIdentifier+dlink[i]+slink[i]+"')");
+a[i].setAttribute('onclick','window.open("'+document.location.href+sflIdentifier+dlink[i]+slink[i]+'")');
 }}
 a[i].setAttribute('href','javascript:{}');
 a[i].removeAttribute('data-sfl');
 }}
 /*Defined Function Random SafeLink if Domain use Blogspot*/
 function sflrandomposts(json){
-var total = parseInt(json.feed.openSearch$totalResults.$t,10);
+var total = 150;
 for(var i=0;i < sflnumofpost;){
 sflflag=0;sflrandarray.length=sflnumofpost;sfllength=Math.floor(Math.random()*total);
 for(j in sflrandarray){if(sfllength==sflrandarray[j]){sflflag=1;}}
 if(sflflag==0&&sfllength!=0){sflrandarray[i++]=sfllength;}}
 for(n in sflrandarray){
-var path='https://'+window.location.hostname+'/feeds/posts/default?start-index='+sflrandarray[n]+'&max-results=1&orderby=published&alt=json-in-script&callback=setSFLButton';
-if(n==(sflrandarray.length - 1)){
-$.ajax({url: path,dataType: "script",success: function (){setBtnSafeLink();},error: function (){console.log("Error JSON | "+this.url);}});
-}else{
-$.ajax({url: path,dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
-}}}
-function setSFLButton(json){
-var entry=json.feed.entry[0];
+var p=sflrandarray[n];
+var entry=json.feed.entry[p-1];
 for(k=0; k < entry.link.length; k++){
-if(entry.link[k].rel=='alternate'){sflSetConnection.push(entry.link[k].href);}}
+if(entry.link[k].rel=='alternate'){sflSetConnection[n]=entry.link[k].href;}}}
+setBtnSafeLink();
 }
+/*Defined Function for Initialize*/
+function initSafelinkCode(){
+var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
-if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||document.location.href.match(sflIdentifier)){
+if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/default?start-index=1&max-results=1&orderby=published&alt=json-in-script&callback=sflrandomposts',dataType: 'script',error: function (){console.log("Error JSON | cf-safelink-script.js");}});
+$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }else{
 $.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }}
-if(document.location.href.match(sflIdentifier)){
+if(str.match(sflIdentifier)){
 $("#countdown,#activeCFSafeLink").show();
 /*reCaptcha Script*/
 $.ajax({url: "https://www.google.com/recaptcha/api.js",dataType: "script"});
-var str=document.location.href;
 urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIdentifier.length,str.length);
 setElmSafeLink();
-}else{$("#countdown,#activeCFSafeLink").remove();}
+}else{$("#countdown,#activeCFSafeLink").remove();}}
+$(document).ready(function(){initSafelinkCode();});
