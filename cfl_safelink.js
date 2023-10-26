@@ -144,25 +144,31 @@ a[i].removeAttribute('data-sfl');
 }}
 /*Defined Function Random SafeLink if Domain use Blogspot*/
 function sflrandomposts(json){
-var total = 150;
+var total = parseInt(json.feed.openSearch$totalResults.$t,10);
 for(var i=0;i < sflnumofpost;){
 sflflag=0;sflrandarray.length=sflnumofpost;sfllength=Math.floor(Math.random()*total);
 for(j in sflrandarray){if(sfllength==sflrandarray[j]){sflflag=1;}}
 if(sflflag==0&&sfllength!=0){sflrandarray[i++]=sfllength;}}
 for(n in sflrandarray){
-var p=sflrandarray[n];
-var entry=json.feed.entry[p-1];
+var path='https://'+window.location.hostname+'/feeds/posts/default?start-index='+sflrandarray[n]+'&max-results=1&orderby=published&alt=json-in-script&callback=setSFLButton';
+if(n==(sflrandarray.length - 1)){
+$.ajax({url: path,dataType: "script",success: function (){setBtnSafeLink();},error: function (){console.log("Error JSON | "+this.url);}});
+}else{
+$.ajax({url: path,dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
+}}}
+function setSFLButton(json){
+var entry=json.feed.entry[0];
 for(k=0; k < entry.link.length; k++){
-if(entry.link[k].rel=='alternate'){sflSetConnection[n]=entry.link[k].href;}}}
-setBtnSafeLink();
+if(entry.link[k].rel=='alternate'){sflSetConnection.push(entry.link[k].href);}}
 }
+
 /*Defined Function for Initialize*/
 function initSafelinkCode(){
 var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-$.ajax({url: "/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
+$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/default?start-index=1&max-results=1&orderby=published&alt=json-in-script&callback=sflrandomposts',dataType: 'script',error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }else{
 $.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }}
