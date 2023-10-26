@@ -178,5 +178,4 @@ $("#countdown,#activeCFSafeLink").show();
 $.ajax({url: "https://www.google.com/recaptcha/api.js",dataType: "script"});
 urlTargetSafeLink=str.substring(str.lastIndexOf(str.match(sflIdentifier))+sflIdentifier.length,str.length);
 setElmSafeLink();
-}else{$("#countdown,#activeCFSafeLink").remove();}}
-$(document).ready(function(){initSafelinkCode();});
+}else{$("#countdown,#activeCFSafeLink").remove();}}initSafelinkCode();
