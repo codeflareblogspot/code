@@ -144,7 +144,8 @@ a[i].removeAttribute('data-sfl');
 }}
 /*Defined Function Random SafeLink if Domain use Blogspot*/
 function sflrandomposts(json){
-var total = parseInt(json.feed.openSearch$totalResults.$t,10);
+/*var total = parseInt(json.feed.openSearch$totalResults.$t,10);*/
+var total = 150;
 for(var i=0;i < sflnumofpost;){
 sflflag=0;sflrandarray.length=sflnumofpost;sfllength=Math.floor(Math.random()*total);
 for(j in sflrandarray){if(sfllength==sflrandarray[j]){sflflag=1;}}
@@ -161,7 +162,7 @@ var str=decodeURIComponent(document.location.href);
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||str.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-var path="https://"+window.location.hostname+"/feeds/posts/default?alt=json-in-script&start-index=1&max-results=1000";
+var path="https://"+window.location.hostname+"/feeds/posts/default?alt=json-in-script&start-index=1&max-results=150";
 $.ajax({url: path+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
 }else{
 $.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | "+this.url);}});
