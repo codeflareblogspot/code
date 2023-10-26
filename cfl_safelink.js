@@ -164,9 +164,9 @@ if(entry.link[k].rel=='alternate'){sflSetConnection.push(entry.link[k].href);}}
 /*Check if Domain use Blogspot Platform if true then call rss JSON Script*/
 if($(".btn-safelink").length>0||typeof getRandomUrlLink !== "undefined"||document.location.href.match(sflIdentifier)){
 if(sflJsonUrl == ""){
-loadjs('https://'+window.location.hostname+'/feeds/posts/default?start-index=1&max-results=1&orderby=published&alt=json-in-script&callback=sflrandomposts');
+$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/default?start-index=1&max-results=1&orderby=published&alt=json-in-script&callback=sflrandomposts',dataType: 'script',error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }else{
-loadjs(sflJsonUrl+'&callback=sflrandomposts');
+$.ajax({url: sflJsonUrl+"&callback=sflrandomposts",dataType: "script",error: function (){console.log("Error JSON | cf-safelink-script.js");}});
 }}
 if(document.location.href.match(sflIdentifier)){
 $("#countdown,#activeCFSafeLink").show();
