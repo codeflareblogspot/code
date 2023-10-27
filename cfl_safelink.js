@@ -122,7 +122,7 @@ dlink[i] = a[i].getAttribute("href");
 if($(".btn-safelink").eq(i).is("[data-sfl]")&&a[i].getAttribute("data-sfl").length>0){slink[i] = a[i].getAttribute("data-sfl");}else{slink[i]="";}}
 for(var i=0;i<a.length;i++){
 var b = Math.floor(Math.random()*sflnumofpost);
-if(sflSetConnection[b]!=''){
+if(sflSetConnection[b].length > 0){
 if(slink[i].length>0&&slink[i].match(sflIdentifier)){
 a[i].setAttribute('onclick',"window.open('"+sflSetConnection[b]+slink[i]+"')");
 }else{
