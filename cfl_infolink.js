@@ -25,7 +25,7 @@ tmp1=key;
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href;se=se.toLowerCase();
 tmp2=se;n=i;
-if(key.match(se)){n=i;console.log(key +' | '+n);break;}
+if(key.match(se)){n=i;console.log(key +' | '+se +' | '+n);break;}
 }
 }
 var ti=entry[n].media$thumbnail.url;
