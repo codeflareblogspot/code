@@ -5,7 +5,7 @@ function getInfoLink(data){
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!='error'){$('#dataInfoLink').slideDown();}
+if(infoLinkImg[data]!='error'){$('#dataInfoLink').slideDown();}console.log(infoLinkImg);
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
