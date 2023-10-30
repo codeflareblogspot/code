@@ -19,11 +19,9 @@ $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 function jsonLink(json){
 var n=0;var entry=json.feed.entry;
 for(var j=0;j < $(elmCflInfoLink).length;j++){
-var t=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
-var s=t.substring(t.lastIndexOf('/')+1,t.lastIndexOf('.'));
-var key =s.replace('-',' ');
+var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
 for(var i=0;i < entry.length;i++){
-var se=entry[i].title.$t;se=se.toLowerCase();
+var se=entry[i].link[4].href;se=se.toLowerCase();
 if(key.match(se)){n=i;break;}
 }
 }
