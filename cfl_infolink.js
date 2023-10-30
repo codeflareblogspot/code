@@ -34,6 +34,6 @@ $('body').append(tmpElm);
 for(var i=0;i<$(elmCflInfoLink).length;i++){
 var t=$(elmCflInfoLink).eq(i).attr('href').toLowerCase();
 var s=t.substring(t.lastIndexOf('/')+1,t.lastIndexOf('.'));
-$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/summary?q='+s+'&max-results=1&alt=json-in-script&callback=jsonLink',dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/default?q='+s+'&max-results=1&alt=json-in-script&callback=jsonLink',dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 $(elmCflInfoLink).eq(i).attr({'onmouseover':'getInfoLink('+i+')','onmousemove':'moveInfoLink(event)'});
 }}cflInfoLink();
