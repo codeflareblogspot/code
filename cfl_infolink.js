@@ -18,7 +18,7 @@ $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 function jsonLink(json){
 var tmp1;var tmp2;
-var n=0;var entry=json.feed.entry;
+var n;var entry=json.feed.entry;
 for(var j=0;j < $(elmCflInfoLink).length;j++){
 var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();console.log('key : '+key);
 tmp1=key;
