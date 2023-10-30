@@ -2,10 +2,11 @@ var infoLinkImg=[];
 var infoLinkTitle=[];
 var infoLinkDesc=[];
 function getInfoLink(data){
+$('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!='error'){$('#dataInfoLink').slideDown();}console.log(infoLinkImg);
+if(infoLinkImg[data]!='error'){$('#dataInfoLink').slideDown();}
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
@@ -43,7 +44,11 @@ var tmpElm='<div id="dataInfoLink" style="top:-500px;left:-500px;"><div class="i
 $('body').append(tmpElm);
 for(var i=0;i<$(elmCflInfoLink).length;i++){
 var t=$(elmCflInfoLink).eq(i).attr('href').toLowerCase();
-var s=t.substring(t.lastIndexOf('/')+1,t.lastIndexOf('.'));
-$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/summary?q='+s+'&alt=json-in-script&callback=jsonLink',dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+var parser = document.createElement('a');
+parser.href = t;
+var s=parser.pathname;
+var m=s.substring(0,s.lastIndexOf('/'));m=m.substring(1,m.lastIndexOf('/'));
+var d=s.substring(0,s.lastIndexOf('/'));d=d.substring(d.lastIndexOf('/')+1,d.length);
+$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-30T23:59:59&alt=json-in-script&callback=jsonLink',dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 $(elmCflInfoLink).eq(i).attr({'onmouseover':'getInfoLink('+i+')','onmousemove':'moveInfoLink(event)'});
 }}cflInfoLink();
