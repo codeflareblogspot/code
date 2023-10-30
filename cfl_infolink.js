@@ -1,6 +1,7 @@
 var infoLinkImg=[];
 var infoLinkTitle=[];
 var infoLinkDesc=[];
+var infoLinkUrl=[]
 function getInfoLink(data){
 $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
@@ -17,27 +18,34 @@ if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
+  
+function callJsonFeed(x){
+var path='https://'+window.location.hostname+infoLinkUrl[x];
+$.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+}  
 var countJsonInfoLink=0;
-function jsonLink(json){console.log(json);
-var tmp1;var tmp2;
-var n;var entry=json.feed.entry;
+function jsonLink(json){
+var ti='';var tx='';var tz='';
+var entry=json.feed.entry;
 var key=$(elmCflInfoLink).eq(countJsonInfoLink).attr('href').toLowerCase();
-tmp1=key;
 for(var i=0;i < entry.length;i++){
-var se=entry[i].link[4].href;se=se.toLowerCase();
-tmp2=se;n=i;
-if(key.match(se)){n=i;console.log(key +' | '+se +' | '+n);break;}
-}
-var ti=entry[n].media$thumbnail.url;
+var se=entry[i].link[4].href.toLowerCase();
+ti='error';tx='error';tz='error';
+if(key==se){
+ti=entry[i].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
-if(tmp1==tmp2){infoLinkImg.push(ti);}else{infoLinkImg.push('error');}
-var tx=entry[n].summary.$t;
+tx=entry[i].summary.$t;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
-if(tmp1==tmp2){infoLinkDesc.push(tx);}else{infoLinkDesc.push('error');}
-var tz=entry[n].title.$t;
-if(tmp1==tmp2){infoLinkTitle.push(tz);}else{infoLinkTitle.push('error');}
+tz=entry[i].title.$t;
+break;
+}}
+infoLinkImg[countJsonInfoLink]=(ti);
+infoLinkDesc[countJsonInfoLink]=(tx);
+infoLinkTitle[countJsonInfoLink]=(tz);
+if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)-1){
 countJsonInfoLink=countJsonInfoLink+1;
-}
+callJsonFeed(countJsonInfoLink);
+}}
 function cflInfoLink(){
 $(elmCflInfoLink).mouseleave(function(){$('#dataInfoLink').hide();});
 var tmpElm='<div id="dataInfoLink" style="top:-500px;left:-500px;"><div class="imgInfo"><img/></div><div class="titleInfo"></div><div class="descInfo"></div></div>';
@@ -49,6 +57,9 @@ parser.href = t;
 var s=parser.pathname;
 var m=s.substring(0,s.lastIndexOf('/'));m=m.substring(1,m.lastIndexOf('/'));
 var d=s.substring(0,s.lastIndexOf('/'));d=d.substring(d.lastIndexOf('/')+1,d.length);
-$.ajax({url: 'https://'+window.location.hostname+'/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-30T23:59:59&alt=json-in-script&callback=jsonLink',dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+infoLinkUrl[i]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 $(elmCflInfoLink).eq(i).attr({'onmouseover':'getInfoLink('+i+')','onmousemove':'moveInfoLink(event)'});
-}}cflInfoLink();
+}
+callJsonFeed(countJsonInfoLink);
+}
+cflInfoLink();
