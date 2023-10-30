@@ -20,12 +20,12 @@ function jsonLink(json){
 var tmp1;var tmp2;
 var n;var entry=json.feed.entry;
 for(var j=0;j < $(elmCflInfoLink).length;j++){
-var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();console.log('key : '+key);
+var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
 tmp1=key;
 for(var i=0;i < entry.length;i++){
-var se=entry[i].link[4].href;se=se.toLowerCase();console.log('se : '+se);
-tmp2=se;
-if(key.match(se)){n=i;console.log('n : '+n);break;}else{n=i};
+var se=entry[i].link[4].href;se=se.toLowerCase();
+tmp2=se;n=i;
+if(key.match(se)){n=i;console.log(key +' | '+n);break;}
 }
 }
 entry=json.feed.entry[n];
