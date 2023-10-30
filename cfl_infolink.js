@@ -28,14 +28,13 @@ tmp2=se;n=i;
 if(key.match(se)){n=i;console.log(key +' | '+n);break;}
 }
 }
-entry=json.feed.entry[n];
-var ti=entry.media$thumbnail.url;
+var ti=entry[n].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
 if(tmp1==tmp2){infoLinkImg.push(ti);}else{infoLinkImg.push('error');}
-var tx=entry.summary.$t;
+var tx=entry[n].summary.$t;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
 if(tmp1==tmp2){infoLinkDesc.push(tx);}else{infoLinkDesc.push('error');}
-var tz=entry.title.$t;
+var tz=entry[n].title.$t;
 if(tmp1==tmp2){infoLinkTitle.push(tz);}else{infoLinkTitle.push('error');}
 }
 function cflInfoLink(){
