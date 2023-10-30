@@ -7,13 +7,16 @@ $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!='error'){$('#dataInfoLink').slideDown();}
+if(infoLinkImg[data]!='error'){moveInfoLink(event);$('#dataInfoLink').show();}
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
-var el = document.querySelector('#dataInfoLink');var elw=el.offsetWidth;
+var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen.availHeight;
+var elw = document.querySelector('#dataInfoLink').offsetWidth;
+var elh = document.querySelector('#dataInfoLink').offsetHeight;
 var l=event.clientX + 10;
 var t=event.clientY + 30;
+if((t + elh + 30) > h){t=t - elh - 40;}
 if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
