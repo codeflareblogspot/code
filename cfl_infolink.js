@@ -16,7 +16,7 @@ if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
-function jsonLink(json){
+function jsonLink(json){console.log(json);
 var tmp1;var tmp2;
 var n;var entry=json.feed.entry;
 for(var j=0;j < $(elmCflInfoLink).length;j++){
