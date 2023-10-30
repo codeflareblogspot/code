@@ -16,17 +16,16 @@ if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
+var countJsonInfoLink=0;
 function jsonLink(json){console.log(json);
 var tmp1;var tmp2;
 var n;var entry=json.feed.entry;
-for(var j=0;j < $(elmCflInfoLink).length;j++){
-var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
+var key=$(elmCflInfoLink).eq(countJsonInfoLink).attr('href').toLowerCase();
 tmp1=key;
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href;se=se.toLowerCase();
 tmp2=se;n=i;
 if(key.match(se)){n=i;console.log(key +' | '+se +' | '+n);break;}
-}
 }
 var ti=entry[n].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
@@ -36,6 +35,7 @@ if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
 if(tmp1==tmp2){infoLinkDesc.push(tx);}else{infoLinkDesc.push('error');}
 var tz=entry[n].title.$t;
 if(tmp1==tmp2){infoLinkTitle.push(tz);}else{infoLinkTitle.push('error');}
+countJsonInfoLink=countJsonInfoLink+1;
 }
 function cflInfoLink(){
 $(elmCflInfoLink).mouseleave(function(){$('#dataInfoLink').hide();});
