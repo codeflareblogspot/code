@@ -17,23 +17,26 @@ else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 function jsonLink(json){
+var tmp1;var tmp2;
 var n=0;var entry=json.feed.entry;
 for(var j=0;j < $(elmCflInfoLink).length;j++){
 var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();console.log('key : '+key);
+tmp1=key;
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href;se=se.toLowerCase();console.log('se : '+se);
+tmp2=se;
 if(key.match(se)){n=i;console.log('n : '+n);break;}else{n=i};
 }
 }
 entry=json.feed.entry[n];
 var ti=entry.media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
-infoLinkImg.push(ti);
+if(tmp1==tmp2){infoLinkImg.push(ti);}else{infoLinkImg.push('error');}
 var tx=entry.summary.$t;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
-infoLinkDesc.push(tx);
+if(tmp1==tmp2){infoLinkDesc.push(tx);}else{infoLinkDesc.push('error');}
 var tz=entry.title.$t;
-infoLinkTitle.push(tz);
+if(tmp1==tmp2){infoLinkTitle.push(tz);}else{infoLinkTitle.push('error');}
 }
 function cflInfoLink(){
 $(elmCflInfoLink).mouseleave(function(){$('#dataInfoLink').hide();});
