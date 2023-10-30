@@ -1,0 +1,24 @@
+#dataInfoLink{
+position:fixed;
+padding:5px;
+background:#f5f5f5;
+color:#333;
+width:300px;
+box-shadow:0 0 10px #000;
+}
+.imgInfo{margin:0 0 10px 0;}
+.imgInfo img{
+width:100%;
+max-height:150px;
+border:1px solid #ccc;
+box-sizing:border-box;
+}
+.titleInfo{
+color:#0083da;
+font-weight:bold;
+margin-bottom:5px;
+text-align:justify;
+}
+.descInfo{
+text-align:justify;
+}
