@@ -27,15 +27,22 @@ if(infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLink
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 countJsonInfoLink=countJsonInfoLink+1;
-}}
+}else{
+countJsonInfoLink=countJsonInfoLink+1;
+callJsonFeed(countJsonInfoLink);
+}
+}
 var countJsonInfoLink=0;
 function jsonLink(json){
 var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
-for(var j=0;j<$(elmCflInfoLink).length;j++){
+if(countJsonInfoLink > 0){
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0){
+if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
+return;
+}}
+for(var j=0;j<$(elmCflInfoLink).length;j++){
 var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
-}else{var key=null;}
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href.toLowerCase();
 if(key==se){
