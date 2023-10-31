@@ -34,10 +34,6 @@ callJsonFeed(countJsonInfoLink);
 }
 var countJsonInfoLink=0;
 function jsonLink(json){
-if(infoLinkImg[countJsonInfoLink - 1]!=''){
-  if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
-  return;
-}
 var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
 for(var j=0;j<$(elmCflInfoLink).length;j++){
