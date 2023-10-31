@@ -34,13 +34,12 @@ callJsonFeed(countJsonInfoLink);
 }
 var countJsonInfoLink=0;
 function jsonLink(json){
+if(infoLinkImg[j]!=''){
+  if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
+  return;
+}
 var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
-if(countJsonInfoLink > 0){
-if(infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0){
-if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
-return;
-}}
 for(var j=0;j<$(elmCflInfoLink).length;j++){
 var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
 for(var i=0;i < entry.length;i++){
