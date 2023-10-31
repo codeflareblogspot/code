@@ -38,7 +38,6 @@ var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
 }else{var key=null;}
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href.toLowerCase();
-ti='';tx='';tz='';
 if(key==se){
 ti=entry[i].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
@@ -48,7 +47,12 @@ tz=entry[i].title.$t;
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
-}}
+}else{
+infoLinkImg[j]='';
+infoLinkDesc[j]='';
+infoLinkTitle[j]='';
+}
+}
 }
 if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){
 callJsonFeed(countJsonInfoLink);
