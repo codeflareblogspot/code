@@ -51,7 +51,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }
 }
-}
+}console.log(infoLinkImg);
 if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){
 callJsonFeed(countJsonInfoLink);
 }}
