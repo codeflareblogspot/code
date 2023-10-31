@@ -31,7 +31,7 @@ $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON 
 countJsonInfoLink=countJsonInfoLink+1;
 }else{
 countJsonInfoLink=countJsonInfoLink+1;
-if(countJsonInfoLink != maxElmInfoLink){callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink != maxElmInfoLink+1){callJsonFeed(countJsonInfoLink);}
 }}
 
 function jsonLink(json){
@@ -52,7 +52,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink != maxElmInfoLink){
+if(countJsonInfoLink != maxElmInfoLink+1){
 callJsonFeed(countJsonInfoLink);
 }}
 
