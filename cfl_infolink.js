@@ -23,17 +23,23 @@ $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
   
 function callJsonFeed(x){
+if(infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLinkImg[x].length < 0){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
-}  
+countJsonInfoLink=countJsonInfoLink+1;
+console.log(path +' | '+x);
+}}
 var countJsonInfoLink=0;
 function jsonLink(json){
 var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
-var key=$(elmCflInfoLink).eq(countJsonInfoLink).attr('href').toLowerCase();
+for(var j=0;j<$(elmCflInfoLink).length;j++){
+if(infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0){
+var key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
+}else{var key=null;}
 for(var i=0;i < entry.length;i++){
 var se=entry[i].link[4].href.toLowerCase();
-ti='error';tx='error';tz='error';
+ti='';tx='';tz='';
 if(key==se){
 ti=entry[i].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
@@ -42,11 +48,11 @@ if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
 tz=entry[i].title.$t;
 break;
 }}
-infoLinkImg[countJsonInfoLink]=(ti);
-infoLinkDesc[countJsonInfoLink]=(tx);
-infoLinkTitle[countJsonInfoLink]=(tz);
+infoLinkImg[j]=(ti);
+infoLinkDesc[j]=(tx);
+infoLinkTitle[j]=(tz);
+}
 if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)-1){
-countJsonInfoLink=countJsonInfoLink+1;
 callJsonFeed(countJsonInfoLink);
 }}
 function cflInfoLink(){
@@ -54,12 +60,8 @@ $(elmCflInfoLink).mouseleave(function(){$('#dataInfoLink').hide();});
 var tmpElm='<div id="dataInfoLink" style="top:-500px;left:-500px;"><div class="imgInfo"><img/></div><div class="titleInfo"></div><div class="descInfo"></div></div>';
 $('body').append(tmpElm);
 for(var i=0;i<$(elmCflInfoLink).length;i++){
-var t=$(elmCflInfoLink).eq(i).attr('href').toLowerCase();
-var parser = document.createElement('a');
-parser.href = t;
-var s=parser.pathname;
-var m=s.substring(0,s.lastIndexOf('/'));m=m.substring(1,m.lastIndexOf('/'));
-var d=s.substring(0,s.lastIndexOf('/'));d=d.substring(d.lastIndexOf('/')+1,d.length);
+var t1=$(elmCflInfoLink).eq(i).attr('href').toLowerCase();
+var t2=t1.split( '/' );var m=t2[3];var d=t2[4];
 infoLinkUrl[i]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 $(elmCflInfoLink).eq(i).attr({'onmouseover':'getInfoLink('+i+')','onmousemove':'moveInfoLink(event)'});
 }
