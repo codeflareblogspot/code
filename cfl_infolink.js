@@ -51,7 +51,7 @@ infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }
-if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)-1){
+if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){
 callJsonFeed(countJsonInfoLink);
 }}
 function cflInfoLink(){
