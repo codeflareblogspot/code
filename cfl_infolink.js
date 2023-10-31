@@ -69,7 +69,7 @@ if(typeof m === 'number' && mt == true && ms == false){
 infoLinkUrl[i]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
-}else{infoLinkUrl[j]=null;}
+}else{infoLinkUrl[j]=null;}console.log(j"+|"+val);
 });
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
