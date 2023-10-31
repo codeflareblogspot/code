@@ -7,7 +7,7 @@ $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!='error'){moveInfoLink(event);$('#dataInfoLink').show();}
+if(infoLinkImg[data]!=''){moveInfoLink(event);$('#dataInfoLink').show();}
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
