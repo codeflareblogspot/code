@@ -27,7 +27,6 @@ if(infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLink
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 countJsonInfoLink=countJsonInfoLink+1;
-console.log(path +' | '+x);
 }}
 var countJsonInfoLink=0;
 function jsonLink(json){
