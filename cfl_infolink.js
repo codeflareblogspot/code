@@ -45,11 +45,10 @@ ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
 tx=entry[i].summary.$t;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
 tz=entry[i].title.$t;
-break;
-}}
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
+}}
 }
 if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){
 callJsonFeed(countJsonInfoLink);
