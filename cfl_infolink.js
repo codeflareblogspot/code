@@ -29,7 +29,7 @@ $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON 
 countJsonInfoLink=countJsonInfoLink+1;
 }else{
 countJsonInfoLink=countJsonInfoLink+1;
-callJsonFeed(countJsonInfoLink);
+if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
 }
 }
 var countJsonInfoLink=0;
