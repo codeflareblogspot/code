@@ -27,7 +27,7 @@ function callJsonFeed(x){
 if((infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLinkImg[x].length < 0)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
-countJsonInfoLink=countJsonInfoLink+1;console.log(path+' | '+x);
+countJsonInfoLink=countJsonInfoLink+1;
 }else{
 countJsonInfoLink=countJsonInfoLink+1;
 if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
