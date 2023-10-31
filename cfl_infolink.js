@@ -49,10 +49,6 @@ tz=entry[i].title.$t;
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
-}else{
-infoLinkImg[j]='';
-infoLinkDesc[j]='';
-infoLinkTitle[j]='';
 }
 }
 }
