@@ -66,7 +66,7 @@ var t2=t1.split( '/' );var m=parseInt(t2[3]);var d=t2[4];
 var mt = /^\d{4}$/.test(m);
 let ms = /.html#/.test(t1);
 if(typeof m === 'number' && mt == true && ms == false){
-infoLinkUrl[j]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
+infoLinkUrl[j]='/feeds/posts/summary?updated-min='+m+'-'+d+'-01T00:00:00&updated-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}maxElmInfoLink=j+1;
