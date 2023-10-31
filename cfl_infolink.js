@@ -41,6 +41,7 @@ if(infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLink
 key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();
 }else{key=null;}
 for(var i=0;i < entry.length;i++){
+infoLinkImg[j]='';infoLinkDesc[j]='';infoLinkTitle[j]='';
 var se=entry[i].link[4].href.toLowerCase();
 if(key==se){
 ti=entry[i].media$thumbnail.url;
