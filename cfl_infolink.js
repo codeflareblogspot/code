@@ -34,7 +34,7 @@ callJsonFeed(countJsonInfoLink);
 }
 var countJsonInfoLink=0;
 function jsonLink(json){
-if(infoLinkImg[j]!=''){
+if(infoLinkImg[countJsonInfoLink - 1]!=''){
   if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
   return;
 }
