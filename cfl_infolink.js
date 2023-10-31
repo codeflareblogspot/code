@@ -34,7 +34,7 @@ if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJs
 }
 var countJsonInfoLink=0;
 function jsonLink(json){
-var ti='';var tx='';var tz='';var key=null;
+var ti='';var tx='';var tz='';var key='';
 var entry=json.feed.entry;
 for(var j=0;j<$(elmCflInfoLink).length;j++){
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0){key=$(elmCflInfoLink).eq(j).attr('href').toLowerCase();}
