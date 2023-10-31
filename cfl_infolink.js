@@ -3,6 +3,7 @@ var infoLinkTitle=[];
 var infoLinkDesc=[];
 var infoLinkUrl=[];
 var countJsonInfoLink=0;
+var maxElmInfoLink;
 function getInfoLink(data){
 $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
@@ -30,7 +31,7 @@ $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON 
 countJsonInfoLink=countJsonInfoLink+1;
 }else{
 countJsonInfoLink=countJsonInfoLink+1;
-if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink != maxElmInfoLink)){callJsonFeed(countJsonInfoLink);}
 }}
 
 function jsonLink(json){
@@ -51,7 +52,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink != parseInt($(elmCflInfoLink).length)){
+if(countJsonInfoLink != maxElmInfoLink)){
 callJsonFeed(countJsonInfoLink);
 }}
 
@@ -68,7 +69,7 @@ if(typeof m === 'number' && mt == true && ms == false){
 infoLinkUrl[j]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
-}else{infoLinkUrl[j]=null;}
+}else{infoLinkUrl[j]=null;}maxElmInfoLink=j;
 });
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
