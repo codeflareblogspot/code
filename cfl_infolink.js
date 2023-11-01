@@ -41,7 +41,7 @@ $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
-if(key==se&&se!=undefined){
+if(key==se){
 ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
 tx=entry[k].summary.$t;
