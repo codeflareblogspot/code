@@ -52,8 +52,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink == infoLinkUrl.length - 1){return;}
-else{countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink != infoLinkUrl.length - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }
 
 function cflInfoLink(){
@@ -70,6 +69,6 @@ infoLinkUrl[j]='/feeds/posts/summary?updated-min='+m+'-'+d+'-01T00:00:00&updated
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
-});
+});console.log(infoLinkUrl);
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
