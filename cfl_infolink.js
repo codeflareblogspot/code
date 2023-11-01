@@ -5,11 +5,11 @@ var infoLinkUrl=[];
 var countJsonInfoLink=0;
 
 function getInfoLink(data){
-$('#dataInfoLink').hide();
+
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!=''||infoLinkImg[data]!=undefined){moveInfoLink(event);$('#dataInfoLink').show();}
+if(infoLinkImg[data]==''||infoLinkImg[data]==undefined){$('#dataInfoLink').hide();}else{moveInfoLink(event);$('#dataInfoLink').show();}
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
