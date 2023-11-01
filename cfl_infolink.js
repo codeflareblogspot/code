@@ -38,7 +38,8 @@ if(countJsonInfoLink != infoLinkUrl.length+1){
 function jsonLink(json){
 var entry=json.feed.entry;
 $(elmCflInfoLink).each(function(j) {
-var key=this.href.toLowerCase();
+if((infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0)&& infoLinkUrl[j]!=null){var key=this.href.toLowerCase();}
+else{var key=null;}
 var ti='';var tx='';var tz='';
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
