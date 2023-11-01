@@ -45,8 +45,8 @@ var ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
 infoLinkImg[j]=ti;
 var tx=entry[k].summary.$t;
-infoLinkDesc[j]=tx;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
+infoLinkDesc[j]=tx;
 var tz=entry[k].title.$t;
 infoLinkTitle[j]=tz;
 }}
