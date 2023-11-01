@@ -29,9 +29,7 @@ if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 }else{
-if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){
-  countJsonInfoLink=countJsonInfoLink+1;
-  callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink < infoLinkUrl.length){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }}
 
 function jsonLink(json){
@@ -51,7 +49,7 @@ var tz=entry[k].title.$t;
 infoLinkTitle[j]=tz;
 }}
 });
-if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink < infoLinkUrl.length){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }
 
 function cflInfoLink(){
