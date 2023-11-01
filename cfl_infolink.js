@@ -3,7 +3,7 @@ var infoLinkTitle=[];
 var infoLinkDesc=[];
 var infoLinkUrl=[];
 var countJsonInfoLink=0;
-var maxElmInfoLink;
+
 function getInfoLink(data){
 $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
@@ -30,7 +30,7 @@ var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
   countJsonInfoLink=countJsonInfoLink+1;console.log(path);
 }else{
-if(countJsonInfoLink != maxElmInfoLink){
+if(countJsonInfoLink != infoLinkUrl.length){
   countJsonInfoLink=countJsonInfoLink+1;
   callJsonFeed(countJsonInfoLink);}
 }}
@@ -53,7 +53,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink != maxElmInfoLink){
+if(countJsonInfoLink != infoLinkUrl.length){
 callJsonFeed(countJsonInfoLink);
 }}
 
@@ -72,6 +72,5 @@ this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
 });
-maxElmInfoLink=infoLinkUrl.length;
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
