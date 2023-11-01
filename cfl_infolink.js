@@ -68,6 +68,7 @@ infoLinkUrl[j]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&publi
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
+infoLinkImg[j]='';infoLinkTitle[j]='';infoLinkDesc[j]='';
 });
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
