@@ -41,7 +41,8 @@ $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
-if(key==se){console.log(key+' | '+se);
+if(key==se){
+try{
 ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");console.log(ti);
 tx=entry[k].summary.$t;
@@ -50,6 +51,7 @@ tz=entry[k].title.$t;console.log(tz);
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
+}catch(err){console.log(err)}
 }}
 });
 if(countJsonInfoLink != infoLinkUrl.length - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
@@ -69,6 +71,6 @@ infoLinkUrl[j]='/feeds/posts/summary?updated-min='+m+'-'+d+'-01T00:00:00&updated
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
-});console.log(infoLinkUrl);
+});
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
