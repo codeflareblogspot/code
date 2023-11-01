@@ -70,7 +70,8 @@ if(typeof m === 'number' && mt == true && ms == false){
 infoLinkUrl[j]='/feeds/posts/summary?updated-min='+m+'-'+d+'-01T00:00:00&updated-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
-}else{infoLinkUrl[j]=null;}maxElmInfoLink=j+1;
+}else{infoLinkUrl[j]=null;}
 });
+maxElmInfoLink=infoLinkUrl.length;
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
