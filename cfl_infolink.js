@@ -3,7 +3,7 @@ var infoLinkTitle=[];
 var infoLinkDesc=[];
 var infoLinkUrl=[];
 var countJsonInfoLink=0;
-
+var tryLoadFeed=false;
 function getInfoLink(data){
 $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
@@ -48,7 +48,7 @@ $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
-if(se==undefined){callJsonFeedError(countJsonInfoLink);break;return;}
+if(se==undefined&&tryLoadFeed==false){tryLoadFeed=true;callJsonFeedError(countJsonInfoLink);break;return;}
 if(key==se){
 ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
