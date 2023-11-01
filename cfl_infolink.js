@@ -40,7 +40,6 @@ var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
 $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
-infoLinkImg[j]='';infoLinkDesc[j]='';infoLinkTitle[j]='';
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
 if(key==se){console.log(key+' | '+se);
