@@ -35,21 +35,20 @@ if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){
 }}
 
 function jsonLink(json){
-var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
 $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
 if(key==se){
-ti=entry[k].media$thumbnail.url;
+var ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
-tx=entry[k].summary.$t;
+infoLinkImg[j]=ti;
+var tx=entry[k].summary.$t;
+infoLinkDesc[j]=tx;
 if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
-tz=entry[k].title.$t;
-infoLinkImg[j]=(ti);
-infoLinkDesc[j]=(tx);
-infoLinkTitle[j]=(tz);
+var tz=entry[k].title.$t;
+infoLinkTitle[j]=tz;
 }}
 });
 if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
