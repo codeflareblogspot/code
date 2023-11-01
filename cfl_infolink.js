@@ -29,7 +29,7 @@ if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 }else{
-if(countJsonInfoLink != infoLinkUrl.length - 1){
+if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){
   countJsonInfoLink=countJsonInfoLink+1;
   callJsonFeed(countJsonInfoLink);}
 }}
@@ -51,8 +51,8 @@ infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
-});console.log(countJsonInfoLink +' | '+ infoLinkUrl.length - 1);
-if(countJsonInfoLink != infoLinkUrl.length - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
+});
+if(countJsonInfoLink != parseInt(infoLinkUrl.length) - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }
 
 function cflInfoLink(){
@@ -69,6 +69,6 @@ infoLinkUrl[j]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&publi
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
-});console.log(infoLinkUrl);
+});
 callJsonFeed(countJsonInfoLink);
 }cflInfoLink();
