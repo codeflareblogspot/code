@@ -43,10 +43,10 @@ for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
 if(key==se){console.log(key+' | '+se);
 ti=entry[k].media$thumbnail.url;
-ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
+ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");console.log(ti);
 tx=entry[k].summary.$t;
-if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
-tz=entry[k].title.$t;
+if(tx.length > 100){tx=tx.slice(0, 100) + '...';}console.log(tx);
+tz=entry[k].title.$t;console.log(tz);
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
