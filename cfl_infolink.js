@@ -3,7 +3,7 @@ var infoLinkTitle=[];
 var infoLinkDesc=[];
 var infoLinkUrl=[];
 var countJsonInfoLink=0;
-var tryLoadFeed=false;
+
 function getInfoLink(data){
 $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
@@ -24,17 +24,10 @@ else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 
-function callJsonFeedError(x){
-if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
-var path='https://'+window.location.hostname+infoLinkUrl[x];
-path=path.replace("published-min", "updated-min").replace("published-max", "updated-max");
-$.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
-}}
-
 function callJsonFeed(x){
 if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
-$.ajax({url: path,dataType: 'script',error: function (){callJsonFeedError(x)}});
+$.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
 }else{
 if(countJsonInfoLink != infoLinkUrl.length - 1){
   countJsonInfoLink=countJsonInfoLink+1;
