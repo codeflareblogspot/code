@@ -51,7 +51,7 @@ infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
-});
+});console.log(countJsonInfoLink +' | '+ infoLinkUrl.length - 1);
 if(countJsonInfoLink != infoLinkUrl.length - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }
 
