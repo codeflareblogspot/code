@@ -24,7 +24,7 @@ else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 
-function callJsonFeed(x){console.log(infoLinkImg[x]);
+function callJsonFeed(x){console.log(infoLinkImg[x]+' | '+x);
 if((infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLinkImg[x].length < 0)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
