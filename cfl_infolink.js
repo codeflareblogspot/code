@@ -41,8 +41,7 @@ $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
-if(key==se){
-try{
+if(key==se&&se!=undefined){
 ti=entry[k].media$thumbnail.url;
 ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");console.log(ti);
 tx=entry[k].summary.$t;
@@ -51,7 +50,6 @@ tz=entry[k].title.$t;console.log(tz);
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
-}catch(err){console.log(err)}
 }}
 });
 if(countJsonInfoLink != infoLinkUrl.length - 1){countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
@@ -67,7 +65,7 @@ var t2=t1.split( '/' );var m=parseInt(t2[3]);var d=t2[4];
 var mt = /^\d{4}$/.test(m);
 let ms = /.html#/.test(t1);
 if(typeof m === 'number' && mt == true && ms == false){
-infoLinkUrl[j]='/feeds/posts/summary?updated-min='+m+'-'+d+'-01T00:00:00&updated-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
+infoLinkUrl[j]='/feeds/posts/summary?published-min='+m+'-'+d+'-01T00:00:00&published-max='+m+'-'+d+'-31T23:59:59&max-result=150&alt=json-in-script&callback=jsonLink';
 this.setAttribute('onmouseover','getInfoLink('+j+')');
 this.setAttribute('onmousemove','moveInfoLink(event)');
 }else{infoLinkUrl[j]=null;}
