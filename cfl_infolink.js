@@ -24,11 +24,10 @@ else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 
-function callJsonFeed(x){console.log(infoLinkImg[x]+' | '+x);
-if((infoLinkImg[x]==''||infoLinkImg[x]==undefined||infoLinkImg[x]==null||infoLinkImg[x].length < 0)&& infoLinkUrl[x]!=null){
+function callJsonFeed(x){
+if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
-  countJsonInfoLink=countJsonInfoLink+1;console.log(path);
 }else{
 if(countJsonInfoLink != infoLinkUrl.length - 1){
   countJsonInfoLink=countJsonInfoLink+1;
@@ -53,7 +52,8 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink == infoLinkUrl.length - 1){return;}else{callJsonFeed(countJsonInfoLink);}
+if(countJsonInfoLink == infoLinkUrl.length - 1){return;}
+else{countJsonInfoLink=countJsonInfoLink+1;callJsonFeed(countJsonInfoLink);}
 }
 
 function cflInfoLink(){
