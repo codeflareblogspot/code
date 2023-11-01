@@ -9,7 +9,7 @@ $('#dataInfoLink').hide();
 $('.imgInfo img').attr('src',infoLinkImg[data]);
 $('.titleInfo').html(infoLinkTitle[data]);
 $('.descInfo').html(infoLinkDesc[data]);
-if(infoLinkImg[data]!=''||infoLinkImg[data]!=undefined){moveInfoLink(event);$('#dataInfoLink').show();}
+if(infoLinkImg[data]==''||infoLinkImg[data]==undefined){$('#dataInfoLink').hide();}else{moveInfoLink(event);$('#dataInfoLink').show();}
 }
 function moveInfoLink(event){
 var w = document.querySelector(elmCflBoundary).offsetWidth;
@@ -24,10 +24,17 @@ else if(l+elw > w){l=l-(elw+20);}
 $('#dataInfoLink').css({'top':t+'px','left':l+'px'});
 }
 
+function callJsonFeedError(x){
+if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
+var path='https://'+window.location.hostname+infoLinkUrl[x];
+path=path.replace("published-min", "updated-min").replace("published-max", "updated-max");
+$.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+}}
+
 function callJsonFeed(x){
 if((infoLinkImg[x]==''||infoLinkImg[x]==undefined)&& infoLinkUrl[x]!=null){
 var path='https://'+window.location.hostname+infoLinkUrl[x];
-$.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
+$.ajax({url: path,dataType: 'script',error: function (){callJsonFeedError(x)}});
 }else{
 if(countJsonInfoLink != infoLinkUrl.length - 1){
   countJsonInfoLink=countJsonInfoLink+1;
@@ -41,12 +48,13 @@ $(elmCflInfoLink).each(function(j) {
 if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
-if(key==se&&se!=undefined){
+if(se==undefined){callJsonFeedError(countJsonInfoLink);break;return;}
+if(key==se){
 ti=entry[k].media$thumbnail.url;
-ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");console.log(ti);
+ti=ti.replace("1.bp", "4.bp").replace("s72-c", "s300");
 tx=entry[k].summary.$t;
-if(tx.length > 100){tx=tx.slice(0, 100) + '...';}console.log(tx);
-tz=entry[k].title.$t;console.log(tz);
+if(tx.length > 100){tx=tx.slice(0, 100) + '...';}
+tz=entry[k].title.$t;
 infoLinkImg[j]=(ti);
 infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
