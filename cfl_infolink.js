@@ -30,17 +30,17 @@ var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
   countJsonInfoLink=countJsonInfoLink+1;console.log(path);
 }else{
-if(countJsonInfoLink != infoLinkUrl.length+1){
+if(countJsonInfoLink != infoLinkUrl.length - 1){
   countJsonInfoLink=countJsonInfoLink+1;
   callJsonFeed(countJsonInfoLink);}
 }}
 
 function jsonLink(json){
+var ti='';var tx='';var tz='';
 var entry=json.feed.entry;
 $(elmCflInfoLink).each(function(j) {
-if((infoLinkImg[j]==''||infoLinkImg[j]==undefined||infoLinkImg[j]==null||infoLinkImg[j].length < 0)&& infoLinkUrl[j]!=null){var key=this.href.toLowerCase();}
-else{var key=null;}
-var ti='';var tx='';var tz='';
+if(infoLinkImg[j]==''||infoLinkImg[j]==undefined){var key=this.href.toLowerCase();}else{var key=null;}
+infoLinkImg[j]='';infoLinkDesc[j]='';infoLinkTitle[j]='';
 for(var k=0;k < entry.length;k++){
 var se=entry[k].link[4].href.toLowerCase();
 if(key==se){console.log(key+' | '+se);
@@ -54,9 +54,8 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink != infoLinkUrl.length+1){
-callJsonFeed(countJsonInfoLink);
-}}
+if(countJsonInfoLink == infoLinkUrl.length - 1){return;}else{callJsonFeed(countJsonInfoLink);}
+}
 
 function cflInfoLink(){
 $(elmCflInfoLink).mouseleave(function(){$('#dataInfoLink').hide();});
