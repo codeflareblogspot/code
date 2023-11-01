@@ -30,7 +30,7 @@ var path='https://'+window.location.hostname+infoLinkUrl[x];
 $.ajax({url: path,dataType: 'script',error: function (){console.log("Error JSON Codeflare InfoLink");}});
   countJsonInfoLink=countJsonInfoLink+1;console.log(path);
 }else{
-if(countJsonInfoLink != infoLinkUrl.length){
+if(countJsonInfoLink != infoLinkUrl.length+1){
   countJsonInfoLink=countJsonInfoLink+1;
   callJsonFeed(countJsonInfoLink);}
 }}
@@ -53,7 +53,7 @@ infoLinkDesc[j]=(tx);
 infoLinkTitle[j]=(tz);
 }}
 });
-if(countJsonInfoLink != infoLinkUrl.length){
+if(countJsonInfoLink != infoLinkUrl.length+1){
 callJsonFeed(countJsonInfoLink);
 }}
 
