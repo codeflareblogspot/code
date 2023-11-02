@@ -60,6 +60,7 @@ position:static;
 text-align:left;
 font-size:14px;
 max-height:100%;
+color:#000;
 }
 /* a Link ----------------------- */
 #related_posts a:link{
