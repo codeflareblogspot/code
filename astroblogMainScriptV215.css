@@ -359,10 +359,8 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
 }
 
 .footerAttribution {
-    width: 100%;
-    text-align: center;
     font-size: 10px;
-    padding-top: 5px;
+    margin: 5px;
     clear: both;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
