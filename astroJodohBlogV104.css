@@ -140,6 +140,7 @@ font-size:10px;
 padding-top:5px;
 clear:both;
 color:#000;
+display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 .leftfooterFrmJodoh{
 text-align:center;
