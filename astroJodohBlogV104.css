@@ -129,7 +129,10 @@ user-select: none;
 }
 #btnKecocokan:hover{box-shadow:0 0 6px 0px #fff;border:1px #f21085 solid;}
 #btnKecocokan:active{border-color:#fff;}
-.footerFrmJodoh{position:relative;clear:both;}
+.footerFrmJodoh{
+  position:relative;clear:both;
+display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
+}
 .footerJodohAttr{
 width:100%;
 text-align:center;
