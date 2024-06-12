@@ -365,6 +365,7 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
     font-size: 10px;
     padding-top: 5px;
     clear: both;
+display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 
 .colorFormAst:before {
