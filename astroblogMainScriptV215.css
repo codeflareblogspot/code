@@ -27,6 +27,7 @@
     height: 32px;
     overflow: hidden;
     background: var(--main-color);
+    display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 
 .leftDateAst,.rightDateAst {
