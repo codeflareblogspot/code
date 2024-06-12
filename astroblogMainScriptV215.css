@@ -348,11 +348,9 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
     font-size: 16px;
     font-weight: 600;
     background: var(--main-color);
-    height: 30px;
     padding: 5px;
     box-sizing: border-box;
     color: #fff;
-    float: left;
     cursor: pointer;
 }
 
