@@ -135,7 +135,6 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
 .footerJodohAttr{
 font-size:10px;
 height:24px;
-clear:both;
 color:#000;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
