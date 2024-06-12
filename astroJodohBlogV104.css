@@ -134,10 +134,8 @@ user-select: none;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 .footerJodohAttr{
-width:100%;
-text-align:center;
 font-size:10px;
-padding-top:5px;
+margin:5px;
 clear:both;
 color:#000;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
