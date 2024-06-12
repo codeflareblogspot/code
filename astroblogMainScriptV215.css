@@ -51,6 +51,7 @@
     box-sizing: border-box;
     line-height: 32px;
     text-align: center;
+display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 
 .menuHeaderAst {
