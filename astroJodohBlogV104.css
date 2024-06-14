@@ -133,10 +133,12 @@ user-select: none;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 .footerJodohAttr{
-font-size:10px;
-height:24px;
-color:#000;
-display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
+font-size: 10px;
+color: #000;
+display: block;
+width: 100%;
+padding: 5px;
+text-align: center;
 }
 .leftfooterFrmJodoh{
 text-align:center;
