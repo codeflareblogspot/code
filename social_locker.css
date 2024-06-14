@@ -335,7 +335,14 @@
 }
 .onp-sociallocker-secrets .fb-like span,
 .onp-sociallocker-secrets .fb-like iframe {
-    width: 118px !important;
+    /*width: 118px !important;*/
+    height: 18px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
 }
 .onp-sociallocker-secrets {
     padding: 0;
