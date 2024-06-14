@@ -154,6 +154,12 @@
     padding: 1px;
     position: relative;
     top: -1px;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
 }
 
 .onp-sociallocker-opera .fb-like {
@@ -386,6 +392,12 @@
 .onp-sociallocker-secrets .onp-sociallocker-button-overlay {
     height: 34px;
     min-width: 118px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: stretch;
 }
 .onp-sociallocker-secrets .onp-sociallocker-button-inner-wrap{
     padding: 7px;
