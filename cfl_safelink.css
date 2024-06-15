@@ -258,3 +258,6 @@ color: #fff;
 font-size: 20px;
 margin-bottom: 10px;
 }
+.iklanteks{display:block;width:100%;height:250px;}
+@media screen and (max-width:500px){.botontextDemo,.botontextDownload{font-size:16px !important;}.btn-demo,.btn-download{max-width:150px;}.ins-btn-demo span,.ins-btn-download span{width:27% !important;}}
+@media screen and (max-width:350px){.botontextDemo,.botontextDownload{font-size:11px !important;}.btn-demo,.btn-download{max-width:110px;}.ins-btn-demo span,.ins-btn-download span{width:27% !important;}}
