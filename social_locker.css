@@ -337,7 +337,7 @@
 .onp-sociallocker-secrets .fb-like iframe {
     /*width: 118px !important;*/
     height: 18px;
-    top: 3px;
+    top: 2px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
