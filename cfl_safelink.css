@@ -209,7 +209,6 @@ height: 100%;
 text-align: center;
 font-size: 100px;
 color: #fff;
-line-height: 160px;
 padding: 0;
 margin: 0;
 -webkit-touch-callout: none;
@@ -218,6 +217,12 @@ margin: 0;
 -moz-user-select: none;
 -ms-user-select: none;
 user-select: none;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 .countdown__inner{
 text-align: center;
