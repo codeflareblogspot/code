@@ -73,22 +73,24 @@ overflow: hidden;
 box-sizing: border-box;
 }
 .countdown{
-height: 140px;
 border-radius: 20px;
-display: inline-block;
+display: flex;
+position: relative;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 .countdown__colored-blocks{
-position: relative;
-top: 0;
-left: 0;
 overflow: hidden;
 width: 140px;
-height: 100%;
+height: 140px;
 padding: 10px;
 border-radius: 50%;
 -webkit-perspective: 1000px;
 perspective: 1000px;
-display: block;
+display: inline-block;
 }
 .countdown__colored-blocks-rotater{
 position: absolute;
@@ -209,7 +211,6 @@ left: 0;
 top: 0;
 width: 100%;
 height: 100%;
-text-align: center;
 font-size: 6rem;
 color: #fff;
 padding: 0;
@@ -228,24 +229,29 @@ justify-content: center;
 align-items: stretch;
 }
 .countdown__inner{
-text-align: center;
-height: 16px;
-width: 100%;
+margin-top: 1rem;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 #countdown__progressBar{
-width:202px;
-height: 10px;
+width: 30%;
+height: 1em;
+overflow: hidden;
 border: 1px solid #ccc;
 display: inline-block;
-padding:0;
-margin:0;
-text-align:left;
+padding: 0;
+margin: 0;
+text-align: left;
 }
 #progressBar{
-height: 8px;
-border: 1px solid #ccc;
+height: 100%;
 transition: all 0.5s ease;
-background-color: green;
+background-color: #0083da;
+box-sizing: border-box;
 }
 .cfsafelinktext{
 color: #fff;
