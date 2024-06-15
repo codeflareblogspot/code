@@ -51,19 +51,23 @@ box-sizing: border-box;
 border: 2px solid #007ccd;
 color: #fff;
 width: 220px;
-display: inline-block;
 position: relative;
 -webkit-transition: all 300ms ease;
 -moz-transition: all 300ms ease;
 transition: all 300ms ease;
 text-align: center;
-font-family: 
--webkit-font-smoothing: antialiased;
-vertical-align:middle;
-font-family:'Roboto',Open Sans, sans-serif;
+font-family: -webkit-font-smoothing: antialiased;
+vertical-align: middle;
+font-family: 'Roboto', Open Sans, sans-serif;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 .cf-btn span {
-display: block;
+display: flex;
 position: relative;
 z-index: 1;
 -webkit-transform: translate(0, 0);
@@ -72,6 +76,11 @@ z-index: 1;
 -o-transform: translate(0, 0);
 transform: translate(0, 0);
 text-shadow: -1px -1px 1px #000;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 .cf-btn span:after, .cf-btn span:before {
 content: '';
@@ -113,6 +122,12 @@ transform: translate(-50%, -50%) rotate(0deg) scale(0.04857);
 -moz-transition: all 350ms ease-out;
 transition: all 350ms ease-out;
 height: 700px;
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-content: center;
+justify-content: center;
+align-items: stretch;
 }
 .cf-btn svg#linux {
 -webkit-transform: translate(-50%, -50%) rotate(0deg) scale(0.05857);
