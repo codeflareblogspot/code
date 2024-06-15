@@ -4,7 +4,7 @@
 
 .mainFrmAst {
     background: #f8f8f8;
-    height: 350px;
+    min-height: 350px;
     line-height: inherit;
 }
 
