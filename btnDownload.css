@@ -67,7 +67,6 @@ justify-content: center;
 align-items: stretch;
 }
 .cf-btn span {
-padding-left: 5px;
 display: flex;
 position: relative;
 z-index: 1;
@@ -82,6 +81,7 @@ flex-wrap: wrap;
 align-content: center;
 justify-content: center;
 align-items: stretch;
+text-shadow:1px 2px 2px #000,1px 2px 2px #111,1px 2px 2px #333,1px 2px 2px #666;
 }
 .cf-btn span:after, .cf-btn span:before {
 content: '';
