@@ -363,7 +363,7 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
     height: 24px;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
-
+.footerAttribution span{margin-right:4px;}
 .colorFormAst:before {
     content: '';
     position: absolute;
