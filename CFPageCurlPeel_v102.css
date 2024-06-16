@@ -61,7 +61,7 @@ width:calc(var(--curl-size) + 40px);
 0%{width:calc(var(--curl-size) + 20px);height:calc(var(--curl-size) + 20px);}
 100%{width:calc(var(--curl-size) + 100px);height:calc(var(--curl-size) + 100px);}
 }
-@media screen and (max-width:550px){
+@media screen and (max-width:200px){
 .curlLeft,.curlRight{display:none;}
 }
 /* ------- curl image base css ------- */
