@@ -510,6 +510,7 @@ var pScL = (((new Date(strYear+','+strMonth+','+strDate).getTime() - new Date(10
 var nameOfDay = new Date(strYear+','+strMonth+','+strDate);
 var nameForDay = weekdayAstroBlog[nameOfDay.getDay()];
 if(dataNeptuAst==0){var strNeptuText="Maaf tidak ada data, silakan periksa tanggal lahir anda !";}else{strNeptuText=strNeptu[dataNeptuAst];}
+console.log(Math.round(pScL));
 $('#fAstWeton').html(nameForDay+' ['+pN[Math.round(pScL)]+']'+' | Neptu ['+dataNeptuAst+']');
 $("#wetonArea").html("Name : "+capital_letter($('#fAstName').val())+"<br>"+"Date of Birth : "+strDate+" - "+strMonth+" - "+strYear+"<br>"+"Neptu : "+dataNeptuAst+"<br><br>"+strNeptu[0]+"<br>"+strNeptuText+"<br><br>Pasaran : "+nameForDay+" ("+pN[Math.round(pScL)]+")<br>"+strNeptuWeton[Math.round(pScL)]);
 }
