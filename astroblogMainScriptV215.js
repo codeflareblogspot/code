@@ -174,10 +174,7 @@ function (){$("#titleHeaderAst").html(contentAPF[initialDate[2]]+' '+contentAPT[
 $("#"+contentAPId[contentAPN2]).delay(800).show("slide", 500);
 $("#titleHeaderAst").delay(300).show("slide", 500);
 contentAPN1=parseInt(contentAPN2);
-}
-getBioImage();
-//$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top - 10},'slow');
-//const openAstroreading = setTimeout(function(){}, 2000);
+}getBioImage();
 });
 }
 /* End Cookie Time */
@@ -935,6 +932,7 @@ function closeBox(){
 $("#lihatAstroBlog").slideUp("slow");
 $("#fBtnAstSubmit").html('<i class="fa fa-desktop" aria-hidden="true"></i> Lihat Data');
 if($("#lihatAstroBlog").data('draggable')){$("#lihatAstroBlog").draggable('destroy');}
+$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top - 50},'slow');
 }
 
 /*get ScrollBar Value*/
