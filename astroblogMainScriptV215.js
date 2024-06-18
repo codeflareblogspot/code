@@ -932,7 +932,7 @@ function closeBox(){
 $("#lihatAstroBlog").slideUp("slow");
 $("#fBtnAstSubmit").html('<i class="fa fa-desktop" aria-hidden="true"></i> Lihat Data');
 if($("#lihatAstroBlog").data('draggable')){$("#lihatAstroBlog").draggable('destroy');}
-$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top - 50},'slow');
+$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top},'slow');
 }
 
 /*get ScrollBar Value*/
