@@ -166,7 +166,6 @@ if(initialDate[0]!=""&&initialDate[0]!=null){$("#fAstName").val(initialDate[0]);
 if(initialDate[1]!=""&&initialDate[1]!=null){$("#fAstDate").datepicker("setDate",initialDate[1]);$("#fBtnAstSave").css("background","#333");}
 $(document).ready(function(){
 runAstrologi();
-getBioImage();
 if(initialDate[2]!=""&&initialDate[2]!=null&&contentAPN1!=initialDate[2]){
 contentAPN2=parseInt(initialDate[2]);
 $("#"+contentAPId[contentAPN1]).hide("slide",{direction : 'right'}, 500);
@@ -176,6 +175,7 @@ $("#"+contentAPId[contentAPN2]).delay(800).show("slide", 500);
 $("#titleHeaderAst").delay(300).show("slide", 500);
 contentAPN1=parseInt(contentAPN2);
 }
+if(initialDate[0]!=""&&initialDate[0]!=null){getBioImage();}
 });
 }
 /* End Cookie Time */
