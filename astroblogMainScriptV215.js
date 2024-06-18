@@ -175,8 +175,9 @@ $("#"+contentAPId[contentAPN2]).delay(800).show("slide", 500);
 $("#titleHeaderAst").delay(300).show("slide", 500);
 contentAPN1=parseInt(contentAPN2);
 }
-$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top - 10},'slow');
-//const openAstroreading = setTimeout(getBioImage, 2000);
+getBioImage();
+//$('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top - 10},'slow');
+//const openAstroreading = setTimeout(function(){}, 2000);
 });
 }
 /* End Cookie Time */
