@@ -195,8 +195,8 @@ $("#fBtnAstClear").on("click", function(){deleteCookie();});
 $("#fBtnAstShare").on("click", function(){
 var username = $('#fAstName').val();
 if (username != "" && username != null && username !="Nama Lengkap" && username.length != 1) {
-var dataAstrologi=(window.location.href)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
-var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.href);
+var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
+var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
 var addQuotes = 'whatsapp://send?phone=&text='+a;
 }else{
