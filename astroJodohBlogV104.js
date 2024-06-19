@@ -1,3 +1,722 @@
 //<![CDATA[
-var _0x65bf=["\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x20\x76","\x31\x2E\x33\x2E\x30","\x68\x74\x6D\x6C","\x2E\x66\x6F\x6F\x74\x65\x72\x4A\x6F\x64\x6F\x68\x41\x74\x74\x72","\x73\x6C\x69\x64\x65\x44\x6F\x77\x6E","\x64\x64\x2D\x6D\x6D\x2D\x79\x79","\x31\x39\x30\x30\x3A\x2B\x30","\x63\x73\x73","\x2E\x75\x69\x2D\x64\x61\x74\x65\x70\x69\x63\x6B\x65\x72","\x64\x61\x74\x65\x70\x69\x63\x6B\x65\x72","\x23\x66\x41\x73\x74\x44\x61\x74\x65\x46\x65\x6D\x61\x6C\x65\x2C\x23\x66\x41\x73\x74\x44\x61\x74\x65\x4D\x61\x6C\x65","\x73\x65\x74\x44\x61\x74\x65","\x67\x65\x74\x54\x69\x6D\x65","\x73\x65\x74\x54\x69\x6D\x65","\x65\x78\x70\x69\x72\x65\x73\x3D","\x74\x6F\x47\x4D\x54\x53\x74\x72\x69\x6E\x67","\x63\x6F\x6F\x6B\x69\x65","\x3D","\x3B","\x3B\x70\x61\x74\x68\x3D\x2F\x3B\x53\x61\x6D\x65\x53\x69\x74\x65\x3D\x53\x65\x63\x75\x72\x65","\x73\x70\x6C\x69\x74","\x6C\x65\x6E\x67\x74\x68","\x73\x75\x62\x73\x74\x72\x69\x6E\x67","\x63\x68\x61\x72\x41\x74","\x20","\x69\x6E\x64\x65\x78\x4F\x66","","\x64\x61\x74\x61","\x3A","\x44\x61\x74\x61\x20\x61\x6E\x64\x61\x20\x75\x6E\x74\x75\x6B\x20\x6E\x61\x6D\x61\x20","\x20\x73\x75\x64\x61\x68\x20\x74\x65\x72\x73\x69\x6D\x70\x61\x6E","\x76\x61\x6C","\x23\x66\x41\x73\x74\x4E\x61\x6D\x65","\x23\x66\x41\x73\x74\x44\x61\x74\x65","\x4E\x61\x6D\x61\x20\x4C\x65\x6E\x67\x6B\x61\x70","\x44\x61\x74\x61\x20\x73\x65\x74\x74\x69\x6E\x67\x20","\x20\x74\x65\x72\x73\x69\x6D\x70\x61\x6E\x20\x6D\x65\x6E\x67\x67\x75\x6E\x61\x6B\x61\x6E\x20\x62\x72\x6F\x77\x73\x65\x72\x20\x6B\x75\x6B\x69","\x53\x69\x6C\x61\x6B\x61\x6E\x20\x69\x73\x69\x20\x6E\x61\x6D\x61\x20\x6C\x65\x6E\x67\x6B\x61\x70\x20\x61\x6E\x64\x61\x20\x21\x0A\x0A\x44\x61\x74\x61\x20\x61\x6E\x64\x61\x20\x61\x6D\x61\x6E\x20\x6B\x61\x72\x65\x6E\x61\x20\x64\x69\x73\x69\x6D\x70\x61\x6E\x20\x70\x61\x64\x61\x20\x6B\x75\x6B\x69\x20\x62\x72\x6F\x77\x73\x65\x72\x20\x61\x6E\x64\x61\x2E","\x66\x6F\x63\x75\x73","\x74\x72\x69\x67\x67\x65\x72","\x64\x61\x74\x61\x3D\x3B\x20\x65\x78\x70\x69\x72\x65\x73\x3D\x54\x68\x75\x2C\x20\x30\x31\x20\x4A\x61\x6E\x20\x31\x39\x37\x30\x20\x30\x30\x3A\x30\x30\x3A\x30\x30\x20\x55\x54\x43\x3B\x20\x70\x61\x74\x68\x3D\x2F\x3B","\x44\x61\x74\x61\x20\x61\x6E\x64\x61\x20\x73\x75\x64\x61\x68\x20\x64\x69\x68\x61\x70\x75\x73\x20\x64\x61\x72\x69\x20\x62\x72\x6F\x77\x73\x65\x72\x20\x6B\x75\x6B\x69","\x64\x61\x74\x61\x6A\x64\x68\x3D","\x6D\x61\x74\x63\x68","\x6C\x61\x73\x74\x49\x6E\x64\x65\x78\x4F\x66","\x61\x74\x6F\x62","\x23\x66\x41\x73\x74\x4E\x61\x6D\x65\x46\x65\x6D\x61\x6C\x65","\x23\x66\x41\x73\x74\x44\x61\x74\x65\x46\x65\x6D\x61\x6C\x65","\x23\x66\x41\x73\x74\x4E\x61\x6D\x65\x4D\x61\x6C\x65","\x23\x66\x41\x73\x74\x44\x61\x74\x65\x4D\x61\x6C\x65","\x73\x6C\x69\x64\x65","\x72\x69\x67\x68\x74","\x68\x69\x64\x65","\x23","\x23\x74\x69\x74\x6C\x65\x48\x65\x61\x64\x65\x72\x4A\x6F\x64\x6F\x68","\x73\x68\x6F\x77","\x64\x65\x6C\x61\x79","\x74\x6F\x70","\x6F\x66\x66\x73\x65\x74","\x2E\x61\x73\x74\x72\x6F\x42\x6C\x6F\x67\x4D\x61\x69\x6E\x55\x49\x4A\x6F\x64\x6F\x68","\x61\x6E\x69\x6D\x61\x74\x65","\x68\x74\x6D\x6C\x2C\x20\x62\x6F\x64\x79","\x63\x6C\x69\x63\x6B","\x6F\x6E","\x23\x72\x69\x67\x68\x74\x4D\x65\x6E\x75\x4A\x6F\x64\x6F\x68","\x23\x6C\x65\x66\x74\x4D\x65\x6E\x75\x4A\x6F\x64\x6F\x68","\x23\x62\x74\x6E\x4B\x65\x63\x6F\x63\x6F\x6B\x61\x6E","\x4B\x41\x4C\x4B\x55\x4C\x41\x53\x49\x20\x4A\x4F\x44\x4F\x48","\x48\x41\x53\x49\x4C\x20\x50\x45\x52\x48\x49\x54\x55\x4E\x47\x41\x4E","\x3C\x69\x20\x63\x6C\x61\x73\x73\x3D\x22\x66\x61\x20\x66\x61\x2D\x63\x75\x62\x65\x22\x20\x61\x72\x69\x61\x2D\x68\x69\x64\x64\x65\x6E\x3D\x22\x74\x72\x75\x65\x22\x3E\x3C\x2F\x69\x3E","\x3C\x69\x20\x63\x6C\x61\x73\x73\x3D\x22\x66\x61\x20\x66\x61\x2D\x6C\x69\x6E\x65\x2D\x63\x68\x61\x72\x74\x22\x20\x61\x72\x69\x61\x2D\x68\x69\x64\x64\x65\x6E\x3D\x22\x74\x72\x75\x65\x22\x3E\x3C\x2F\x69\x3E","\x6C\x65\x66\x74","\x74\x72\x61\x6E\x73\x66\x6F\x72\x6D","\x72\x6F\x74\x61\x74\x65\x59\x28","\x64\x65\x67\x29","\x2E\x66\x6C\x69\x70\x2D\x63\x61\x72\x64\x2D\x69\x6E\x6E\x65\x72","\x4E\x61\x6D\x61\x20\x4C\x65\x6E\x67\x6B\x61\x70\x20\x57\x61\x6E\x69\x74\x61","\x53\x69\x6C\x61\x6B\x61\x6E\x20\x6B\x65\x74\x69\x6B\x61\x6E\x20\x6E\x61\x6D\x61\x20\x6C\x65\x6E\x67\x6B\x61\x70\x20\x61\x6E\x64\x61\x20\x64\x61\x6E\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x21","\x4E\x61\x6D\x61\x20\x4C\x65\x6E\x67\x6B\x61\x70\x20\x50\x72\x69\x61","\x23\x66\x42\x74\x6E\x4A\x6F\x64\x6F\x68\x53\x68\x61\x72\x65","\x23\x64\x61\x74\x61\x6A\x64\x68\x3D","\x62\x74\x6F\x61","\x4B\x61\x6C\x6B\x75\x6C\x61\x73\x69\x20\x4A\x6F\x64\x6F\x68\x20\x4F\x6E\x6C\x69\x6E\x65\x25\x30\x41\x25\x30\x41\x48\x61\x73\x69\x6C\x20\x6B\x61\x6C\x6B\x75\x6C\x61\x73\x69\x20\x62\x69\x73\x61\x20\x64\x69\x6C\x69\x68\x61\x74\x20\x70\x61\x64\x61\x20\x6C\x69\x6E\x6B\x20\x3A\x25\x30\x41","\x25\x30\x41\x25\x30\x41\x44\x69\x6B\x69\x72\x69\x6D\x20\x76\x69\x61\x20\x3A\x25\x30\x41","\x75\x73\x65\x72\x41\x67\x65\x6E\x74","\x74\x65\x73\x74","\x77\x68\x61\x74\x73\x61\x70\x70\x3A\x2F\x2F\x73\x65\x6E\x64\x3F\x70\x68\x6F\x6E\x65\x3D\x26\x74\x65\x78\x74\x3D","\x68\x74\x74\x70\x73\x3A\x2F\x2F\x77\x65\x62\x2E\x77\x68\x61\x74\x73\x61\x70\x70\x2E\x63\x6F\x6D\x2F\x73\x65\x6E\x64\x3F\x70\x68\x6F\x6E\x65\x3D\x26\x74\x65\x78\x74\x3D","\x54\x69\x6B\x75\x73","\x4C\x65\x6D\x62\x75","\x4D\x61\x63\x61\x6E","\x4B\x65\x6C\x69\x6E\x63\x69","\x4E\x61\x67\x61","\x55\x6C\x61\x72","\x4B\x75\x64\x61","\x44\x6F\x6D\x62\x61","\x4D\x6F\x6E\x79\x65\x74","\x41\x79\x61\x6D\x20\x4A\x61\x6E\x74\x61\x6E","\x41\x6E\x6A\x69\x6E\x67","\x42\x61\x62\x69","\x4D\x69\x6E\x67\x67\x75","\x53\x65\x6E\x69\x6E","\x53\x65\x6C\x61\x73\x61","\x52\x61\x62\x75","\x4B\x61\x6D\x69\x73","\x4A\x75\x6D\x61\x74","\x53\x61\x62\x74\x75","\x4C\x65\x67\x69","\x50\x61\x68\x69\x6E\x67","\x50\x6F\x6E","\x57\x61\x67\x65","\x4B\x6C\x69\x77\x6F\x6E","\x68","\x61","\x69","\x65","\x6F","\x75","\x6E","\x63","\x72","\x6B","\x71","\x64","\x74","\x73","\x7A","\x77","\x6C","\x70","\x66","\x76","\x6A","\x79","\x6D","\x67","\x62","\x54\x69\x64\x61\x6B\x20\x42\x61\x69\x6B","\x42\x61\x67\x75\x73","\x4C\x75\x6D\x61\x79\x61\x6E","\x43\x6F\x63\x6F\x6B","\x42\x65\x6C\x75\x6D\x20\x43\x6F\x63\x6F\x6B","\x42\x61\x69\x6B","\x61\x62\x73","\x72\x6F\x75\x6E\x64","\x54\x69\x64\x61\x6B\x20\x43\x6F\x63\x6F\x6B","\x4B\x75\x72\x61\x6E\x67\x20\x42\x61\x67\x75\x73","\x43\x75\x6B\x75\x70\x20\x42\x61\x67\x75\x73","\x59\x61","\x54\x69\x64\x61\x6B","\x74\x6F\x4C\x6F\x77\x65\x72\x43\x61\x73\x65","\x62\x30","\x62\x31","\x62\x32","\x62\x33","\x62\x34","\x53\x61\x6D\x61","\x53\x61\x74\x75\x20\x42\x61\x72\x69\x73","\x72\x61\x6E\x64\x6F\x6D","\x66\x6C\x6F\x6F\x72","\x41\x74\x61\x73","\x54\x65\x6E\x67\x61\x68","\x42\x61\x77\x61\x68","\x43\x6F\x63\x6F\x6B\x20\x53\x65\x62\x61\x67\x61\x69\x20\x50\x61\x73\x61\x6E\x67\x61\x6E","\x54\x65\x6D\x61\x6E\x20\x2F\x20\x50\x61\x73\x61\x6E\x67\x61\x6E","\x61\x30","\x61\x31","\x61\x32","\x61\x33","\x4D\x65\x6E\x79\x61\x74\x75","\x54\x65\x72\x70\x69\x73\x61\x68","\x63\x65\x69\x6C","\x43\x69\x6E\x74\x61\x20\x41\x62\x61\x64\x69\x20\x26\x20\x42\x61\x68\x61\x67\x69\x61","\x23\x66\x41\x73\x74\x4D\x61\x74\x63\x68","\x53\x61\x6C\x69\x6E\x67\x20\x4D\x65\x6D\x61\x68\x61\x6D\x69\x20\x26\x20\x50\x65\x6E\x75\x68\x20\x43\x69\x6E\x74\x61","\x43\x6F\x63\x6F\x6B\x20\x26\x20\x48\x61\x6E\x67\x61\x74","\x42\x61\x69\x6B\x20\x41\x70\x61\x20\x41\x64\x61\x6E\x79\x61","\x42\x75\x74\x75\x68\x20\x4B\x65\x73\x61\x62\x61\x72\x61\x6E","\x50\x65\x72\x6A\x75\x61\x6E\x67\x61\x6E\x20\x4B\x65\x72\x61\x73","\x50\x69\x6C\x69\x68\x61\x6E\x20\x41\x64\x61\x20\x50\x61\x64\x61\x20\x41\x6E\x64\x61","\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64","\x70\x69\x6E\x6B","\x23\x67\x41\x76\x65\x72\x61\x67\x65\x4D\x61\x74\x63\x68","\x67\x72\x65\x65\x6E","\x6F\x72\x61\x6E\x67\x65","\x72\x65\x64","\x77\x69\x64\x74\x68","\x25","\x67\x65\x74\x44\x61\x74\x65","\x4E\x61\x6D\x61\x20\x57\x61\x6E\x69\x74\x61\x20\x3A\x20","\x3C\x62\x72\x20\x2F\x3E","\x54\x67\x6C\x20\x4C\x61\x68\x69\x72\x20\x3A\x20","\x20\x2D\x20","\x67\x65\x74\x4D\x6F\x6E\x74\x68","\x67\x65\x74\x46\x75\x6C\x6C\x59\x65\x61\x72","\x48\x61\x72\x69\x20\x4C\x61\x68\x69\x72\x20\x3A\x20","\x20\x5B","\x5D\x20\x4E\x65\x70\x74\x75\x20\x5B","\x5D\x3C\x62\x72\x20\x2F\x3E","\x3C\x63\x65\x6E\x74\x65\x72\x3E\x3C\x64\x69\x76\x20\x63\x6C\x61\x73\x73\x3D\x27\x6C\x65\x66\x74\x66\x6F\x6F\x74\x65\x72\x46\x72\x6D\x4A\x6F\x64\x6F\x68\x20\x68\x6F\x76\x2D\x73\x6C\x69\x64\x65\x72\x27\x20\x73\x74\x79\x6C\x65\x3D\x27\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x3A\x23\x66\x66\x30\x62\x37\x35\x3B\x6D\x61\x72\x67\x69\x6E\x3A\x35\x70\x78\x20\x30\x3B\x63\x6F\x6C\x6F\x72\x3A\x23\x66\x66\x66\x3B\x70\x61\x64\x64\x69\x6E\x67\x3A\x35\x70\x78\x20\x31\x30\x70\x78\x3B\x27\x20\x6F\x6E\x63\x6C\x69\x63\x6B\x3D\x27\x67\x65\x74\x41\x73\x74\x4A\x64\x68\x44\x65\x74\x61\x69\x6C\x28\x22\x66\x22\x29\x27\x3E\x4C\x69\x68\x61\x74\x20\x44\x65\x74\x61\x69\x6C\x3C\x2F\x64\x69\x76\x3E\x3C\x2F\x63\x65\x6E\x74\x65\x72\x3E","\x23\x64\x61\x74\x61\x46\x65\x6D\x61\x6C\x65","\x4E\x61\x6D\x61\x20\x50\x72\x69\x61\x20\x3A\x20","\x3C\x63\x65\x6E\x74\x65\x72\x3E\x3C\x64\x69\x76\x20\x63\x6C\x61\x73\x73\x3D\x27\x6C\x65\x66\x74\x66\x6F\x6F\x74\x65\x72\x46\x72\x6D\x4A\x6F\x64\x6F\x68\x20\x68\x6F\x76\x2D\x73\x6C\x69\x64\x65\x72\x27\x20\x73\x74\x79\x6C\x65\x3D\x27\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x3A\x23\x30\x30\x38\x33\x64\x61\x3B\x6D\x61\x72\x67\x69\x6E\x3A\x35\x70\x78\x20\x30\x3B\x63\x6F\x6C\x6F\x72\x3A\x23\x66\x66\x66\x3B\x70\x61\x64\x64\x69\x6E\x67\x3A\x35\x70\x78\x20\x31\x30\x70\x78\x3B\x27\x20\x6F\x6E\x63\x6C\x69\x63\x6B\x3D\x27\x67\x65\x74\x41\x73\x74\x4A\x64\x68\x44\x65\x74\x61\x69\x6C\x28\x22\x6D\x22\x29\x27\x3E\x4C\x69\x68\x61\x74\x20\x44\x65\x74\x61\x69\x6C\x3C\x2F\x64\x69\x76\x3E\x3C\x2F\x63\x65\x6E\x74\x65\x72\x3E","\x23\x64\x61\x74\x61\x4D\x61\x6C\x65","\x23\x64\x61\x74\x61\x50\x72\x69\x6D\x62\x6F\x6E","\x3C\x64\x69\x76\x20\x73\x74\x79\x6C\x65\x3D\x22\x70\x61\x64\x64\x69\x6E\x67\x3A\x35\x70\x78\x20\x30\x3B\x6D\x61\x72\x67\x69\x6E\x2D\x62\x6F\x74\x74\x6F\x6D\x3A\x35\x70\x78\x3B\x62\x61\x63\x6B\x67\x72\x6F\x75\x6E\x64\x3A\x23\x66\x66\x30\x30\x61\x37\x3B\x77\x69\x64\x74\x68\x3A\x31\x30\x30\x25\x3B\x74\x65\x78\x74\x2D\x61\x6C\x69\x67\x6E\x3A\x63\x65\x6E\x74\x65\x72\x3B\x66\x6F\x6E\x74\x2D\x73\x69\x7A\x65\x3A\x31\x36\x70\x78\x3B\x22\x3E\x46\x41\x4B\x54\x4F\x52\x20\x4B\x45\x43\x4F\x43\x4F\x4B\x41\x4E\x3C\x2F\x64\x69\x76\x3E","\x3C\x74\x61\x62\x6C\x65\x20\x62\x6F\x72\x64\x65\x72\x3D\x22\x30\x22\x20\x77\x69\x64\x74\x68\x3D\x22\x31\x30\x30\x25\x22\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x20\x77\x69\x64\x74\x68\x3D\x22\x31\x33\x30\x70\x78\x22\x3E\x46\x61\x6B\x74\x6F\x72\x20\x5A\x6F\x64\x69\x61\x6B\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x2F\x74\x64\x3E\x3C\x2F\x74\x72\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x46\x61\x6B\x74\x6F\x72\x20\x53\x48\x49\x4F\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x52\x61\x73\x69\x6F\x20\x48\x61\x72\x69\x20\x4C\x61\x68\x69\x72\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x52\x61\x73\x69\x6F\x20\x42\x69\x6F\x72\x69\x74\x6D\x69\x6B\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x53\x61\x6D\x61\x20\x57\x65\x74\x6F\x6E\x20\x4A\x61\x77\x61\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x53\x61\x6D\x61\x20\x48\x61\x72\x69\x20\x4D\x61\x73\x65\x68\x69\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x4B\x6F\x6D\x62\x69\x6E\x61\x73\x69\x20\x4E\x65\x70\x74\x75\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x50\x61\x6B\x65\x6D\x20\x4E\x61\x6D\x61\x20\x44\x65\x70\x61\x6E\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x4E\x65\x70\x74\x75\x20\x4E\x61\x6D\x61\x20\x53\x61\x6D\x61\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x4E\x65\x70\x74\x75\x20\x4E\x61\x6D\x61\x20\x31\x31\x2F\x32\x32\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x57\x61\x72\x6E\x61\x20\x41\x75\x72\x61\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x54\x67\x6C\x20\x42\x69\x6C\x61\x6E\x67\x61\x6E\x20\x50\x72\x69\x6D\x61\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x74\x72\x3E\x3C\x74\x64\x3E\x41\x6E\x67\x6B\x61\x20\x41\x63\x61\x6B\x20\x53\x61\x61\x74\x20\x69\x6E\x69\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E\x3A\x3C\x2F\x74\x64\x3E\x3C\x74\x64\x3E","\x3C\x2F\x74\x61\x62\x6C\x65\x3E","\x23\x64\x61\x74\x61\x4B\x65\x63\x6F\x63\x6F\x6B\x61\x6E","\x23\x74\x69\x74\x6C\x65\x48\x65\x61\x64\x65\x72\x41\x73\x74","\x67\x65\x74\x44\x61\x79","\x2C","\x43\x61\x70\x72\x69\x63\x6F\x72\x6E","\x41\x71\x75\x61\x72\x69\x75\x73","\x50\x69\x73\x63\x65\x73","\x41\x72\x69\x65\x73","\x54\x61\x75\x72\x75\x73","\x47\x65\x6D\x69\x6E\x69","\x43\x61\x6E\x63\x65\x72","\x4C\x65\x6F","\x56\x69\x72\x67\x6F","\x4C\x69\x62\x72\x61","\x53\x63\x6F\x72\x70\x69\x6F","\x53\x61\x67\x69\x74\x74\x61\x72\x69\x75\x73","\x2D","\x69\x6E\x44\x61\x79\x73","\x50\x49","\x73\x69\x6E","\x70\x75\x73\x68","\x6D\x61\x70","\x72\x65\x70\x6C\x61\x63\x65","\x31\x2E\x33\x31","\x32\x2E\x31\x39","\x32\x2E\x30\x38","\x31\x2E\x32\x39","\x32\x2E\x31\x36","\x32\x2E\x30\x34","\x31\x2E\x32\x35","\x32\x2E\x31\x33","\x32\x2E\x30\x32","\x31\x2E\x32\x32","\x32\x2E\x31\x30","\x31\x2E\x33\x30","\x32\x2E\x31\x38","\x32\x2E\x30\x36","\x31\x2E\x32\x36","\x32\x2E\x31\x34","\x32\x2E\x30\x33","\x31\x2E\x32\x33","\x32\x2E\x31\x31","\x32\x2E\x30\x31","\x32\x2E\x32\x30","\x31\x2E\x32\x38","\x32\x2E\x30\x35","\x32\x2E\x31\x37","\x31\x2E\x32\x34","\x31\x2E\x32\x37","\x32\x2E\x31\x35","\x32\x2E\x31\x32","\x31\x2E\x32\x31","\x32\x2E\x30\x39","\x32\x2E\x30\x37","\x30","\x31","\x32","\x33","\x34","\x35","\x36","\x37","\x38","\x39","\x31\x30","\x31\x31","\x2E","\x4D\x61\x61\x66\x2C\x20\x74\x69\x64\x61\x6B\x20\x61\x64\x61\x20\x69\x6E\x66\x6F\x20\x75\x6E\x74\x75\x6B\x20\x74\x61\x6E\x67\x67\x61\x6C\x20\x69\x6E\x69\x2C\x20\x6B\x61\x72\x65\x6E\x61\x20\x73\x65\x62\x65\x6C\x75\x6D\x20\x31\x39\x30\x30\x2C\x20\x6D\x65\x6E\x75\x72\x75\x74\x20\x6B\x61\x6C\x65\x6E\x64\x65\x72\x20\x43\x69\x6E\x61\x2E\x20\x54\x61\x68\x75\x6E\x20\x62\x61\x72\x75\x20\x43\x69\x6E\x61\x20\x64\x69\x6D\x75\x6C\x61\x69\x20\x70\x61\x64\x61\x20\x33\x31\x20\x4A\x61\x6E\x75\x61\x72\x69\x20\x64\x69\x20\x54\x61\x68\x75\x6E\x20\x31\x39\x30\x30\x2E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x73\x65\x62\x65\x6E\x61\x72\x6E\x79\x61\x20\x70\x61\x6E\x64\x61\x69\x20\x6D\x65\x6E\x63\x61\x72\x69\x20\x70\x65\x6E\x67\x68\x61\x73\x69\x6C\x61\x6E\x2C\x20\x62\x69\x73\x61\x20\x6B\x61\x79\x61\x20\x74\x61\x70\x69\x20\x73\x65\x72\x69\x6E\x67\x20\x64\x69\x74\x69\x70\x75\x20\x61\x74\x61\x75\x20\x64\x69\x6B\x65\x63\x65\x77\x61\x6B\x61\x6E\x20\x6F\x72\x61\x6E\x67\x2E\x20\x42\x69\x73\x61\x20\x6C\x61\x6E\x67\x67\x65\x6E\x67\x20\x61\x73\x61\x6C\x20\x73\x65\x6C\x61\x6C\x75\x20\x62\x65\x72\x73\x79\x75\x6B\x75\x72\x2C\x20\x73\x61\x62\x61\x72\x20\x64\x61\x6E\x20\x6D\x65\x6D\x61\x61\x66\x6B\x61\x6E\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x47\x61\x72\x61\x6E\x67\x61\x6E\x20\x4D\x61\x63\x61\x6E\x2E\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x62\x65\x73\x61\x72\x20\x77\x69\x62\x61\x77\x61\x6E\x79\x61\x20\x64\x61\x6E\x20\x6C\x75\x61\x73\x20\x70\x65\x6E\x67\x61\x6C\x61\x6D\x61\x6E\x6E\x79\x61\x2C\x20\x74\x65\x74\x61\x70\x69\x20\x72\x65\x6A\x65\x6B\x69\x20\x61\x67\x61\x6B\x20\x73\x75\x6C\x69\x74\x2E\x20\x4A\x69\x6B\x61\x20\x70\x75\x6E\x79\x61\x20\x61\x6E\x61\x6B\x20\x73\x61\x74\x75\x2C\x20\x6B\x61\x6C\x61\x75\x20\x6C\x61\x6B\x69\x2D\x6C\x61\x6B\x69\x2C\x20\x61\x79\x61\x68\x6E\x79\x61\x20\x79\x61\x6E\x67\x20\x6B\x61\x6C\x61\x68\x2E\x20\x4B\x61\x6C\x6F\x20\x70\x65\x72\x65\x6D\x70\x75\x61\x6E\x2C\x20\x69\x62\x75\x6E\x79\x61\x20\x79\x61\x6E\x67\x20\x6B\x61\x6C\x61\x68\x2E\x20\x4A\x69\x6B\x61\x20\x74\x69\x64\x61\x6B\x20\x73\x61\x62\x61\x72\x20\x62\x69\x73\x61\x20\x62\x65\x72\x63\x65\x72\x61\x69\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x50\x69\x73\x61\x6E\x67\x20\x50\x69\x6E\x75\x67\x65\x6C\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x61\x6B\x61\x6E\x20\x74\x65\x6E\x61\x6E\x67\x2C\x20\x74\x65\x6E\x74\x72\x61\x6D\x2C\x20\x64\x61\x6E\x20\x73\x65\x6C\x61\x6D\x61\x74\x20\x73\x65\x72\x74\x61\x20\x62\x61\x68\x61\x67\x69\x61\x20\x72\x75\x6D\x61\x68\x20\x74\x61\x6E\x67\x67\x61\x6E\x79\x61\x2C\x20\x73\x65\x72\x74\x61\x20\x6D\x65\x6E\x64\x61\x70\x61\x74\x20\x72\x65\x6A\x65\x6B\x69\x20\x79\x61\x6E\x67\x20\x6C\x61\x6E\x67\x73\x75\x6E\x67\x20\x64\x61\x6E\x20\x6C\x75\x6D\x69\x6E\x74\x75\x2E\x20\x42\x69\x73\x61\x20\x6A\x61\x64\x69\x20\x70\x65\x6E\x67\x61\x79\x6F\x6D\x61\x6E\x20\x73\x61\x6E\x61\x6B\x20\x73\x61\x75\x64\x61\x72\x61\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x53\x61\x6E\x67\x67\x61\x72\x20\x57\x61\x72\x69\x6E\x67\x69\x6E\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x61\x6B\x61\x6E\x20\x73\x65\x6C\x61\x6C\x75\x20\x6D\x65\x6E\x64\x61\x70\x61\x74\x20\x6B\x65\x6D\x75\x6C\x69\x61\x61\x6E\x20\x64\x61\x6E\x20\x6D\x65\x6E\x64\x61\x70\x61\x74\x20\x6B\x65\x68\x6F\x72\x6D\x61\x74\x61\x6E\x2E\x20\x4B\x65\x68\x69\x64\x75\x70\x61\x6E\x20\x74\x65\x72\x61\x6E\x67\x2C\x20\x74\x61\x70\x69\x20\x62\x61\x6E\x79\x61\x6B\x20\x62\x65\x72\x61\x6E\x64\x61\x69\x2D\x61\x6E\x64\x61\x69\x20\x28\x6D\x65\x6E\x67\x68\x61\x79\x61\x6C\x29\x2E\x20\x43\x65\x70\x61\x74\x20\x6B\x61\x79\x61\x20\x74\x61\x70\x69\x20\x73\x65\x72\x69\x6E\x67\x20\x6B\x65\x6D\x61\x6C\x69\x6E\x67\x61\x6E\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x47\x65\x64\x6F\x6E\x67\x20\x52\x65\x6D\x62\x75\x6C\x61\x6E\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x62\x69\x73\x61\x20\x6D\x65\x6E\x6A\x61\x64\x69\x20\x70\x65\x6D\x69\x6D\x70\x69\x6E\x20\x64\x61\x6E\x20\x6D\x65\x6D\x62\x65\x72\x69\x20\x74\x65\x6C\x61\x64\x61\x6E\x20\x70\x61\x64\x61\x20\x74\x65\x74\x61\x6E\x67\x67\x61\x20\x64\x69\x73\x65\x6B\x69\x74\x61\x72\x6E\x79\x61\x2C\x20\x74\x65\x74\x61\x70\x69\x20\x70\x61\x6E\x61\x73\x20\x64\x69\x20\x74\x65\x6D\x70\x61\x74\x20\x74\x69\x64\x75\x72\x2C\x20\x61\x72\x74\x69\x6E\x79\x61\x20\x73\x65\x72\x69\x6E\x67\x20\x73\x61\x6B\x69\x74\x2D\x73\x61\x6B\x69\x74\x61\x6E\x2C\x20\x73\x65\x6C\x61\x6C\x75\x20\x67\x65\x6C\x69\x73\x61\x68\x2C\x20\x64\x61\x6E\x20\x73\x65\x72\x69\x6E\x67\x20\x62\x65\x64\x61\x20\x70\x65\x6E\x64\x61\x70\x61\x74\x20\x64\x65\x6E\x67\x61\x6E\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x42\x61\x6C\x65\x20\x4B\x65\x64\x68\x61\x77\x61\x6E\x67\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x61\x6B\x61\x6E\x20\x73\x65\x6C\x61\x6D\x61\x74\x2C\x20\x74\x61\x70\x69\x20\x74\x69\x64\x61\x6B\x20\x6B\x75\x61\x74\x20\x6B\x61\x79\x61\x2C\x20\x6A\x69\x6B\x61\x20\x61\x64\x61\x20\x75\x61\x6E\x67\x20\x6C\x65\x62\x69\x68\x20\x61\x6B\x61\x6E\x20\x63\x65\x6E\x64\x65\x72\x75\x6E\x67\x20\x75\x6E\x74\x75\x6B\x20\x6D\x65\x6D\x62\x65\x6C\x61\x6E\x6A\x61\x6B\x61\x6E\x6E\x79\x61\x2E\x20\x4B\x61\x6C\x6F\x20\x70\x75\x6E\x79\x61\x20\x61\x6E\x61\x6B\x2C\x20\x73\x65\x73\x75\x64\x61\x68\x20\x64\x65\x77\x61\x73\x61\x20\x61\x6B\x61\x6E\x20\x74\x69\x6D\x62\x75\x6C\x20\x6D\x61\x73\x61\x6C\x61\x68\x20\x79\x61\x6E\x67\x20\x63\x75\x6B\x75\x70\x20\x62\x65\x72\x61\x74\x2E\x20\x53\x65\x72\x69\x6E\x67\x6B\x61\x6C\x69\x20\x6D\x65\x6E\x67\x61\x6C\x61\x6D\x69\x20\x6B\x65\x73\x75\x6C\x69\x74\x61\x6E\x20\x64\x61\x6E\x20\x6D\x65\x6E\x64\x61\x70\x61\x74\x20\x6D\x61\x6C\x75\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x47\x61\x6A\x61\x68\x20\x50\x6C\x61\x73\x75\x6E\x67\x61\x6E\x3C\x2F\x75\x3E","\x4B\x65\x6C\x75\x61\x72\x67\x61\x20\x61\x6E\x64\x61\x20\x62\x69\x73\x61\x20\x63\x61\x72\x69\x20\x70\x65\x6E\x67\x68\x61\x73\x69\x6C\x61\x6E\x2C\x20\x74\x61\x70\x69\x20\x74\x69\x64\x61\x6B\x20\x62\x69\x73\x61\x20\x6D\x65\x6E\x79\x69\x6D\x70\x61\x6E\x20\x75\x61\x6E\x67\x2C\x20\x6A\x69\x6B\x61\x20\x61\x64\x61\x20\x75\x61\x6E\x67\x20\x6C\x65\x62\x69\x68\x20\x61\x6B\x61\x6E\x20\x63\x65\x6E\x64\x65\x72\x75\x6E\x67\x20\x75\x6E\x74\x75\x6B\x20\x6D\x65\x6D\x62\x65\x6C\x61\x6E\x6A\x61\x6B\x61\x6E\x6E\x79\x61\x2E\x20\x42\x61\x6E\x79\x61\x6B\x20\x70\x65\x72\x74\x65\x6E\x74\x61\x6E\x67\x61\x6E\x20\x70\x65\x6E\x64\x61\x70\x61\x74\x2C\x20\x61\x67\x61\x6B\x20\x67\x65\x6C\x61\x70\x20\x68\x61\x74\x69\x20\x74\x61\x70\x69\x20\x74\x61\x62\x61\x68\x20\x64\x61\x6C\x61\x6D\x20\x6D\x65\x6E\x67\x68\x61\x64\x61\x70\x69\x20\x73\x65\x67\x61\x6C\x61\x20\x70\x65\x6E\x64\x65\x72\x69\x74\x61\x61\x6E\x2E\x20\x53\x65\x62\x75\x74\x61\x6E\x20\x75\x6E\x74\x75\x6B\x20\x70\x61\x73\x61\x6E\x67\x61\x6E\x20\x69\x6E\x69\x3A\x20\x3C\x75\x3E\x57\x61\x72\x61\x6B\x20\x50\x61\x6E\x67\x72\x75\x6E\x67\x72\x75\x6E\x67\x61\x6E\x3C\x2F\x75\x3E","\x72\x65\x61\x64\x79"];var setVersionJodoh=getHostName(window[_0x65bf[1]][_0x65bf[0]])+ _0x65bf[2]+ _0x65bf[3];$(_0x65bf[5])[_0x65bf[4]](setVersionJodoh);$(_0x65bf[12])[_0x65bf[11]]({changeMonth:true,changeYear:true,"\x73\x68\x6F\x77\x41\x6E\x69\x6D":_0x65bf[6],dateFormat:_0x65bf[7],yearRange:_0x65bf[8],beforeShow:function(){$(_0x65bf[10])[_0x65bf[9]]({'\x66\x6F\x6E\x74\x2D\x73\x69\x7A\x65':10,'\x7A\x2D\x69\x6E\x64\x65\x78':99})}});var currentDate= new Date();$(_0x65bf[12])[_0x65bf[11]](_0x65bf[13],currentDate);function setCookieJodoh(_0xe961x4,_0xe961x5,_0xe961x6){var _0xe961x7= new Date();_0xe961x7[_0x65bf[15]](_0xe961x7[_0x65bf[14]]()+ (_0xe961x6* 24* 60* 60* 1000));var _0xe961x8=_0x65bf[16]+ _0xe961x7[_0x65bf[17]]();document[_0x65bf[18]]= _0xe961x4+ _0x65bf[19]+ _0xe961x5+ _0x65bf[20]+ _0xe961x8+ _0x65bf[21]}function getCookieJodoh(_0xe961x4){var _0xe961xa=_0xe961x4+ _0x65bf[19];var _0xe961xb=decodeURIComponent(document[_0x65bf[18]]);var _0xe961xc=_0xe961xb[_0x65bf[22]](_0x65bf[20]);for(var _0xe961xd=0;_0xe961xd< _0xe961xc[_0x65bf[23]];_0xe961xd++){var _0xe961xe=_0xe961xc[_0xe961xd];while(_0xe961xe[_0x65bf[25]](0)== _0x65bf[26]){_0xe961xe= _0xe961xe[_0x65bf[24]](1)};if(_0xe961xe[_0x65bf[27]](_0xe961xa)== 0){return _0xe961xe[_0x65bf[24]](_0xe961xa[_0x65bf[23]],_0xe961xe[_0x65bf[23]])}};return _0x65bf[28]}function checkCookieJodoh(){var _0xe961x10=getCookieJodoh(_0x65bf[29]);if(_0xe961x10!= _0x65bf[28]){var _0xe961x11=_0xe961x10[_0x65bf[24]](0,_0xe961x10[_0x65bf[27]](_0x65bf[30]));alert(_0x65bf[31]+ _0xe961x11+ _0x65bf[32])}else {var _0xe961x12=$(_0x65bf[34])[_0x65bf[33]]();var _0xe961x13=$(_0x65bf[35])[_0x65bf[33]]();if(_0xe961x12!= _0x65bf[28]&& _0xe961x12!= null&& _0xe961x12!= _0x65bf[36]){setCookieJodoh(_0x65bf[29],_0xe961x12+ _0x65bf[30]+ _0xe961x13+ _0x65bf[30]+ contentAPN1,30);alert(_0x65bf[37]+ _0xe961x10+ _0x65bf[38])}else {alert(_0x65bf[39]);$(_0x65bf[34])[_0x65bf[41]](_0x65bf[40])}}}function deleteCookieJodoh(){var _0xe961x10=getCookie(_0x65bf[29]);if(_0xe961x10!= _0x65bf[28]&& _0xe961x10!= null&& _0xe961x10!= _0x65bf[36]){document[_0x65bf[18]]= _0x65bf[42];alert(_0x65bf[43])}}function initialSetDateJodoh(){var _0xe961xa=_0x65bf[44];var _0xe961x16=decodeURIComponent(document[_0x65bf[1]][_0x65bf[0]]);var _0xe961x17=_0x65bf[28];var _0xe961x18= new Array;if(_0xe961x16[_0x65bf[45]](_0xe961xa)){_0xe961x17= _0xe961x16[_0x65bf[24]](_0xe961x16[_0x65bf[46]](_0xe961x16[_0x65bf[45]](_0xe961xa))+ 8,_0xe961x16[_0x65bf[23]]);_0xe961x18= _0xe961x17[_0x65bf[22]](_0x65bf[20]);_0xe961x18[0]= window[_0x65bf[47]](_0xe961x18[0]);_0xe961x18[1]= window[_0x65bf[47]](_0xe961x18[1]);_0xe961x18[2]= window[_0x65bf[47]](_0xe961x18[2]);_0xe961x18[3]= window[_0x65bf[47]](_0xe961x18[3])};if(_0xe961x18[0]!= _0x65bf[28]&& _0xe961x18[0]!= null){$(_0x65bf[48])[_0x65bf[33]](_0xe961x18[0])};if(_0xe961x18[1]!= _0x65bf[28]&& _0xe961x18[1]!= null){$(_0x65bf[49])[_0x65bf[11]](_0x65bf[13],_0xe961x18[1])};if(_0xe961x18[2]!= _0x65bf[28]&& _0xe961x18[2]!= null){$(_0x65bf[50])[_0x65bf[33]](_0xe961x18[2])};if(_0xe961x18[3]!= _0x65bf[28]&& _0xe961x18[3]!= null){$(_0x65bf[51])[_0x65bf[11]](_0x65bf[13],_0xe961x18[3]);runKalkulasiJodoh()};if(_0xe961x18[4]!= _0x65bf[28]&& _0xe961x18[4]!= null&& contentAPN1Jodoh!= _0xe961x18[4]){contentAPN2Jodoh= _0xe961x18[4];$(_0x65bf[55]+ contentAPIdJodoh[contentAPN1Jodoh])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[53]},500);$(_0x65bf[56])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[53]},500,function(){$(_0x65bf[56])[_0x65bf[4]](contentAPFJodoh[_0xe961x18[4]]+ _0x65bf[26]+ contentAPTJodoh[_0xe961x18[4]])});$(_0x65bf[55]+ contentAPIdJodoh[contentAPN2Jodoh])[_0x65bf[58]](800)[_0x65bf[57]](_0x65bf[52],500);$(_0x65bf[56])[_0x65bf[58]](300)[_0x65bf[57]](_0x65bf[52],500);contentAPN1Jodoh= contentAPN2Jodoh;$(_0x65bf[63])[_0x65bf[62]]({scrollTop:$(_0x65bf[61])[_0x65bf[60]]()[_0x65bf[59]]},500)}}$(_0x65bf[66])[_0x65bf[65]](_0x65bf[64],function(){navPageRightJodoh()});$(_0x65bf[67])[_0x65bf[65]](_0x65bf[64],function(){navPageLeftJodoh()});$(_0x65bf[68])[_0x65bf[65]](_0x65bf[64],function(){runKalkulasiJodoh()});var contentAPN1Jodoh=0;var contentAPN2Jodoh=1;var contentAPTJodoh= new Array;contentAPTJodoh[0]= _0x65bf[69];contentAPTJodoh[1]= _0x65bf[70];var contentAPFJodoh= new Array;contentAPFJodoh[0]= _0x65bf[71];contentAPFJodoh[1]= _0x65bf[72];var rotation=0;function navPageLeftJodoh(){rotation-= 180;if(contentAPN1Jodoh== 0){contentAPN2Jodoh= 1};if(contentAPN1Jodoh== 1){contentAPN2Jodoh= 0};$(_0x65bf[56])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[73]},200,function(){$(_0x65bf[56])[_0x65bf[4]](contentAPFJodoh[contentAPN2Jodoh]+ _0x65bf[26]+ contentAPTJodoh[contentAPN2Jodoh])});$(_0x65bf[56])[_0x65bf[57]](_0x65bf[52],{direction:_0x65bf[53]},200);contentAPN1Jodoh= contentAPN2Jodoh;$(_0x65bf[77])[_0x65bf[9]](_0x65bf[74],_0x65bf[75]+ rotation+ _0x65bf[76])}function navPageRightJodoh(){rotation+= 180;if(contentAPN1Jodoh== 0){contentAPN2Jodoh= 1};if(contentAPN1Jodoh== 1){contentAPN2Jodoh= 0};$(_0x65bf[56])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[53]},200,function(){$(_0x65bf[56])[_0x65bf[4]](contentAPFJodoh[contentAPN2Jodoh]+ _0x65bf[26]+ contentAPTJodoh[contentAPN2Jodoh])});$(_0x65bf[56])[_0x65bf[57]](_0x65bf[52],200);contentAPN1Jodoh= contentAPN2Jodoh;$(_0x65bf[77])[_0x65bf[9]](_0x65bf[74],_0x65bf[75]+ rotation+ _0x65bf[76])}$(_0x65bf[81])[_0x65bf[65]](_0x65bf[64],function(){var _0xe961x20=$(_0x65bf[48])[_0x65bf[33]]();if(_0xe961x20== _0x65bf[28]|| _0xe961x20== null|| _0xe961x20== _0x65bf[78]){alert(_0x65bf[79]);$(_0x65bf[48])[_0x65bf[41]](_0x65bf[40]);return};var _0xe961x21=$(_0x65bf[50])[_0x65bf[33]]();if(_0xe961x21== _0x65bf[28]|| _0xe961x21== null|| _0xe961x21== _0x65bf[80]){alert(_0x65bf[79]);$(_0x65bf[50])[_0x65bf[41]](_0x65bf[40]);return};shareJodoh()});function shareJodoh(){var _0xe961x23=$(_0x65bf[48])[_0x65bf[33]]();var _0xe961x24=$(_0x65bf[49])[_0x65bf[33]]();var _0xe961x25=$(_0x65bf[50])[_0x65bf[33]]();var _0xe961x26=$(_0x65bf[51])[_0x65bf[33]]();var _0xe961x27=(window[_0x65bf[1]][_0x65bf[0]])+ _0x65bf[82]+ (window[_0x65bf[83]](_0xe961x23))+ _0x65bf[20]+ (window[_0x65bf[83]](_0xe961x24))+ _0x65bf[20]+ (window[_0x65bf[83]](_0xe961x25))+ _0x65bf[20]+ (window[_0x65bf[83]](_0xe961x26))+ _0x65bf[20]+ contentAPN1Jodoh;var _0xe961x28=_0x65bf[84]+ escape(_0xe961x27)+ _0x65bf[85]+ escape(window[_0x65bf[1]][_0x65bf[0]]);if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i[_0x65bf[87]](navigator[_0x65bf[86]])){var _0xe961x29=_0x65bf[88]+ _0xe961x28}else {var _0xe961x29=_0x65bf[89]+ _0xe961x28};chkBrowserAst(_0xe961x29,800,600)}var shioJodoh=[_0x65bf[90],_0x65bf[91],_0x65bf[92],_0x65bf[93],_0x65bf[94],_0x65bf[95],_0x65bf[96],_0x65bf[97],_0x65bf[98],_0x65bf[99],_0x65bf[100],_0x65bf[101]];var weekdayJodohBlog= new Array(_0x65bf[102],_0x65bf[103],_0x65bf[104],_0x65bf[105],_0x65bf[106],_0x65bf[107],_0x65bf[108]);var namaPasaranJawa=[_0x65bf[109],_0x65bf[110],_0x65bf[111],_0x65bf[112],_0x65bf[113]];var neptuPasaranJawa=[0,5,9,7,4,8];var neptuPasaranMasehi=[5,4,3,7,8,6,9];var primaJodoh=[2,3,5,7,11,13,17,19,23,29,31];var hurufDepan1=[_0x65bf[114],_0x65bf[115],_0x65bf[116],_0x65bf[117],_0x65bf[118],_0x65bf[119],_0x65bf[120],_0x65bf[121],_0x65bf[122],_0x65bf[123],_0x65bf[124]];var hurufDepan2=[_0x65bf[125],_0x65bf[126],_0x65bf[127],_0x65bf[128],_0x65bf[129],_0x65bf[130]];var hurufDepan3=[_0x65bf[131],_0x65bf[132],_0x65bf[133],_0x65bf[125],_0x65bf[134],_0x65bf[135]];var hurufDepan4=[_0x65bf[136],_0x65bf[137],_0x65bf[138],_0x65bf[126],_0x65bf[120]];var warnaAura1=[1,3,5,7];var warnaAura2=[2,4,6,8];var warnaAura3=[0,9,11,22];var strNeptuFemale,strHariJawaFemale,strNamaHariFemale,strIndexHariF,strBioReadingF,strNameIdxF;var strNeptuMale,strHariJawaMale,strNamaHariMale,strIndexHariM,strBioReadingM,strNameIdxM;var strZodiakFemale,strShioFemale;var strZodiakMale,strShioMale;var cocokNeptu,cocokZodiak,cocokHari,cocokBio,cocokPrima,cocokNama,cocokNamaSpesial,cocokNamaDepan,cocokRandom,cocokShio;var cocokHariJawa,cocokHariBiasa,cocokWarnaAura;function getMatchLove(){var _0xe961x55,_0xe961x56,_0xe961x57,_0xe961x58,_0xe961x59,_0xe961x5a,_0xe961x5b,_0xe961x5c,_0xe961x5d,_0xe961x5e,_0xe961x5f,_0xe961x60,_0xe961x61;var _0xe961x62=0;var _0xe961x63=0;for(var _0xe961xd=0;_0xe961xd< weekdayJodohBlog[_0x65bf[23]];_0xe961xd++){if(weekdayJodohBlog[_0xe961xd]== strNamaHariFemale){_0xe961x62= neptuPasaranMasehi[_0xe961xd]};if(weekdayJodohBlog[_0xe961xd]== strNamaHariFemale){_0xe961x63= neptuPasaranMasehi[_0xe961xd]}};var _0xe961x64=(neptuPasaranJawa[strHariJawaFemale]+ neptuPasaranJawa[strHariJawaMale]+ _0xe961x62+ _0xe961x63);if(_0xe961x64== 1|| _0xe961x64== 10|| _0xe961x64== 19|| _0xe961x64== 28){cocokNeptu= 0;_0xe961x55= _0x65bf[139]};if(_0xe961x64== 2|| _0xe961x64== 11|| _0xe961x64== 20|| _0xe961x64== 29){cocokNeptu= 1;_0xe961x55= _0x65bf[140]};if(_0xe961x64== 3|| _0xe961x64== 12|| _0xe961x64== 21|| _0xe961x64== 30){cocokNeptu= 1;_0xe961x55= _0x65bf[140]};if(_0xe961x64== 4|| _0xe961x64== 13|| _0xe961x64== 22|| _0xe961x64== 31){cocokNeptu= 0.5;_0xe961x55= _0x65bf[141]};if(_0xe961x64== 5|| _0xe961x64== 14|| _0xe961x64== 23|| _0xe961x64== 32){cocokNeptu= 1;_0xe961x55= _0x65bf[140]};if(_0xe961x64== 6|| _0xe961x64== 15|| _0xe961x64== 24|| _0xe961x64== 33){cocokNeptu= 0;_0xe961x55= _0x65bf[139]};if(_0xe961x64== 7|| _0xe961x64== 16|| _0xe961x64== 25|| _0xe961x64== 34){cocokNeptu= 0;_0xe961x55= _0x65bf[139]};if(_0xe961x64== 8|| _0xe961x64== 17|| _0xe961x64== 26|| _0xe961x64== 35){cocokNeptu= 1;_0xe961x55= _0x65bf[140]};if(_0xe961x64== 9|| _0xe961x64== 18|| _0xe961x64== 27|| _0xe961x64== 36){cocokNeptu= 0;_0xe961x55= _0x65bf[139]};if(strZodiakFemale== 0){if(strZodiakMale== 4|| strZodiakMale== 8|| strZodiakMale== 2){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 1){if(strZodiakMale== 5|| strZodiakMale== 9|| strZodiakMale== 3){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 2){if(strZodiakMale== 6|| strZodiakMale== 10|| strZodiakMale== 4){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 3){if(strZodiakMale== 3|| strZodiakMale== 11|| strZodiakMale== 5){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 4){if(strZodiakMale== 8|| strZodiakMale== 0|| strZodiakMale== 6){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 5){if(strZodiakMale== 9|| strZodiakMale== 1|| strZodiakMale== 7){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 6){if(strZodiakMale== 10|| strZodiakMale== 2|| strZodiakMale== 8){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 7){if(strZodiakMale== 3|| strZodiakMale== 11|| strZodiakMale== 9){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 8){if(strZodiakMale== 4|| strZodiakMale== 0|| strZodiakMale== 10){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 9){if(strZodiakMale== 5|| strZodiakMale== 1|| strZodiakMale== 11){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 10){if(strZodiakMale== 6|| strZodiakMale== 2|| strZodiakMale== 0){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strZodiakFemale== 11){if(strZodiakMale== 3|| strZodiakMale== 7|| strZodiakMale== 1){cocokZodiak= 1;_0xe961x56= _0x65bf[142]}else {cocokZodiak= 0;_0xe961x56= _0x65bf[143]}};if(strIndexHariF== 0){if(strIndexHariM== 2|| strIndexHariM== 4|| strIndexHariM== 6){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 1){if(strIndexHariM== 3|| strIndexHariM== 5|| strIndexHariM== 6){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 2){if(strIndexHariM== 0|| strIndexHariM== 5){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 3){if(strIndexHariM== 1|| strIndexHariM== 4|| strIndexHariM== 5){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 4){if(strIndexHariM== 0|| strIndexHariM== 1|| strIndexHariM== 3){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 5){if(strIndexHariM== 2|| strIndexHariM== 1|| strIndexHariM== 6){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(strIndexHariF== 6){if(strIndexHariM== 0|| strIndexHariM== 1|| strIndexHariM== 5){cocokHari= 1;_0xe961x57= _0x65bf[144]}else {cocokHari= 0;_0xe961x57= _0x65bf[139]}};if(Math[_0x65bf[146]](Math[_0x65bf[145]](strBioReadingF- strBioReadingM))<= 101){cocokBio= 0;_0xe961x58= _0x65bf[147]};if(Math[_0x65bf[146]](Math[_0x65bf[145]](strBioReadingF- strBioReadingM))<= 80){cocokBio= 0.4;_0xe961x58= _0x65bf[148]};if(Math[_0x65bf[146]](Math[_0x65bf[145]](strBioReadingF- strBioReadingM))<= 40){cocokBio= 0.8;_0xe961x58= _0x65bf[149]};if(Math[_0x65bf[146]](Math[_0x65bf[145]](strBioReadingF- strBioReadingM))<= 10){cocokBio= 1;_0xe961x58= _0x65bf[140]};var _0xe961x65=0;var _0xe961x66=0;for(var _0xe961xd=0;_0xe961xd< primaJodoh[_0x65bf[23]];_0xe961xd++){if(strIndexHariF== primaJodoh[_0xe961xd]){_0xe961x65= 1};if(strIndexHariM== primaJodoh[_0xe961xd]){_0xe961x66= 1}};if(_0xe961x65== _0xe961x66){cocokPrima= 0.5;_0xe961x59= _0x65bf[150]}else {cocokPrima= 0;_0xe961x59= _0x65bf[151]};var _0xe961x67=$(_0x65bf[48])[_0x65bf[33]]()[_0x65bf[25]](0)[_0x65bf[152]]();var _0xe961x68=$(_0x65bf[50])[_0x65bf[33]]()[_0x65bf[25]](0)[_0x65bf[152]]();var _0xe961x69=_0x65bf[153];var _0xe961x6a=_0x65bf[153];for(var _0xe961xd=0;_0xe961xd< hurufDepan1[_0x65bf[23]];_0xe961xd++){if(_0xe961x67== hurufDepan1[_0xe961xd]){_0xe961x69= _0x65bf[154]};if(_0xe961x68== hurufDepan1[_0xe961xd]){_0xe961x6a= _0x65bf[154]}};for(var _0xe961xd=0;_0xe961xd< hurufDepan2[_0x65bf[23]];_0xe961xd++){if(_0xe961x67== hurufDepan2[_0xe961xd]){_0xe961x69= _0x65bf[155]};if(_0xe961x68== hurufDepan2[_0xe961xd]){_0xe961x6a= _0x65bf[155]}};for(var _0xe961xd=0;_0xe961xd< hurufDepan3[_0x65bf[23]];_0xe961xd++){if(_0xe961x67== hurufDepan3[_0xe961xd]){_0xe961x69= _0x65bf[156]};if(_0xe961x68== hurufDepan3[_0xe961xd]){_0xe961x6a= _0x65bf[156]}};for(var _0xe961xd=0;_0xe961xd< hurufDepan4[_0x65bf[23]];_0xe961xd++){if(_0xe961x67== hurufDepan4[_0xe961xd]){_0xe961x69= _0x65bf[157]};if(_0xe961x68== hurufDepan4[_0xe961xd]){_0xe961x6a= _0x65bf[157]}};if((_0xe961x69== _0x65bf[154]&& _0xe961x6a== _0x65bf[154])|| (_0xe961x69== _0x65bf[153]&& _0xe961x6a== _0x65bf[153])|| (_0xe961x69== _0x65bf[155]&& _0xe961x6a== _0x65bf[155])|| (_0xe961x69== _0x65bf[156]&& _0xe961x6a== _0x65bf[156])|| (_0xe961x69== _0x65bf[157]&& _0xe961x6a== _0x65bf[157])){cocokNamaDepan= 1;_0xe961x5a= _0x65bf[158]}else {if((_0xe961x69== _0x65bf[153]&& _0xe961x6a== _0x65bf[154])|| (_0xe961x6a== _0x65bf[153]&& _0xe961x69== _0x65bf[154])){cocokNamaDepan= 0.5;_0xe961x5a= _0x65bf[159]}else {if((_0xe961x69== _0x65bf[154]&& _0xe961x6a== _0x65bf[155])|| (_0xe961x6a== _0x65bf[154]&& _0xe961x69== _0x65bf[155])){cocokNamaDepan= 0.5;_0xe961x5a= _0x65bf[159]}else {if((_0xe961x69== _0x65bf[155]&& _0xe961x6a== _0x65bf[156])|| (_0xe961x6a== _0x65bf[155]&& _0xe961x69== _0x65bf[156])){cocokNamaDepan= 0.5;_0xe961x5a= _0x65bf[159]}else {if((_0xe961x69== _0x65bf[156]&& _0xe961x6a== _0x65bf[157])|| (_0xe961x6a== _0x65bf[156]&& _0xe961x69== _0x65bf[157])){cocokNamaDepan= 0.5;_0xe961x5a= _0x65bf[159]}else {if((_0xe961x69== _0x65bf[157]&& _0xe961x6a== _0x65bf[153])|| (_0xe961x6a== _0x65bf[157]&& _0xe961x69== _0x65bf[153])){cocokNamaDepan= 0.5;_0xe961x5a= _0x65bf[159]}else {cocokNamaDepan= 0;_0xe961x5a= _0x65bf[147]}}}}}};if(strNameIdxF== strNameIdxM){cocokNama= 1;_0xe961x5b= _0x65bf[150]}else {cocokNama= 0;_0xe961x5b= _0x65bf[151]};if(strNameIdxF== 11|| strNameIdxF== 22|| strNameIdxM== 11|| strNameIdxM== 22){cocokNamaSpesial= 2;_0xe961x5c= _0x65bf[150]}else {cocokNamaSpesial= 0;_0xe961x5c= _0x65bf[151]};var _0xe961x6b= new Array();var _0xe961x6c=0;for(var _0xe961xd=0;_0xe961xd< 3;_0xe961xd++){_0xe961x6b[_0xe961xd]= Math[_0x65bf[161]](Math[_0x65bf[160]]()* 10);_0xe961x6c+= _0xe961x6b[_0xe961xd]};_0xe961x6c= Math[_0x65bf[161]]((_0xe961x6c/ 27)* 100);if(_0xe961x6c< 101){cocokRandom= 1;_0xe961x5d= _0x65bf[162]};if(_0xe961x6c< 70){cocokRandom= 0.5;_0xe961x5d= _0x65bf[163]};if(_0xe961x6c< 50){cocokRandom= 0;_0xe961x5d= _0x65bf[164]};if(strShioFemale== 0){if(strShioMale== 1|| strShioMale== 4|| strShioMale== 8){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 0|| strShioMale== 2|| strShioMale== 5|| strShioMale== 10|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 1){if(strShioMale== 0|| strShioMale== 5|| strShioMale== 9){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 1|| strShioMale== 2|| strShioMale== 8|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 2){if(strShioMale== 6|| strShioMale== 10|| strShioMale== 11){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 0|| strShioMale== 1|| strShioMale== 2|| strShioMale== 3|| strShioMale== 4|| strShioMale== 7|| strShioMale== 9){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 3){if(strShioMale== 7|| strShioMale== 10|| strShioMale== 11){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 2|| strShioMale== 3|| strShioMale== 5|| strShioMale== 8){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 4){if(strShioMale== 0|| strShioMale== 8|| strShioMale== 9){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 2|| strShioMale== 5|| strShioMale== 6|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 5){if(strShioMale== 1|| strShioMale== 8|| strShioMale== 9){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 0|| strShioMale== 3|| strShioMale== 4|| strShioMale== 5|| strShioMale== 6|| strShioMale== 7|| strShioMale== 10){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 6){if(strShioMale== 2|| strShioMale== 7|| strShioMale== 10){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 4|| strShioMale== 5|| strShioMale== 8|| strShioMale== 9|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 7){if(strShioMale== 3|| strShioMale== 6|| strShioMale== 11){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 2|| strShioMale== 5|| strShioMale== 7|| strShioMale== 8|| strShioMale== 9|| strShioMale== 10){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 8){if(strShioMale== 0|| strShioMale== 4|| strShioMale== 5){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 1|| strShioMale== 3|| strShioMale== 6|| strShioMale== 7|| strShioMale== 8|| strShioMale== 9|| strShioMale== 10){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 9){if(strShioMale== 1|| strShioMale== 4|| strShioMale== 5){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 2|| strShioMale== 6|| strShioMale== 7|| strShioMale== 8|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 10){if(strShioMale== 2|| strShioMale== 3|| strShioMale== 6){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 0|| strShioMale== 5|| strShioMale== 8|| strShioMale== 10|| strShioMale== 11){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strShioFemale== 11){if(strShioMale== 2|| strShioMale== 3|| strShioMale== 7){cocokShio= 2;_0xe961x5e= _0x65bf[165]}else {if(strShioMale== 0|| strShioMale== 1|| strShioMale== 4|| strShioMale== 6|| strShioMale== 9|| strShioMale== 10){cocokShio= 1;_0xe961x5e= _0x65bf[166]}else {cocokShio= 0;_0xe961x5e= _0x65bf[143]}}};if(strHariJawaFemale== strHariJawaMale){cocokHariJawa= 1;_0xe961x5f= _0x65bf[150]}else {cocokHariJawa= 0;_0xe961x5f= _0x65bf[151]};if(strNamaHariFemale== strNamaHariMale){cocokHariBiasa= 1;_0xe961x60= _0x65bf[150]}else {cocokHariBiasa= 0;_0xe961x60= _0x65bf[151]};var _0xe961x6d=_0x65bf[167];var _0xe961x6e=_0x65bf[167];for(var _0xe961xd=0;_0xe961xd< warnaAura1[_0x65bf[23]];_0xe961xd++){if(strNeptuFemale== warnaAura1[_0xe961xd]){_0xe961x6d= _0x65bf[168]};if(strNeptuMale== warnaAura1[_0xe961xd]){_0xe961x6e= _0x65bf[168]}};for(var _0xe961xd=0;_0xe961xd< warnaAura2[_0x65bf[23]];_0xe961xd++){if(strNeptuFemale== warnaAura2[_0xe961xd]){_0xe961x6d= _0x65bf[169]};if(strNeptuMale== warnaAura2[_0xe961xd]){_0xe961x6e= _0x65bf[169]}};for(var _0xe961xd=0;_0xe961xd< warnaAura3[_0x65bf[23]];_0xe961xd++){if(strNeptuFemale== warnaAura3[_0xe961xd]){_0xe961x6d= _0x65bf[170]};if(strNeptuMale== warnaAura3[_0xe961xd]){_0xe961x6e= _0x65bf[170]}};if(_0xe961x6d== _0xe961x6e){cocokWarnaAura= 0.5;_0xe961x61= _0x65bf[171]}else {cocokWarnaAura= 0;_0xe961x61= _0x65bf[172]};var _0xe961x6f=Math[_0x65bf[173]](((cocokNeptu+ cocokZodiak+ cocokHari+ cocokBio+ cocokPrima+ cocokNamaDepan+ cocokNama+ cocokNamaSpesial+ cocokRandom+ cocokShio+ cocokHariJawa+ cocokHariBiasa+ cocokWarnaAura)/ 10)* 100);if(_0xe961x6f> 100){_0xe961x6f= 100};if(Math[_0x65bf[146]](_0xe961x6f)<= 101){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[174])};if(Math[_0x65bf[146]](_0xe961x6f)<= 90){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[176])};if(Math[_0x65bf[146]](_0xe961x6f)<= 80){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[177])};if(Math[_0x65bf[146]](_0xe961x6f)<= 70){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[178])};if(Math[_0x65bf[146]](_0xe961x6f)<= 50){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[179])};if(Math[_0x65bf[146]](_0xe961x6f)<= 40){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[180])};if(Math[_0x65bf[146]](_0xe961x6f)<= 30){$(_0x65bf[175])[_0x65bf[4]](_0x65bf[181])};if(Math[_0x65bf[146]](_0xe961x6f)<= 101){$(_0x65bf[184])[_0x65bf[9]](_0x65bf[182],_0x65bf[183])};if(Math[_0x65bf[146]](_0xe961x6f)<= 80){$(_0x65bf[184])[_0x65bf[9]](_0x65bf[182],_0x65bf[185])};if(Math[_0x65bf[146]](_0xe961x6f)<= 50){$(_0x65bf[184])[_0x65bf[9]](_0x65bf[182],_0x65bf[186])};if(Math[_0x65bf[146]](_0xe961x6f)<= 30){$(_0x65bf[184])[_0x65bf[9]](_0x65bf[182],_0x65bf[187])};$(_0x65bf[184])[_0x65bf[9]](_0x65bf[188],_0xe961x6f+ _0x65bf[189]);$(_0x65bf[68])[_0x65bf[4]](_0xe961x6f+ _0x65bf[189]);var _0xe961x70=$(_0x65bf[49])[_0x65bf[11]](_0x65bf[190]);var _0xe961x71=$(_0x65bf[51])[_0x65bf[11]](_0x65bf[190]);var _0xe961x72=_0x65bf[191]+ $(_0x65bf[48])[_0x65bf[33]]()+ _0x65bf[192];_0xe961x72+= _0x65bf[193]+ _0xe961x70[_0x65bf[190]]()+ _0x65bf[194]+ (_0xe961x70[_0x65bf[195]]()+ 1)+ _0x65bf[194]+ _0xe961x70[_0x65bf[196]]()+ _0x65bf[192];_0xe961x72+= _0x65bf[197]+ strNamaHariFemale+ _0x65bf[198]+ namaPasaranJawa[strHariJawaFemale]+ _0x65bf[199]+ strNeptuFemale+ _0x65bf[200];_0xe961x72+= _0x65bf[201];$(_0x65bf[202])[_0x65bf[4]](_0xe961x72);_0xe961x72= _0x65bf[203]+ $(_0x65bf[50])[_0x65bf[33]]()+ _0x65bf[192];_0xe961x72+= _0x65bf[193]+ _0xe961x71[_0x65bf[190]]()+ _0x65bf[194]+ (_0xe961x71[_0x65bf[195]]()+ 1)+ _0x65bf[194]+ _0xe961x71[_0x65bf[196]]()+ _0x65bf[192];_0xe961x72+= _0x65bf[197]+ strNamaHariMale+ _0x65bf[198]+ namaPasaranJawa[strHariJawaMale]+ _0x65bf[199]+ strNeptuMale+ _0x65bf[200];_0xe961x72+= _0x65bf[204];$(_0x65bf[205])[_0x65bf[4]](_0xe961x72);$(_0x65bf[206])[_0x65bf[4]](getWetonJdhReading());_0xe961x72= _0x65bf[207];_0xe961x72+= _0x65bf[208];_0xe961x72+= _0x65bf[209]+ _0xe961x56+ _0x65bf[210];_0xe961x72+= _0x65bf[211]+ _0xe961x5e+ _0x65bf[210];_0xe961x72+= _0x65bf[212]+ _0xe961x57+ _0x65bf[210];_0xe961x72+= _0x65bf[213]+ _0xe961x58+ _0x65bf[210];_0xe961x72+= _0x65bf[214]+ _0xe961x5f+ _0x65bf[210];_0xe961x72+= _0x65bf[215]+ _0xe961x60+ _0x65bf[210];_0xe961x72+= _0x65bf[216]+ _0xe961x55+ _0x65bf[210];_0xe961x72+= _0x65bf[217]+ _0xe961x5a+ _0x65bf[210];_0xe961x72+= _0x65bf[218]+ _0xe961x5b+ _0x65bf[210];_0xe961x72+= _0x65bf[219]+ _0xe961x5c+ _0x65bf[210];_0xe961x72+= _0x65bf[220]+ _0xe961x61+ _0x65bf[210];_0xe961x72+= _0x65bf[221]+ _0xe961x59+ _0x65bf[210];_0xe961x72+= _0x65bf[222]+ _0xe961x5d+ _0x65bf[210];_0xe961x72+= _0x65bf[223];$(_0x65bf[224])[_0x65bf[4]](_0xe961x72);rotation= 0;setTimeout(navPageRightJodoh,1000)}function getAstJdhDetail(_0xe961x74){if(_0xe961x74== _0x65bf[132]){$(_0x65bf[34])[_0x65bf[33]]($(_0x65bf[48])[_0x65bf[33]]());$(_0x65bf[35])[_0x65bf[11]](_0x65bf[13],$(_0x65bf[49])[_0x65bf[11]](_0x65bf[190]))}else {$(_0x65bf[34])[_0x65bf[33]]($(_0x65bf[50])[_0x65bf[33]]());$(_0x65bf[35])[_0x65bf[11]](_0x65bf[13],$(_0x65bf[51])[_0x65bf[11]](_0x65bf[190]))};contentAPN2= 0;$(_0x65bf[55]+ contentAPId[contentAPN1])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[53]},500);$(_0x65bf[225])[_0x65bf[54]](_0x65bf[52],{direction:_0x65bf[53]},500,function(){$(_0x65bf[225])[_0x65bf[4]](contentAPF[contentAPN2]+ _0x65bf[26]+ contentAPT[contentAPN2])});$(_0x65bf[55]+ contentAPId[contentAPN2])[_0x65bf[58]](800)[_0x65bf[57]](_0x65bf[52],500);$(_0x65bf[225])[_0x65bf[58]](300)[_0x65bf[57]](_0x65bf[52],500);contentAPN1= contentAPN2;runAstrologi();getBioImage()}function runKalkulasiJodoh(){var _0xe961x20=$(_0x65bf[48])[_0x65bf[33]]();if(_0xe961x20== _0x65bf[28]|| _0xe961x20== null|| _0xe961x20== _0x65bf[78]){alert(_0x65bf[79]);$(_0x65bf[48])[_0x65bf[41]](_0x65bf[40]);return};var _0xe961x21=$(_0x65bf[50])[_0x65bf[33]]();if(_0xe961x21== _0x65bf[28]|| _0xe961x21== null|| _0xe961x21== _0x65bf[80]){alert(_0x65bf[79]);$(_0x65bf[50])[_0x65bf[41]](_0x65bf[40]);return};getDataKalkulasiJodoh(_0x65bf[132]);getDataKalkulasiJodoh(_0x65bf[136]);getMatchLove()}function getDataKalkulasiJodoh(_0xe961x74){if(_0xe961x74== _0x65bf[132]){var _0xe961x77=$(_0x65bf[49])[_0x65bf[11]](_0x65bf[190]);strZodiakFemale= getZodiac(_0xe961x77);var _0xe961x78=_0xe961x77[_0x65bf[190]]();var _0xe961x79=_0xe961x77[_0x65bf[195]]()+ 1;var _0xe961x7a=_0xe961x77[_0x65bf[196]]();strShioFemale= getShioJodoh(_0xe961x77);strNameIdxF= getArtiNamaCalc($(_0x65bf[48])[_0x65bf[33]]());strBioReadingF= getBioCalculation(_0xe961x77);strIndexHariF= _0xe961x77[_0x65bf[226]]();strNeptuFemale= getPrimbonNeptu(_0xe961x77);strHariJawaFemale= getHariJawa(_0xe961x77);strNamaHariFemale= weekdayJodohBlog[_0xe961x77[_0x65bf[226]]()]}else {var _0xe961x77=$(_0x65bf[51])[_0x65bf[11]](_0x65bf[190]);strZodiakMale= getZodiac(_0xe961x77);var _0xe961x78=_0xe961x77[_0x65bf[190]]();var _0xe961x79=_0xe961x77[_0x65bf[195]]()+ 1;var _0xe961x7a=_0xe961x77[_0x65bf[196]]();strShioMale= getShioJodoh(_0xe961x77);strNameIdxM= getArtiNamaCalc($(_0x65bf[50])[_0x65bf[33]]());strBioReadingM= getBioCalculation(_0xe961x77);strIndexHariM= _0xe961x77[_0x65bf[226]]();strNeptuMale= getPrimbonNeptu(_0xe961x77);strHariJawaMale= getHariJawa(_0xe961x77);strNamaHariMale= weekdayJodohBlog[_0xe961x77[_0x65bf[226]]()]}}function getHariJawa(_0xe961x77){var _0xe961x7c=((( new Date(_0xe961x77[_0x65bf[196]]()+ _0x65bf[227]+ (_0xe961x77[_0x65bf[195]]()+ 1)+ _0x65bf[227]+ _0xe961x77[_0x65bf[190]]())[_0x65bf[14]]()-  new Date(100,0,1)[_0x65bf[14]]())/ (24* 60* 60* 1000))% 5);return Math[_0x65bf[146]](_0xe961x7c)}function getPrimbonNeptu(_0xe961x77){var _0xe961x7e=String(_0xe961x77[_0x65bf[190]]());var _0xe961x7f=String(_0xe961x77[_0x65bf[195]]()+ 1);var _0xe961x80=String(_0xe961x77[_0x65bf[196]]());var _0xe961x81= new Array();var _0xe961x82= new Array();var _0xe961x83= new Array();var _0xe961x84= new Array();var _0xe961x85,_0xe961x86,_0xe961x87,_0xe961x88,_0xe961x89,_0xe961x8a,_0xe961x8b,_0xe961x8c,_0xe961x8d,_0xe961x8e,_0xe961x8f;var _0xe961x90,_0xe961x91,_0xe961x92,_0xe961x93,_0xe961x94;for(i= 0;i< _0xe961x7e[_0x65bf[23]];i++){_0xe961x81[i]= _0xe961x7e[i]};_0xe961x85= _0xe961x81[0];if(_0xe961x7e[_0x65bf[23]]> 1){_0xe961x86= _0xe961x81[1]}else {_0xe961x86= 0};_0xe961x87= parseInt(_0xe961x85)+ parseInt(_0xe961x86);for(i= 0;i< _0xe961x7f[_0x65bf[23]];i++){_0xe961x82[i]= _0xe961x7f[i]};_0xe961x88= _0xe961x82[0];if(_0xe961x7f[_0x65bf[23]]> 1){_0xe961x89= _0xe961x82[1]}else {_0xe961x89= 0};_0xe961x8a= parseInt(_0xe961x88)+ parseInt(_0xe961x89);for(i= 0;i< _0xe961x80[_0x65bf[23]];i++){_0xe961x83[i]= _0xe961x80[i]};_0xe961x8b= _0xe961x83[0];_0xe961x8c= _0xe961x83[1];_0xe961x8d= _0xe961x83[2];_0xe961x8e= _0xe961x83[3];_0xe961x8f= parseInt(_0xe961x8b)+ parseInt(_0xe961x8c)+ parseInt(_0xe961x8d)+ parseInt(_0xe961x8e);_0xe961x90= parseInt(_0xe961x87)+ parseInt(_0xe961x8a)+ parseInt(_0xe961x8f);_0xe961x90= _0xe961x90.toString();for(i= 0;i< _0xe961x90[_0x65bf[23]];i++){_0xe961x84[i]= _0xe961x90[i]};_0xe961x91= _0xe961x84[0];if(_0xe961x84[_0x65bf[23]]> 1){_0xe961x92= _0xe961x84[1]}else {_0xe961x92= 0};_0xe961x93= parseInt(_0xe961x91)+ parseInt(_0xe961x92);if(_0xe961x93> 9){_0xe961x93= _0xe961x93.toString();for(i= 0;i< _0xe961x93[_0x65bf[23]];i++){_0xe961x84[i]= _0xe961x93[i]};_0xe961x91= _0xe961x84[0];if(_0xe961x84[_0x65bf[23]]> 1){_0xe961x92= _0xe961x84[1]}else {_0xe961x92= 0};_0xe961x94= parseInt(_0xe961x91)+ parseInt(_0xe961x92);_0xe961x93= _0xe961x94};return _0xe961x93}function getZodiac(_0xe961x77){var _0xe961x96=_0xe961x77[_0x65bf[190]]();var _0xe961x97=_0xe961x77[_0x65bf[195]]();if(_0xe961x96> 21&& _0xe961x96< 32){if(_0xe961x97== 11){lunarType= _0x65bf[228]};if(_0xe961x97== 0){lunarType= _0x65bf[229]};if(_0xe961x97== 1){lunarType= _0x65bf[230]};if(_0xe961x97== 2){lunarType= _0x65bf[231]};if(_0xe961x97== 3){lunarType= _0x65bf[232]};if(_0xe961x97== 4){lunarType= _0x65bf[233]};if(_0xe961x97== 5){lunarType= _0x65bf[234]};if(_0xe961x97== 6){lunarType= _0x65bf[235]};if(_0xe961x97== 7){lunarType= _0x65bf[236]};if(_0xe961x97== 8){lunarType= _0x65bf[237]};if(_0xe961x97== 9){lunarType= _0x65bf[238]};if(_0xe961x97== 10){lunarType= _0x65bf[239]}};if(_0xe961x96> 0&& _0xe961x96< 22){if(_0xe961x97== 0){lunarType= _0x65bf[228]};if(_0xe961x97== 1){lunarType= _0x65bf[229]};if(_0xe961x97== 2){lunarType= _0x65bf[230]};if(_0xe961x97== 3){lunarType= _0x65bf[231]};if(_0xe961x97== 4){lunarType= _0x65bf[232]};if(_0xe961x97== 5){lunarType= _0x65bf[233]};if(_0xe961x97== 6){lunarType= _0x65bf[234]};if(_0xe961x97== 7){lunarType= _0x65bf[235]};if(_0xe961x97== 8){lunarType= _0x65bf[236]};if(_0xe961x97== 9){lunarType= _0x65bf[237]};if(_0xe961x97== 10){lunarType= _0x65bf[238]};if(_0xe961x97== 11){lunarType= _0x65bf[239]}};if(lunarType== _0x65bf[228]){lunarTypeNum= 0};if(lunarType== _0x65bf[229]){lunarTypeNum= 1};if(lunarType== _0x65bf[230]){lunarTypeNum= 2};if(lunarType== _0x65bf[231]){lunarTypeNum= 3};if(lunarType== _0x65bf[232]){lunarTypeNum= 4};if(lunarType== _0x65bf[233]){lunarTypeNum= 5};if(lunarType== _0x65bf[234]){lunarTypeNum= 6};if(lunarType== _0x65bf[235]){lunarTypeNum= 7};if(lunarType== _0x65bf[236]){lunarTypeNum= 8};if(lunarType== _0x65bf[237]){lunarTypeNum= 9};if(lunarType== _0x65bf[238]){lunarTypeNum= 10};if(lunarType== _0x65bf[239]){lunarTypeNum= 11};return lunarTypeNum}function getBioCalculation(_0xe961x77){var _0xe961x99= new Array;var _0xe961x9a=23;var _0xe961x9b=28;var _0xe961x9c=33;var _0xe961x9d=38;var _0xe961x9e=43;var _0xe961x9f=48;var _0xe961xa0=53;var _0xe961xa1=[_0xe961x9a,_0xe961x9b,_0xe961x9c,_0xe961x9d,_0xe961x9e,_0xe961x9f,_0xe961xa0];var _0xe961xa2=(_0xe961x77[_0x65bf[195]]()+ 1)+ _0x65bf[227]+ _0xe961x77[_0x65bf[190]]()+ _0x65bf[227]+ _0xe961x77[_0x65bf[196]]();var _0xe961xa3= new Date();var _0xe961xa4=_0xe961xa3[_0x65bf[196]]()+ _0x65bf[240]+ (_0xe961xa3[_0x65bf[195]]()+ 1)+ _0x65bf[240]+ _0xe961xa3[_0x65bf[190]]();var _0xe961xa5={inDays:function(_0xe961xa6,_0xe961xa7){var _0xe961xa8=_0xe961xa7[_0x65bf[14]]();var _0xe961xa9=_0xe961xa6[_0x65bf[14]]();return parseInt((_0xe961xa8- _0xe961xa9)/ (24* 3600* 1000))},inWeeks:function(_0xe961xa6,_0xe961xa7){var _0xe961xa8=_0xe961xa7[_0x65bf[14]]();var _0xe961xa9=_0xe961xa6[_0x65bf[14]]();return parseInt((_0xe961xa8- _0xe961xa9)/ (24* 3600* 1000* 7))},inMonths:function(_0xe961xa6,_0xe961xa7){var _0xe961xaa=_0xe961xa6[_0x65bf[196]]();var _0xe961xab=_0xe961xa7[_0x65bf[196]]();var _0xe961xac=_0xe961xa6[_0x65bf[195]]();var _0xe961xad=_0xe961xa7[_0x65bf[195]]();return (_0xe961xad+ 12* _0xe961xab)- (_0xe961xac+ 12* _0xe961xaa)},inYears:function(_0xe961xa6,_0xe961xa7){return _0xe961xa7[_0x65bf[196]]()- _0xe961xa6[_0x65bf[196]]()}};var _0xe961xa6= new Date(_0xe961xa2);var _0xe961xa7= new Date(_0xe961xa4);var _0xe961xae=_0xe961xa5[_0x65bf[241]](_0xe961xa6,_0xe961xa7);for(var _0xe961xd=0;_0xe961xd< _0xe961xa1[_0x65bf[23]];_0xe961xd++){var _0xe961xaf=(Math[_0x65bf[161]](_0xe961xae/ _0xe961xa1[_0xe961xd]));_0xe961xaf= _0xe961xaf* _0xe961xa1[_0xe961xd];_0xe961xaf= _0xe961xae- _0xe961xaf;_0xe961xaf= Math[_0x65bf[243]](_0xe961xaf* (2* Math[_0x65bf[242]]/ _0xe961xa1[_0xe961xd]));_0xe961x99[_0xe961xd]= _0xe961xaf};_0xe961x99[_0x65bf[244]]((_0xe961x99[0]+ _0xe961x99[2])/ 2,(_0xe961x99[0]+ _0xe961x99[1])/ 2,(_0xe961x99[1]+ _0xe961x99[2])/ 2,(_0xe961x99[0]+ _0xe961x99[3])/ 2,(_0xe961x99[1]+ _0xe961x99[3])/ 2,(_0xe961x99[2]+ _0xe961x99[3])/ 2);for(var _0xe961xd=0;_0xe961xd< _0xe961x99[_0x65bf[23]];_0xe961xd++){_0xe961x99[_0xe961xd]= Math[_0x65bf[146]](_0xe961x99[_0xe961xd]* 100);_0xe961x99[_0xe961xd]= 50+ (Math[_0x65bf[161]](_0xe961x99[_0xe961xd]/ 2))};var _0xe961xb0=0;for(var _0xe961xd=0;_0xe961xd< _0xe961x99[_0x65bf[23]];_0xe961xd++){_0xe961xb0+= _0xe961x99[_0xe961xd]};return Math[_0x65bf[146]](_0xe961xb0/ _0xe961x99[_0x65bf[23]])}function letterValue(_0xe961x16){var _0xe961xb2={a:1,b:2,c:3,d:4,e:5,f:6,g:7,h:8,i:9,j:10,k:11,l:12,m:13,n:14,o:15,p:16,q:17,r:18,s:10,t:20,u:21,v:22,w:23,x:24,y:25,z:26};if(_0xe961x16[_0x65bf[23]]== 1){return _0xe961xb2[_0xe961x16]|| _0x65bf[26]};return _0xe961x16[_0x65bf[22]](_0x65bf[28])[_0x65bf[245]](letterValue)}function getArtiNamaCalc(_0xe961x77){var _0xe961xb4=_0xe961x77;_0xe961xb4= _0xe961xb4[_0x65bf[152]]()[_0x65bf[246]](/\s/g,_0x65bf[28])[_0x65bf[22]](_0x65bf[28]);var _0xe961xb5=0;var _0xe961xb6=0;var _0xe961xb7=0;var _0xe961xb8=0;var _0xe961xb9=0;for(var _0xe961xd=0;_0xe961xd< _0xe961xb4[_0x65bf[23]];_0xe961xd++){_0xe961xb6+= letterValue(_0xe961xb4[_0xe961xd])};if(_0xe961xb6== 11|| _0xe961xb6== 22){return _0xe961xb5= _0xe961xb6};var _0xe961xba=_0xe961xb6.toString()[_0x65bf[22]](_0x65bf[28]);if(_0xe961xba[_0x65bf[23]]== 4){_0xe961xb7= parseInt(_0xe961xba[0])+ parseInt(_0xe961xba[1])+ parseInt(_0xe961xba[2])+ parseInt(_0xe961xba[3]);if(_0xe961xb7== 11|| _0xe961xb7== 22){return _0xe961xb5= _0xe961xb7}};if(_0xe961xba[_0x65bf[23]]== 3){_0xe961xb7= parseInt(_0xe961xba[0])+ parseInt(_0xe961xba[1])+ parseInt(_0xe961xba[2]);if(_0xe961xb7== 11|| _0xe961xb7== 22){return _0xe961xb5= _0xe961xb7}};if(_0xe961xba[_0x65bf[23]]== 2){_0xe961xb7= parseInt(_0xe961xba[0])+ parseInt(_0xe961xba[1]);if(_0xe961xb7== 11|| _0xe961xb7== 22){return _0xe961xb7}};if(_0xe961xba[_0x65bf[23]]== 1){_0xe961xb7= parseInt(_0xe961xba[0]);_0xe961xb5= _0xe961xb7;if(_0xe961xb7== 11|| _0xe961xb7== 22){return _0xe961xb7}};if((_0xe961xb7)=>{return 9}){var _0xe961xbb=_0xe961xb7.toString()[_0x65bf[22]](_0x65bf[28]);if(_0xe961xbb[_0x65bf[23]]== 3){_0xe961xb8= parseInt(_0xe961xbb[0])+ parseInt(_0xe961xbb[1])+ parseInt(_0xe961xbb[2]);if(_0xe961xb8== 11|| _0xe961xb8== 22){return _0xe961xb5= _0xe961xb8}};if(_0xe961xbb[_0x65bf[23]]== 2){_0xe961xb8= parseInt(_0xe961xbb[0])+ parseInt(_0xe961xbb[1]);if(_0xe961xb8== 11|| _0xe961xb8== 22){return _0xe961xb5= _0xe961xb8}};if(_0xe961xbb[_0x65bf[23]]== 1){_0xe961xb8= parseInt(_0xe961xbb[0]);_0xe961xb5= _0xe961xb8;if(_0xe961xb8== 11|| _0xe961xb8== 22){return _0xe961xb5= _0xe961xb8}}}else {_0xe961xb5= _0xe961xb6};if((_0xe961xb8)=>{return 9}){var _0xe961xbc=_0xe961xb8.toString()[_0x65bf[22]](_0x65bf[28]);if(_0xe961xbc[_0x65bf[23]]== 2){_0xe961xb9= parseInt(_0xe961xbc[0])+ parseInt(_0xe961xbc[1]);if(_0xe961xb9== 11|| _0xe961xb9== 22){return _0xe961xb5= _0xe961xb9}};if(_0xe961xbc[_0x65bf[23]]== 1){_0xe961xb9= parseInt(_0xe961xbc[0]);_0xe961xb5= _0xe961xb9;if(_0xe961xb9== 11|| _0xe961xb9== 22){return _0xe961xb5= _0xe961xb9}}}else {_0xe961xb5= _0xe961xb8};return _0xe961xb5}function getShioJodoh(_0xe961x77){var _0xe961xbe=1900;var _0xe961xbf= new Array(_0x65bf[247],_0x65bf[248],_0x65bf[249],_0x65bf[250],_0x65bf[251],_0x65bf[252],_0x65bf[253],_0x65bf[254],_0x65bf[255],_0x65bf[256],_0x65bf[257],_0x65bf[258],_0x65bf[259],_0x65bf[260],_0x65bf[261],_0x65bf[262],_0x65bf[263],_0x65bf[264],_0x65bf[265],_0x65bf[266],_0x65bf[267],_0x65bf[249],_0x65bf[268],_0x65bf[251],_0x65bf[269],_0x65bf[253],_0x65bf[254],_0x65bf[255],_0x65bf[264],_0x65bf[257],_0x65bf[258],_0x65bf[270],_0x65bf[260],_0x65bf[261],_0x65bf[262],_0x65bf[252],_0x65bf[271],_0x65bf[265],_0x65bf[247],_0x65bf[248],_0x65bf[249],_0x65bf[272],_0x65bf[273],_0x65bf[269],_0x65bf[253],_0x65bf[254],_0x65bf[255],_0x65bf[256],_0x65bf[257],_0x65bf[250],_0x65bf[270],_0x65bf[260],_0x65bf[272],_0x65bf[262],_0x65bf[263],_0x65bf[271],_0x65bf[274],_0x65bf[247],_0x65bf[259],_0x65bf[249],_0x65bf[268],_0x65bf[273],_0x65bf[269],_0x65bf[253],_0x65bf[254],_0x65bf[255],_0x65bf[275],_0x65bf[276],_0x65bf[258],_0x65bf[270],_0x65bf[260],_0x65bf[272],_0x65bf[273],_0x65bf[263],_0x65bf[264],_0x65bf[265],_0x65bf[247],_0x65bf[259],_0x65bf[277],_0x65bf[268],_0x65bf[251],_0x65bf[269],_0x65bf[253],_0x65bf[254],_0x65bf[255],_0x65bf[267],_0x65bf[276],_0x65bf[250],_0x65bf[270],_0x65bf[260],_0x65bf[272],_0x65bf[273],_0x65bf[252],_0x65bf[264],_0x65bf[257],_0x65bf[247],_0x65bf[248],_0x65bf[277],_0x65bf[268],_0x65bf[251],_0x65bf[269],_0x65bf[271],_0x65bf[274],_0x65bf[266],_0x65bf[256],_0x65bf[276],_0x65bf[250],_0x65bf[259],_0x65bf[277],_0x65bf[261],_0x65bf[262],_0x65bf[263],_0x65bf[264],_0x65bf[257],_0x65bf[247],_0x65bf[248],_0x65bf[249],_0x65bf[268],_0x65bf[251],_0x65bf[269],_0x65bf[253],_0x65bf[274],_0x65bf[266],_0x65bf[256],_0x65bf[257],_0x65bf[250],_0x65bf[270],_0x65bf[260],_0x65bf[261],_0x65bf[254]);var _0xe961xc0=[_0x65bf[90],_0x65bf[91],_0x65bf[92],_0x65bf[93],_0x65bf[94],_0x65bf[95],_0x65bf[96],_0x65bf[97],_0x65bf[98],_0x65bf[99],_0x65bf[100],_0x65bf[101]];var _0xe961xc1=[_0x65bf[278],_0x65bf[279],_0x65bf[280],_0x65bf[281],_0x65bf[282],_0x65bf[283],_0x65bf[284],_0x65bf[285],_0x65bf[286],_0x65bf[287],_0x65bf[288],_0x65bf[289]];var _0xe961xc2=_0xe961x77[_0x65bf[196]]();var _0xe961xc3=_0xe961x77[_0x65bf[195]]()+ 1;var _0xe961xc4=_0xe961x77[_0x65bf[190]]();var _0xe961xc5;var _0xe961xc6;var _0xe961xc7,_0xe961xc8;if((_0xe961xc2!= _0x65bf[28])&& (_0xe961xc3!= _0x65bf[28])&& (_0xe961xc4!= _0x65bf[28])){_0xe961xc7= parseInt(_0xe961xbf[_0xe961xc2- 1900][_0x65bf[24]](0,_0xe961xbf[_0xe961xc2- 1900][_0x65bf[27]](_0x65bf[290])));if(parseInt(_0xe961xc3)< _0xe961xc7){_0xe961xc5= _0xe961xc2- 1}else {if(parseInt(_0xe961xc3)== _0xe961xc7){_0xe961xc8= parseFloat(_0xe961xbf[_0xe961xc2- 1900][_0x65bf[24]](parseInt(_0xe961xbf[_0xe961xc2- 1900][_0x65bf[27]](_0x65bf[290]))+ 1,_0xe961xbf[_0xe961xc2- 1900][_0x65bf[23]]));if(parseInt(_0xe961xc4)< _0xe961xc8){_0xe961xc5= _0xe961xc2- 1}else {_0xe961xc5= _0xe961xc2}}else {_0xe961xc5= _0xe961xc2}};if(_0xe961xc2< 1900){alert(_0x65bf[291])}else {_0xe961xc6= (_0xe961xc5- 4)% 12;return _0xe961xc1[_0xe961xc6]}}}function getWetonNumber(_0xe961xca,_0xe961xcb){return _0x65bf[102]== _0xe961xca?idH= 5:_0x65bf[103]== _0xe961xca?idH= 4:_0x65bf[104]== _0xe961xca?idH= 3:_0x65bf[105]== _0xe961xca?idH= 7:_0x65bf[106]== _0xe961xca?idH= 8:_0x65bf[107]== _0xe961xca?idH= 6:_0x65bf[108]== _0xe961xca&& (idH= 9),_0x65bf[110]== _0xe961xcb?idP= 9:_0x65bf[111]== _0xe961xcb?idP= 7:_0x65bf[112]== _0xe961xcb?idP= 4:_0x65bf[113]== _0xe961xcb?idP= 8:_0x65bf[109]== _0xe961xcb&& (idP= 5),idH+ idP}function getWetonJdhReading(){var _0xe961xcd=getWetonNumber(strNamaHariFemale,namaPasaranJawa[strHariJawaFemale]);var _0xe961xce=getWetonNumber(strNamaHariMale,namaPasaranJawa[strHariJawaMale]);var _0xe961xcf=parseInt(_0xe961xcd)+ parseInt(_0xe961xce);var _0xe961xd0=_0xe961xcf/ 7;var _0xe961xd1=Math[_0x65bf[146]](7* (_0xe961xd0- Math[_0x65bf[161]](_0xe961xd0)));var _0xe961xd2= new Array();_0xe961xd2[0]= _0x65bf[292];_0xe961xd2[1]= _0x65bf[293];_0xe961xd2[2]= _0x65bf[294];_0xe961xd2[3]= _0x65bf[295];_0xe961xd2[4]= _0x65bf[296];_0xe961xd2[5]= _0x65bf[297];_0xe961xd2[6]= _0x65bf[298];return _0xe961xd2[_0xe961xd1]}$(document)[_0x65bf[299]](function(){initialSetDateJodoh()})
+/* Start Version */
+var setVersionJodoh=getHostName(window.location.href)+" v"+"1.4.0";
+$(".footerJodohAttr").html(setVersionJodoh);
+/* End Version */
+/* Start Initial Date Value */
+$("#fAstDateFemale,#fAstDateMale").datepicker({
+changeMonth: true,
+changeYear: true,
+"showAnim":"slideDown",
+dateFormat: 'dd-mm-yy',
+yearRange: "1900:+0",
+beforeShow: function(){$(".ui-datepicker").css({'font-size':10,'z-index':99})},
+//onSelect: function() {runAstrologi();}
+});
+var currentDate = new Date();
+$("#fAstDateFemale,#fAstDateMale").datepicker("setDate",currentDate);
+/* Assign Default Value */
+/* End Initial Date Value */
+/* Start Cookie Time */
+function setCookieJodoh(cname,cvalue,exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Secure";
+}
+function getCookieJodoh(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+function checkCookieJodoh() {
+  var username = getCookieJodoh("data");
+  if (username != "") {
+  var ausername=username.substring(0, username.indexOf(":"))
+   alert("Data anda untuk nama " + ausername+" sudah tersimpan");
+  } else {
+    var userID = $('#fAstName').val();
+	var userDate = $('#fAstDate').val();
+    if (userID != "" && userID != null && userID !="Nama Lengkap") {
+      setCookieJodoh("data", userID+":"+userDate+":"+contentAPN1, 30);
+	  alert("Data setting "+username+" tersimpan menggunakan browser kuki");
+    }else{alert("Silakan isi nama lengkap anda !\n\nData anda aman karena disimpan pada kuki browser anda.");$("#fAstName").trigger( "focus" );}
+  }
+}
+function deleteCookieJodoh(){
+var username = getCookie("data");
+if (username != "" && username != null && username !="Nama Lengkap") {
+document.cookie = "data=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";  
+alert("Data anda sudah dihapus dari browser kuki");
+}}
+function initialSetDateJodoh(){
+var name = "datajdh=";
+var str = decodeURIComponent(document.location.href);
+var res="";var initialDate=new Array;
+if(str.match(name)){
+res = str.substring(str.lastIndexOf(str.match(name))+8,str.length);
+initialDate=res.split(";");
+initialDate[0]=window.atob(initialDate[0]);
+initialDate[1]=window.atob(initialDate[1]);
+initialDate[2]=window.atob(initialDate[2]);
+initialDate[3]=window.atob(initialDate[3]);
+}
+if(initialDate[0]!=""&&initialDate[0]!=null){$("#fAstNameFemale").val(initialDate[0]);}
+if(initialDate[1]!=""&&initialDate[1]!=null){$("#fAstDateFemale").datepicker("setDate",initialDate[1]);}
+if(initialDate[2]!=""&&initialDate[2]!=null){$("#fAstNameMale").val(initialDate[2]);}
+if(initialDate[3]!=""&&initialDate[3]!=null){
+$("#fAstDateMale").datepicker("setDate",initialDate[3]);
+runKalkulasiJodoh();
+}
+if(initialDate[4]!=""&&initialDate[4]!=null&&contentAPN1Jodoh!=initialDate[4]){
+contentAPN2Jodoh=initialDate[4];
+$("#"+contentAPIdJodoh[contentAPN1Jodoh]).hide("slide",{direction : 'right'}, 500);
+$("#titleHeaderJodoh").hide("slide",{direction : 'right'}, 500,
+function (){$("#titleHeaderJodoh").html(contentAPFJodoh[initialDate[4]]+' '+contentAPTJodoh[initialDate[4]]);});
+$("#"+contentAPIdJodoh[contentAPN2Jodoh]).delay(800).show("slide", 500);
+$("#titleHeaderJodoh").delay(300).show("slide", 500);
+contentAPN1Jodoh=contentAPN2Jodoh;
+$('html, body').animate({ scrollTop: $(".astroBlogMainUIJodoh").offset().top }, 500);
+}
+}
+/* End Cookie Time */
+/* Start Navigation */
+$("#rightMenuJodoh").on("click", function(){navPageRightJodoh();});
+$("#leftMenuJodoh").on("click", function(){navPageLeftJodoh();});
+$("#btnKecocokan").on("click", function(){runKalkulasiJodoh();});
+
+var contentAPN1Jodoh=0;var contentAPN2Jodoh=1;
+var contentAPTJodoh=new Array;
+contentAPTJodoh[0]="KALKULASI JODOH";
+contentAPTJodoh[1]="HASIL PERHITUNGAN";
+var contentAPFJodoh=new Array;
+contentAPFJodoh[0]='<i class="fa fa-cube" aria-hidden="true"></i>';
+contentAPFJodoh[1]='<i class="fa fa-line-chart" aria-hidden="true"></i>';
+var rotation=0;
+function navPageLeftJodoh(){
+rotation -= 180;
+if(contentAPN1Jodoh==0){contentAPN2Jodoh=1;}
+if(contentAPN1Jodoh==1){contentAPN2Jodoh=0;}
+$("#titleHeaderJodoh").hide("slide",{direction : 'left'}, 200,
+function (){$("#titleHeaderJodoh").html(contentAPFJodoh[contentAPN2Jodoh]+' '+contentAPTJodoh[contentAPN2Jodoh]);});
+$("#titleHeaderJodoh").show("slide",{direction : 'right'}, 200);
+contentAPN1Jodoh=contentAPN2Jodoh;
+$(".flip-card-inner").css("transform", "rotateY("+rotation+"deg)");
+}
+function navPageRightJodoh(){
+rotation += 180;
+if(contentAPN1Jodoh==0){contentAPN2Jodoh=1;}
+if(contentAPN1Jodoh==1){contentAPN2Jodoh=0;}
+$("#titleHeaderJodoh").hide("slide",{direction : 'right'}, 200,
+function (){$("#titleHeaderJodoh").html(contentAPFJodoh[contentAPN2Jodoh]+' '+contentAPTJodoh[contentAPN2Jodoh]);});
+$("#titleHeaderJodoh").show("slide", 200);
+contentAPN1Jodoh=contentAPN2Jodoh;
+$(".flip-card-inner").css("transform", "rotateY("+rotation+"deg)");
+}
+$("#fBtnJodohShare").on("click", function(){
+var strNameF=$('#fAstNameFemale').val();
+if(strNameF==""||strNameF==null||strNameF=="Nama Lengkap Wanita"){
+alert("Silakan ketikan nama lengkap anda dan pasangan !");
+$("#fAstNameFemale").trigger( "focus" );
+return;
+}
+var strNameM=$('#fAstNameMale').val();
+if(strNameM==""||strNameM==null||strNameM=="Nama Lengkap Pria"){
+alert("Silakan ketikan nama lengkap anda dan pasangan !");
+$("#fAstNameMale").trigger( "focus" );
+return;
+}
+shareJodoh();
+});
+/* End Navigation */
+
+function shareJodoh(){
+var usernameF = $('#fAstNameFemale').val();
+var tglLahirF = $('#fAstDateFemale').val();
+var usernameM = $('#fAstNameMale').val();
+var tglLahirM = $('#fAstDateMale').val();
+var dataAstrologi=(window.location.hostname)+"#datajdh="+(window.btoa(usernameF))+";"+(window.btoa(tglLahirF))+";"+(window.btoa(usernameM))+";"+(window.btoa(tglLahirM))+";"+contentAPN1Jodoh;
+var a = 'Kalkulasi Jodoh Online%0A%0AHasil kalkulasi bisa dilihat pada link :%0A'+escape(dataAstrologi)+'%0A%0ADikirim via :%0A'+escape(window.location.hostname);
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
+var addQuotes = 'whatsapp://send?phone=&text='+a;
+}else{
+var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;
+}
+chkBrowserAst(addQuotes,800,600);
+}
+
+var shioJodoh = ['Tikus','Lembu','Macan','Kelinci','Naga','Ular','Kuda','Domba','Monyet','Ayam Jantan','Anjing','Babi'];
+var weekdayJodohBlog=new Array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
+var namaPasaranJawa = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+var neptuPasaranJawa=[0,5,9,7,4,8];
+var neptuPasaranMasehi=[5,4,3,7,8,6,9];
+var primaJodoh=[2,3,5,7,11,13,17,19,23,29,31];
+var hurufDepan1=['h','a','i','e','o','u','n','c','r','k','q'];
+var hurufDepan2=['d','t','s','z','w','l'];
+var hurufDepan3=['p','f','v','d','j','y'];
+var hurufDepan4=['m','g','b','t','n'];
+var warnaAura1=[1,3,5,7];
+var warnaAura2=[2,4,6,8];
+var warnaAura3=[0,9,11,22];
+var strNeptuFemale,strHariJawaFemale,strNamaHariFemale,strIndexHariF,strBioReadingF,strNameIdxF;
+var strNeptuMale,strHariJawaMale,strNamaHariMale,strIndexHariM,strBioReadingM,strNameIdxM;
+var strZodiakFemale,strShioFemale;
+var strZodiakMale,strShioMale;
+var cocokNeptu,cocokZodiak,cocokHari,cocokBio,cocokPrima,cocokNama,cocokNamaSpesial,cocokNamaDepan,cocokRandom,cocokShio;
+var cocokHariJawa,cocokHariBiasa,cocokWarnaAura;
+
+function getMatchLove(){
+var tmpStrC0,tmpStrC1,tmpStrC2,tmpStrC3,tmpStrC4,tmpStrC5,tmpStrC6,tmpStrC7,tmpStrC8,tmpStrC9,tmpStrC10,tmpStrC11,tmpStrC12;
+var tmpHariMasehiF=0;var tmpHariMasehiM=0;
+for(var i=0;i < weekdayJodohBlog.length;i++){
+if(weekdayJodohBlog[i]==strNamaHariFemale){tmpHariMasehiF=neptuPasaranMasehi[i];}
+if(weekdayJodohBlog[i]==strNamaHariFemale){tmpHariMasehiM=neptuPasaranMasehi[i];}
+}
+
+var tmpJP=(neptuPasaranJawa[strHariJawaFemale]+neptuPasaranJawa[strHariJawaMale]+tmpHariMasehiF+tmpHariMasehiM);
+if(tmpJP==1||tmpJP==10||tmpJP==19||tmpJP==28){cocokNeptu=0;tmpStrC0="Tidak Baik";}
+if(tmpJP==2||tmpJP==11||tmpJP==20||tmpJP==29){cocokNeptu=1;tmpStrC0="Bagus";}
+if(tmpJP==3||tmpJP==12||tmpJP==21||tmpJP==30){cocokNeptu=1;tmpStrC0="Bagus";}
+if(tmpJP==4||tmpJP==13||tmpJP==22||tmpJP==31){cocokNeptu=0.5;tmpStrC0="Lumayan";}
+if(tmpJP==5||tmpJP==14||tmpJP==23||tmpJP==32){cocokNeptu=1;tmpStrC0="Bagus";}
+if(tmpJP==6||tmpJP==15||tmpJP==24||tmpJP==33){cocokNeptu=0;tmpStrC0="Tidak Baik";}
+if(tmpJP==7||tmpJP==16||tmpJP==25||tmpJP==34){cocokNeptu=0;tmpStrC0="Tidak Baik";}
+if(tmpJP==8||tmpJP==17||tmpJP==26||tmpJP==35){cocokNeptu=1;tmpStrC0="Bagus";}
+if(tmpJP==9||tmpJP==18||tmpJP==27||tmpJP==36){cocokNeptu=0;tmpStrC0="Tidak Baik";}
+
+if(strZodiakFemale==0){if(strZodiakMale==4||strZodiakMale==8||strZodiakMale==2){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==1){if(strZodiakMale==5||strZodiakMale==9||strZodiakMale==3){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==2){if(strZodiakMale==6||strZodiakMale==10||strZodiakMale==4){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==3){if(strZodiakMale==3||strZodiakMale==11||strZodiakMale==5){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==4){if(strZodiakMale==8||strZodiakMale==0||strZodiakMale==6){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==5){if(strZodiakMale==9||strZodiakMale==1||strZodiakMale==7){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==6){if(strZodiakMale==10||strZodiakMale==2||strZodiakMale==8){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==7){if(strZodiakMale==3||strZodiakMale==11||strZodiakMale==9){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==8){if(strZodiakMale==4||strZodiakMale==0||strZodiakMale==10){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==9){if(strZodiakMale==5||strZodiakMale==1||strZodiakMale==11){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==10){if(strZodiakMale==6||strZodiakMale==2||strZodiakMale==0){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+if(strZodiakFemale==11){if(strZodiakMale==3||strZodiakMale==7||strZodiakMale==1){cocokZodiak=1;tmpStrC1="Cocok";}else{cocokZodiak=0;tmpStrC1="Belum Cocok";}}
+
+if(strIndexHariF==0){if(strIndexHariM==2||strIndexHariM==4||strIndexHariM==6){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==1){if(strIndexHariM==3||strIndexHariM==5||strIndexHariM==6){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==2){if(strIndexHariM==0||strIndexHariM==5){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==3){if(strIndexHariM==1||strIndexHariM==4||strIndexHariM==5){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==4){if(strIndexHariM==0||strIndexHariM==1||strIndexHariM==3){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==5){if(strIndexHariM==2||strIndexHariM==1||strIndexHariM==6){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+if(strIndexHariF==6){if(strIndexHariM==0||strIndexHariM==1||strIndexHariM==5){cocokHari=1;tmpStrC2="Baik";}else{cocokHari=0;tmpStrC2="Tidak Baik";}}
+
+if(Math.round(Math.abs(strBioReadingF-strBioReadingM))<=101){cocokBio=0;tmpStrC3="Tidak Cocok";}
+if(Math.round(Math.abs(strBioReadingF-strBioReadingM))<=80){cocokBio=0.4;tmpStrC3="Kurang Bagus";}
+if(Math.round(Math.abs(strBioReadingF-strBioReadingM))<=40){cocokBio=0.8;tmpStrC3="Cukup Bagus";}
+if(Math.round(Math.abs(strBioReadingF-strBioReadingM))<=10){cocokBio=1;tmpStrC3="Bagus";}
+
+var tmpPrimaF=0;var tmpPrimaM=0;
+for(var i=0;i < primaJodoh.length;i++){
+if(strIndexHariF==primaJodoh[i]){tmpPrimaF=1;}
+if(strIndexHariM==primaJodoh[i]){tmpPrimaM=1;}
+}
+if(tmpPrimaF==tmpPrimaM){cocokPrima=0.5;tmpStrC4="Ya";}else{cocokPrima=0;tmpStrC4="Tidak";}
+
+var tmpNamaDepanF=$("#fAstNameFemale").val().charAt(0).toLowerCase();
+var tmpNamaDepanM=$("#fAstNameMale").val().charAt(0).toLowerCase();
+var tmpNDF='b0';var tmpNDM='b0';
+for(var i=0;i < hurufDepan1.length;i++){
+if(tmpNamaDepanF==hurufDepan1[i]){tmpNDF='b1';}
+if(tmpNamaDepanM==hurufDepan1[i]){tmpNDM='b1';}
+}
+for(var i=0;i < hurufDepan2.length;i++){
+if(tmpNamaDepanF==hurufDepan2[i]){tmpNDF='b2';}
+if(tmpNamaDepanM==hurufDepan2[i]){tmpNDM='b2';}
+}
+for(var i=0;i < hurufDepan3.length;i++){
+if(tmpNamaDepanF==hurufDepan3[i]){tmpNDF='b3';}
+if(tmpNamaDepanM==hurufDepan3[i]){tmpNDM='b3';}
+}
+for(var i=0;i < hurufDepan4.length;i++){
+if(tmpNamaDepanF==hurufDepan4[i]){tmpNDF='b4';}
+if(tmpNamaDepanM==hurufDepan4[i]){tmpNDM='b4';}
+}
+
+if((tmpNDF=='b1' && tmpNDM=='b1')||(tmpNDF=='b0' && tmpNDM=='b0')||(tmpNDF=='b2' && tmpNDM=='b2')||(tmpNDF=='b3' && tmpNDM=='b3')||(tmpNDF=='b4' && tmpNDM=='b4')){cocokNamaDepan=1;tmpStrC5="Sama";}
+else if((tmpNDF=='b0' && tmpNDM=='b1') || (tmpNDM=='b0' && tmpNDF=='b1')){cocokNamaDepan=0.5;tmpStrC5="Satu Baris";}
+else if((tmpNDF=='b1' && tmpNDM=='b2') || (tmpNDM=='b1' && tmpNDF=='b2')){cocokNamaDepan=0.5;tmpStrC5="Satu Baris";}
+else if((tmpNDF=='b2' && tmpNDM=='b3') || (tmpNDM=='b2' && tmpNDF=='b3')){cocokNamaDepan=0.5;tmpStrC5="Satu Baris";}
+else if((tmpNDF=='b3' && tmpNDM=='b4') || (tmpNDM=='b3' && tmpNDF=='b4')){cocokNamaDepan=0.5;tmpStrC5="Satu Baris";}
+else if((tmpNDF=='b4' && tmpNDM=='b0') || (tmpNDM=='b4' && tmpNDF=='b0')){cocokNamaDepan=0.5;tmpStrC5="Satu Baris";}
+else{cocokNamaDepan=0;tmpStrC5="Tidak Cocok";}
+
+if(strNameIdxF==strNameIdxM){cocokNama=1;tmpStrC6="Ya";}else{cocokNama=0;tmpStrC6="Tidak";}
+if(strNameIdxF==11||strNameIdxF==22||strNameIdxM==11||strNameIdxM==22){cocokNamaSpesial=2;tmpStrC7="Ya";}else{cocokNamaSpesial=0;tmpStrC7="Tidak";}
+
+var strRandom=new Array();var tmpRandom=0;
+for(var i=0;i < 3;i++){
+strRandom[i]=Math.floor(Math.random() * 10);
+tmpRandom +=strRandom[i];
+}
+tmpRandom=Math.floor((tmpRandom/27)*100);
+if(tmpRandom < 101){cocokRandom=1;tmpStrC8="Atas";}
+if(tmpRandom < 70){cocokRandom=0.5;tmpStrC8="Tengah";}
+if(tmpRandom < 50){cocokRandom=0;tmpStrC8="Bawah";}
+
+if(strShioFemale==0){
+if(strShioMale==1||strShioMale==4||strShioMale==8){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==0||strShioMale==2||strShioMale==5||strShioMale==10||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==1){
+if(strShioMale==0||strShioMale==5||strShioMale==9){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==1||strShioMale==2||strShioMale==8||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==2){
+if(strShioMale==6||strShioMale==10||strShioMale==11){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==0||strShioMale==1||strShioMale==2||strShioMale==3||strShioMale==4||strShioMale==7||strShioMale==9){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==3){
+if(strShioMale==7||strShioMale==10||strShioMale==11){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==2||strShioMale==3||strShioMale==5||strShioMale==8){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==4){
+if(strShioMale==0||strShioMale==8||strShioMale==9){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==2||strShioMale==5||strShioMale==6||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==5){
+if(strShioMale==1||strShioMale==8||strShioMale==9){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==0||strShioMale==3||strShioMale==4||strShioMale==5||strShioMale==6||strShioMale==7||strShioMale==10){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==6){
+if(strShioMale==2||strShioMale==7||strShioMale==10){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==4||strShioMale==5||strShioMale==8||strShioMale==9||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==7){
+if(strShioMale==3||strShioMale==6||strShioMale==11){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==2||strShioMale==5||strShioMale==7||strShioMale==8||strShioMale==9||strShioMale==10){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==8){
+if(strShioMale==0||strShioMale==4||strShioMale==5){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==1||strShioMale==3||strShioMale==6||strShioMale==7||strShioMale==8||strShioMale==9||strShioMale==10){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==9){
+if(strShioMale==1||strShioMale==4||strShioMale==5){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==2||strShioMale==6||strShioMale==7||strShioMale==8||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==10){
+if(strShioMale==2||strShioMale==3||strShioMale==6){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==0||strShioMale==5||strShioMale==8||strShioMale==10||strShioMale==11){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+if(strShioFemale==11){
+if(strShioMale==2||strShioMale==3||strShioMale==7){cocokShio=2;tmpStrC9="Cocok Sebagai Pasangan";}
+else if(strShioMale==0||strShioMale==1||strShioMale==4||strShioMale==6||strShioMale==9||strShioMale==10){cocokShio=1;tmpStrC9="Teman / Pasangan";}
+else{cocokShio=0;tmpStrC9="Belum Cocok";}
+}
+
+if(strHariJawaFemale==strHariJawaMale){cocokHariJawa=1;tmpStrC10="Ya";}else{cocokHariJawa=0;tmpStrC10="Tidak";}
+if(strNamaHariFemale==strNamaHariMale){cocokHariBiasa=1;tmpStrC11="Ya";}else{cocokHariBiasa=0;tmpStrC11="Tidak";}
+
+var tmpAuraF='a0';var tmpAuraM='a0';
+for(var i=0;i < warnaAura1.length;i++){
+if(strNeptuFemale==warnaAura1[i]){tmpAuraF='a1';}
+if(strNeptuMale==warnaAura1[i]){tmpAuraM='a1';}
+}
+for(var i=0;i < warnaAura2.length;i++){
+if(strNeptuFemale==warnaAura2[i]){tmpAuraF='a2';}
+if(strNeptuMale==warnaAura2[i]){tmpAuraM='a2';}
+}
+for(var i=0;i < warnaAura3.length;i++){
+if(strNeptuFemale==warnaAura3[i]){tmpAuraF='a3';}
+if(strNeptuMale==warnaAura3[i]){tmpAuraM='a3';}
+}
+if(tmpAuraF==tmpAuraM){cocokWarnaAura=0.5;tmpStrC12='Menyatu'}else{cocokWarnaAura=0;tmpStrC12='Terpisah';}
+
+var sumCocok=Math.ceil(((cocokNeptu+cocokZodiak+cocokHari+cocokBio+cocokPrima+cocokNamaDepan+cocokNama+cocokNamaSpesial+cocokRandom+cocokShio+cocokHariJawa+cocokHariBiasa+cocokWarnaAura)/10)*100);
+
+if(sumCocok > 100){sumCocok=100;}
+if(Math.round(sumCocok)<=101){$("#fAstMatch").html("Cinta Abadi & Bahagia");}
+if(Math.round(sumCocok)<=90){$("#fAstMatch").html("Saling Memahami & Penuh Cinta");}
+if(Math.round(sumCocok)<=80){$("#fAstMatch").html("Cocok & Hangat");}
+if(Math.round(sumCocok)<=70){$("#fAstMatch").html("Baik Apa Adanya");}
+if(Math.round(sumCocok)<=50){$("#fAstMatch").html("Butuh Kesabaran");}
+if(Math.round(sumCocok)<=40){$("#fAstMatch").html("Perjuangan Keras");}
+if(Math.round(sumCocok)<=30){$("#fAstMatch").html("Pilihan Ada Pada Anda");}
+
+if(Math.round(sumCocok)<=101){$('#gAverageMatch').css("background","pink");}
+if(Math.round(sumCocok)<=80){$('#gAverageMatch').css("background","green");}
+if(Math.round(sumCocok)<=50){$('#gAverageMatch').css("background","orange");}
+if(Math.round(sumCocok)<=30){$('#gAverageMatch').css("background","red");}
+
+$("#gAverageMatch").css("width",sumCocok+"%");
+$("#btnKecocokan").html(sumCocok+"%");
+
+var strDateF=$("#fAstDateFemale").datepicker('getDate');
+var strDateM=$("#fAstDateMale").datepicker('getDate');
+
+var strHtml="Nama Wanita : "+$("#fAstNameFemale").val()+"<br />";
+strHtml +="Tgl Lahir : "+strDateF.getDate()+" - "+(strDateF.getMonth()+1)+" - "+strDateF.getFullYear()+"<br />";
+strHtml +="Hari Lahir : "+strNamaHariFemale+" ["+namaPasaranJawa[strHariJawaFemale]+"] Neptu ["+strNeptuFemale+"]<br />";
+strHtml +="<center><div class='leftfooterFrmJodoh hov-slider' style='background:#ff0b75;margin:5px 0;color:#fff;padding:5px 10px;' onclick='getAstJdhDetail(\"f\")'>Lihat Detail</div></center>";
+$("#dataFemale").html(strHtml);
+strHtml ="Nama Pria : "+$("#fAstNameMale").val()+"<br />";
+strHtml +="Tgl Lahir : "+strDateM.getDate()+" - "+(strDateM.getMonth()+1)+" - "+strDateM.getFullYear()+"<br />";
+strHtml +="Hari Lahir : "+strNamaHariMale+" ["+namaPasaranJawa[strHariJawaMale]+"] Neptu ["+strNeptuMale+"]<br />";
+strHtml +="<center><div class='leftfooterFrmJodoh hov-slider' style='background:#0083da;margin:5px 0;color:#fff;padding:5px 10px;' onclick='getAstJdhDetail(\"m\")'>Lihat Detail</div></center>";
+$("#dataMale").html(strHtml);
+$("#dataPrimbon").html(getWetonJdhReading());
+strHtml ='<div style="padding:5px 0;margin-bottom:5px;background:#ff00a7;width:100%;text-align:center;font-size:16px;">FAKTOR KECOCOKAN</div>';
+strHtml +='<table border="0" width="100%">';
+strHtml +='<tr><td width="130px">Faktor Zodiak</td><td>:</td><td>'+tmpStrC1+'</td></tr>';
+strHtml +='<tr><td>Faktor SHIO</td><td>:</td><td>'+tmpStrC9+'</td></tr>';
+strHtml +='<tr><td>Rasio Hari Lahir</td><td>:</td><td>'+tmpStrC2+'</td></tr>';
+strHtml +='<tr><td>Rasio Bioritmik</td><td>:</td><td>'+tmpStrC3+'</td></tr>';
+strHtml +='<tr><td>Sama Weton Jawa</td><td>:</td><td>'+tmpStrC10+'</td></tr>';
+strHtml +='<tr><td>Sama Hari Masehi</td><td>:</td><td>'+tmpStrC11+'</td></tr>';
+strHtml +='<tr><td>Kombinasi Neptu</td><td>:</td><td>'+tmpStrC0+'</td></tr>';
+strHtml +='<tr><td>Pakem Nama Depan</td><td>:</td><td>'+tmpStrC5+'</td></tr>';
+strHtml +='<tr><td>Neptu Nama Sama</td><td>:</td><td>'+tmpStrC6+'</td></tr>';
+strHtml +='<tr><td>Neptu Nama 11/22</td><td>:</td><td>'+tmpStrC7+'</td></tr>';
+strHtml +='<tr><td>Warna Aura</td><td>:</td><td>'+tmpStrC12+'</td></tr>';
+strHtml +='<tr><td>Tgl Bilangan Prima</td><td>:</td><td>'+tmpStrC4+'</td></tr>';
+strHtml +='<tr><td>Angka Acak Saat ini</td><td>:</td><td>'+tmpStrC8+'</td></tr>';
+
+strHtml +='</table>';
+$("#dataKecocokan").html(strHtml);
+rotation=0;
+setTimeout(navPageRightJodoh,1000);
+}
+
+function getAstJdhDetail(gender){
+if(gender=="f"){
+$("#fAstName").val($("#fAstNameFemale").val());
+$("#fAstDate").datepicker("setDate",$("#fAstDateFemale").datepicker('getDate'));
+}else{
+$("#fAstName").val($("#fAstNameMale").val());
+$("#fAstDate").datepicker("setDate",$("#fAstDateMale").datepicker('getDate'));
+}
+contentAPN2=0;
+$("#"+contentAPId[contentAPN1]).hide("slide",{direction : 'right'}, 500);
+$("#titleHeaderAst").hide("slide",{direction : 'right'}, 500,
+function (){$("#titleHeaderAst").html(contentAPF[contentAPN2]+' '+contentAPT[contentAPN2]);});
+$("#"+contentAPId[contentAPN2]).delay(800).show("slide", 500);
+$("#titleHeaderAst").delay(300).show("slide", 500);
+contentAPN1=contentAPN2;
+runAstrologi();
+getBioImage();
+}
+
+function runKalkulasiJodoh(){
+var strNameF=$('#fAstNameFemale').val();
+if(strNameF==""||strNameF==null||strNameF=="Nama Lengkap Wanita"){
+alert("Silakan ketikan nama lengkap anda dan pasangan !");
+$("#fAstNameFemale").trigger( "focus" );
+return;
+}
+var strNameM=$('#fAstNameMale').val();
+if(strNameM==""||strNameM==null||strNameM=="Nama Lengkap Pria"){
+alert("Silakan ketikan nama lengkap anda dan pasangan !");
+$("#fAstNameMale").trigger( "focus" );
+return;
+}
+getDataKalkulasiJodoh("f");
+getDataKalkulasiJodoh("m");
+getMatchLove();
+}
+function getDataKalkulasiJodoh(gender){
+if(gender=="f"){
+var data=$("#fAstDateFemale").datepicker('getDate');
+strZodiakFemale=getZodiac(data);
+var strdate = data.getDate();
+var strmonth = data.getMonth()+1;
+var stryear = data.getFullYear();
+strShioFemale=getShioJodoh(data);
+strNameIdxF=getArtiNamaCalc($('#fAstNameFemale').val());
+strBioReadingF=getBioCalculation(data);
+strIndexHariF=data.getDay();
+strNeptuFemale=getPrimbonNeptu(data);
+strHariJawaFemale=getHariJawa(data);
+strNamaHariFemale=weekdayJodohBlog[data.getDay()];
+}else{
+var data=$("#fAstDateMale").datepicker('getDate');
+strZodiakMale=getZodiac(data);
+var strdate = data.getDate();
+var strmonth = data.getMonth()+1;
+var stryear = data.getFullYear();
+strShioMale=getShioJodoh(data);
+strNameIdxM=getArtiNamaCalc($('#fAstNameMale').val());
+strBioReadingM=getBioCalculation(data);
+strIndexHariM=data.getDay();
+strNeptuMale=getPrimbonNeptu(data);
+strHariJawaMale=getHariJawa(data);
+strNamaHariMale=weekdayJodohBlog[data.getDay()];
+}
+}
+function getHariJawa(data){
+var pScL = (((new Date(data.getFullYear()+','+(data.getMonth()+1)+','+data.getDate()).getTime() - new Date(100, 0, 1).getTime()) / (24 * 60 * 60 * 1000)) % 5);
+return Math.round(pScL);
+}
+/* Start Primbon Javanese Calculation */
+function getPrimbonNeptu(data){
+var strDate=String(data.getDate());
+var strMonth=String(data.getMonth()+1);
+var strYear=String(data.getFullYear());
+var pDateAry=new Array();
+var pMonthAry=new Array();
+var pYearAry=new Array();
+var neptuAry=new Array();
+var pDate1,pDate2,pDate3,pMonth1,pMonth2,pMonth3,pYear1,pYear2,pYear3,pYear4,pYear5;
+var neptu1,neptu2,neptu3,neptu4,neptu5;
+for (i = 0; i < strDate.length; i++){pDateAry[i]=strDate[i];}
+pDate1 = pDateAry[0];
+if (strDate.length > 1){pDate2=pDateAry[1];}
+else{pDate2=0}
+pDate3=parseInt(pDate1)+parseInt(pDate2);
+for (i = 0; i < strMonth.length; i++){pMonthAry[i]=strMonth[i];}
+pMonth1 = pMonthAry[0];
+if (strMonth.length > 1){pMonth2=pMonthAry[1];}
+else{pMonth2=0}
+pMonth3=parseInt(pMonth1)+parseInt(pMonth2);
+for (i = 0; i < strYear.length; i++){pYearAry[i]=strYear[i];}
+pYear1 = pYearAry[0];
+pYear2 = pYearAry[1];
+pYear3 = pYearAry[2];
+pYear4 = pYearAry[3];
+pYear5=parseInt(pYear1)+parseInt(pYear2)+parseInt(pYear3)+parseInt(pYear4);
+neptu1=parseInt(pDate3)+parseInt(pMonth3)+parseInt(pYear5);
+neptu1=neptu1.toString();
+for (i = 0; i < neptu1.length; i++){neptuAry[i]=neptu1[i];}
+neptu2 = neptuAry[0];
+if (neptuAry.length > 1){neptu3=neptuAry[1];}
+else{neptu3=0;}
+neptu4=parseInt(neptu2)+parseInt(neptu3);
+if (neptu4 > 9) {neptu4=neptu4.toString();
+for (i = 0; i < neptu4.length; i++){neptuAry[i]=neptu4[i];}
+neptu2 = neptuAry[0];
+if (neptuAry.length > 1){neptu3=neptuAry[1];}
+else{neptu3=0;}
+neptu5=parseInt(neptu2)+parseInt(neptu3);
+neptu4=neptu5;
+}
+return neptu4;
+//if(astroBlogUserID==MD5((window.location.host).substring(0,(window.location.host).indexOf(".")))&&astroBlogVer==astroBlogUserID){dataNeptuAst=neptu4;}else{return;}
+}
+/* End Primbon Javanese Calculation */
+/* Start Zodiac Calculation */
+function getZodiac(data){
+var b1day=data.getDate();
+var b1month=data.getMonth();
+if(b1day>21 && b1day<32){
+if(b1month==11){lunarType="Capricorn";}
+if(b1month==0){lunarType="Aquarius";}
+if(b1month==1){lunarType="Pisces";}
+if(b1month==2){lunarType="Aries";}
+if(b1month==3){lunarType="Taurus";}
+if(b1month==4){lunarType="Gemini";}
+if(b1month==5){lunarType="Cancer";}
+if(b1month==6){lunarType="Leo";}
+if(b1month==7){lunarType="Virgo";}
+if(b1month==8){lunarType="Libra";}
+if(b1month==9){lunarType="Scorpio";}
+if(b1month==10){lunarType="Sagittarius";}
+}
+if(b1day>0 && b1day<22){
+if(b1month==0){lunarType="Capricorn";}
+if(b1month==1){lunarType="Aquarius";}
+if(b1month==2){lunarType="Pisces";}
+if(b1month==3){lunarType="Aries";}
+if(b1month==4){lunarType="Taurus";}
+if(b1month==5){lunarType="Gemini";}
+if(b1month==6){lunarType="Cancer";}
+if(b1month==7){lunarType="Leo";}
+if(b1month==8){lunarType="Virgo";}
+if(b1month==9){lunarType="Libra";}
+if(b1month==10){lunarType="Scorpio";}
+if(b1month==11){lunarType="Sagittarius";}
+}
+if(lunarType=="Capricorn"){lunarTypeNum=0;}
+if(lunarType=="Aquarius"){lunarTypeNum=1;}
+if(lunarType=="Pisces"){lunarTypeNum=2;}
+if(lunarType=="Aries"){lunarTypeNum=3;}
+if(lunarType=="Taurus"){lunarTypeNum=4;}
+if(lunarType=="Gemini"){lunarTypeNum=5;}
+if(lunarType=="Cancer"){lunarTypeNum=6;}
+if(lunarType=="Leo"){lunarTypeNum=7;}
+if(lunarType=="Virgo"){lunarTypeNum=8;}
+if(lunarType=="Libra"){lunarTypeNum=9;}
+if(lunarType=="Scorpio"){lunarTypeNum=10;}
+if(lunarType=="Sagittarius"){lunarTypeNum=11;}
+return lunarTypeNum;
+}
+/* End Zodiac Calculation */
+/* Start Bioritmik Calculation */
+function getBioCalculation(data){
+var tmpData = new Array;
+var phy=23;var emo=28;var intl=33;var inu=38;var est=43;var awa=48;var spi=53;
+var bioDivider=[phy,emo,intl,inu,est,awa,spi];
+var date1=(data.getMonth()+1)+','+data.getDate()+','+data.getFullYear();
+var dateNow=new Date();
+var date2=dateNow.getFullYear()+'-'+(dateNow.getMonth()+1)+'-'+dateNow.getDate();
+var DateDiff = {
+inDays: function(d1, d2) {
+var t2 = d2.getTime();
+var t1 = d1.getTime();
+return parseInt((t2-t1)/(24*3600*1000));
+},
+inWeeks: function(d1, d2) {
+var t2 = d2.getTime();
+var t1 = d1.getTime();
+return parseInt((t2-t1)/(24*3600*1000*7));
+},
+inMonths: function(d1, d2) {
+var d1Y = d1.getFullYear();
+var d2Y = d2.getFullYear();
+var d1M = d1.getMonth();
+var d2M = d2.getMonth();
+return (d2M+12*d2Y)-(d1M+12*d1Y);
+},
+inYears: function(d1, d2) {
+return d2.getFullYear()-d1.getFullYear();
+}
+}
+var d1 = new Date(date1);
+var d2 = new Date(date2);
+/* Bioritmik Calculation */
+var timeDifferenceInDays=DateDiff.inDays(d1, d2);
+for(var i=0;i<bioDivider.length;i++){
+var bcalc = (Math.floor(timeDifferenceInDays/bioDivider[i]));
+bcalc=bcalc*bioDivider[i];
+bcalc=timeDifferenceInDays-bcalc;
+bcalc=Math.sin(bcalc*(2*Math.PI/bioDivider[i]));
+tmpData[i]=bcalc;
+}
+tmpData.push((tmpData[0]+tmpData[2])/2,(tmpData[0]+tmpData[1])/2,(tmpData[1]+tmpData[2])/2,(tmpData[0]+tmpData[3])/2,(tmpData[1]+tmpData[3])/2,(tmpData[2]+tmpData[3])/2);
+for(var i=0;i<tmpData.length;i++){
+tmpData[i]=Math.round(tmpData[i]*100);
+tmpData[i]=50+(Math.floor(tmpData[i]/2));
+}
+var sumData=0;
+for(var i=0;i<tmpData.length;i++){sumData+=tmpData[i];}
+return Math.round(sumData/tmpData.length);
+}
+/* End Bioritmik Calculation */
+
+function letterValue(str){
+var anum={
+a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, 
+l: 12, m: 13, n: 14,o: 15, p: 16, q: 17, r: 18, s: 10, t: 20, 
+u: 21, v: 22, w: 23, x: 24, y: 25, z: 26
+}
+if(str.length== 1) return anum[str] || ' ';
+return str.split('').map(letterValue);
+}
+function getArtiNamaCalc(data){
+var strName=data;
+strName=strName.toLowerCase().replace(/\s/g, '').split('');
+var strNameNum=0;var strNameNum1=0;var strNameNum2=0;var strNameNum3=0;var strNameNum4=0;
+for(var i=0;i<strName.length;i++){
+strNameNum1+=letterValue(strName[i]);
+}
+if(strNameNum1==11||strNameNum1==22){return strNameNum=strNameNum1;}
+var digits = strNameNum1.toString().split('');
+if(digits.length==4){strNameNum2=parseInt(digits[0])+parseInt(digits[1])+parseInt(digits[2])+parseInt(digits[3]);if(strNameNum2==11||strNameNum2==22){return strNameNum=strNameNum2;}}
+if(digits.length==3){strNameNum2=parseInt(digits[0])+parseInt(digits[1])+parseInt(digits[2]);if(strNameNum2==11||strNameNum2==22){return strNameNum=strNameNum2;}}
+if(digits.length==2){strNameNum2=parseInt(digits[0])+parseInt(digits[1]);if(strNameNum2==11||strNameNum2==22){return strNameNum2;}}
+if(digits.length==1){strNameNum2=parseInt(digits[0]);strNameNum=strNameNum2;if(strNameNum2==11||strNameNum2==22){return strNameNum2;}}
+if(strNameNum2 => 9){
+var digits1 = strNameNum2.toString().split('');
+if(digits1.length==3){strNameNum3=parseInt(digits1[0])+parseInt(digits1[1])+parseInt(digits1[2]);if(strNameNum3==11||strNameNum3==22){return strNameNum=strNameNum3;}}
+if(digits1.length==2){strNameNum3=parseInt(digits1[0])+parseInt(digits1[1]);if(strNameNum3==11||strNameNum3==22){return strNameNum=strNameNum3;}}
+if(digits1.length==1){strNameNum3=parseInt(digits1[0]);strNameNum=strNameNum3;if(strNameNum3==11||strNameNum3==22){return strNameNum=strNameNum3;}}
+}else{strNameNum=strNameNum1;}
+if(strNameNum3 => 9){
+var digits2 = strNameNum3.toString().split('');
+if(digits2.length==2){strNameNum4=parseInt(digits2[0])+parseInt(digits2[1]);if(strNameNum4==11||strNameNum4==22){return strNameNum=strNameNum4;}}
+if(digits2.length==1){strNameNum4=parseInt(digits2[0]);strNameNum=strNameNum4;if(strNameNum4==11||strNameNum4==22){return strNameNum=strNameNum4;}}
+}else{strNameNum=strNameNum3;}
+return strNameNum;
+}
+
+/* Start Shio Reading */
+function getShioJodoh(data){
+var startYear=1900;
+var cNYstartDate = new Array(
+"1.31","2.19","2.08","1.29","2.16","2.04","1.25","2.13","2.02","1.22",
+"2.10","1.30","2.18","2.06","1.26","2.14","2.03","1.23","2.11","2.01",
+"2.20","2.08","1.28","2.16","2.05","1.25","2.13","2.02","1.23","2.10",
+"1.30","2.17","2.06","1.26","2.14","2.04","1.24","2.11","1.31","2.19",
+"2.08","1.27","2.15","2.05","1.25","2.13","2.02","1.22","2.10","1.29",
+"2.17","2.06","1.27","2.14","2.03","1.24","2.12","1.31","2.18","2.08",
+"1.28","2.15","2.05","1.25","2.13","2.02","1.21","2.09","1.30","2.17",
+"2.06","1.27","2.15","2.03","1.23","2.11","1.31","2.18","2.07","1.28",
+"2.16","2.05","1.25","2.13","2.02","2.20","2.09","1.29","2.17","2.06",
+"1.27","2.15","2.04","1.23","2.10","1.31","2.19","2.07","1.28","2.16", /*1900->1999*/
+"2.05","1.24","2.12","2.01","1.22","2.09","1.29","2.18","2.07","1.26", /* 2000-> */
+"2.14","2.03","1.23","2.10","1.31","2.19","2.08","1.28","2.16","2.05", /* 10-19 */
+"1.25","2.12","2.01","1.22","2.10","1.29","2.17","2.06","1.26","2.13"  /* 20-29 */
+);
+var shio = ['Tikus','Lembu','Macan','Kelinci','Naga','Ular','Kuda','Domba','Monyet','Ayam Jantan','Anjing','Babi'];
+var shioArray = ['0','1','2','3','4','5','6','7','8','9','10','11'];
+var y_select = data.getFullYear();
+var m_select = data.getMonth()+1;
+var d_select = data.getDate();
+var cYear;
+var anYear;
+var edgeMonth,edgeDay;
+if((y_select!="")&&(m_select!="")&&(d_select!="")){
+edgeMonth=parseInt(cNYstartDate[y_select-1900].substring(0,cNYstartDate[y_select-1900].indexOf(".")));
+if(parseInt(m_select) < edgeMonth){
+cYear=y_select-1;
+}else{
+if(parseInt(m_select) == edgeMonth){
+edgeDay=parseFloat(cNYstartDate[y_select-1900].substring(parseInt(cNYstartDate[y_select-1900].indexOf("."))+1,cNYstartDate[y_select-1900].length));
+if( parseInt(d_select)<edgeDay){
+cYear=y_select-1;
+}else{cYear=y_select;}
+}else{ cYear=y_select;}
+}
+if(y_select<1900){
+alert("Maaf, tidak ada info untuk tanggal ini, karena sebelum 1900, menurut kalender Cina. Tahun baru Cina dimulai pada 31 Januari di Tahun 1900.");
+}else{
+anYear=(cYear-4)%12;
+return shioArray[anYear];
+}}}
+/* End Shio Reading */
+/* Start Weton Reading */
+function getWetonNumber(m,n) {
+return "Minggu" == m ? idH = 5 : "Senin" == m ? idH = 4 : "Selasa" == m ? idH = 3 : "Rabu" == m ? idH = 7 : "Kamis" == m ? idH = 8 : "Jumat" == m ? idH = 6 : "Sabtu" == m && (idH = 9), "Pahing" == n ? idP = 9 : "Pon" == n ? idP = 7 : "Wage" == n ? idP = 4 : "Kliwon" == n ? idP = 8 : "Legi" == n && (idP = 5), idH + idP;
+}
+function getWetonJdhReading(){
+var w1=getWetonNumber(strNamaHariFemale,namaPasaranJawa[strHariJawaFemale]);
+var w2=getWetonNumber(strNamaHariMale,namaPasaranJawa[strHariJawaMale]);
+var indexTotal = parseInt(w1)+parseInt(w2);
+var hsb = indexTotal / 7;
+var weton = Math.round(7 * (hsb - Math.floor(hsb)));
+var read = new Array();
+read[0]="Keluarga anda sebenarnya pandai mencari penghasilan, bisa kaya tapi sering ditipu atau dikecewakan orang. Bisa langgeng asal selalu bersyukur, sabar dan memaafkan. Sebutan untuk pasangan ini: <u>Garangan Macan.</u>";
+read[1]="Keluarga anda besar wibawanya dan luas pengalamannya, tetapi rejeki agak sulit. Jika punya anak satu, kalau laki-laki, ayahnya yang kalah. Kalo perempuan, ibunya yang kalah. Jika tidak sabar bisa bercerai. Sebutan untuk pasangan ini: <u>Pisang Pinugel</u>";
+read[2]="Keluarga anda akan tenang, tentram, dan selamat serta bahagia rumah tangganya, serta mendapat rejeki yang langsung dan lumintu. Bisa jadi pengayoman sanak saudara. Sebutan untuk pasangan ini: <u>Sanggar Waringin</u>";
+read[3]="Keluarga anda akan selalu mendapat kemuliaan dan mendapat kehormatan. Kehidupan terang, tapi banyak berandai-andai (menghayal). Cepat kaya tapi sering kemalingan. Sebutan untuk pasangan ini: <u>Gedong Rembulan</u>";
+read[4]="Keluarga anda bisa menjadi pemimpin dan memberi teladan pada tetangga disekitarnya, tetapi panas di tempat tidur, artinya sering sakit-sakitan, selalu gelisah, dan sering beda pendapat dengan pasangan. Sebutan untuk pasangan ini: <u>Bale Kedhawang</u>";
+read[5]="Keluarga anda akan selamat, tapi tidak kuat kaya, jika ada uang lebih akan cenderung untuk membelanjakannya. Kalo punya anak, sesudah dewasa akan timbul masalah yang cukup berat. Seringkali mengalami kesulitan dan mendapat malu. Sebutan untuk pasangan ini: <u>Gajah Plasungan</u>";
+read[6]="Keluarga anda bisa cari penghasilan, tapi tidak bisa menyimpan uang, jika ada uang lebih akan cenderung untuk membelanjakannya. Banyak pertentangan pendapat, agak gelap hati tapi tabah dalam menghadapi segala penderitaan. Sebutan untuk pasangan ini: <u>Warak Pangrungrungan</u>";
+return read[weton];
+}
+/* End Weton Reading */
+$(document).ready(function(){initialSetDateJodoh();});
 //]]>
