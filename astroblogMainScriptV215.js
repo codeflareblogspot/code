@@ -157,7 +157,7 @@ var name = "data=";
 var str = decodeURIComponent(document.location.href);
 var res="";var initialDate=new Array;
 if(str.match(name)){
-res = str.substring(str.lastIndexOf(str.match(name))+5,str.length);
+res = str.substring(str.lastIndexOf(str.match(name)) + name.length,str.length);
 initialDate=res.split(";");
 initialDate[0]=window.atob(initialDate[0]);
 initialDate[1]=window.atob(initialDate[1]);
@@ -195,7 +195,7 @@ $("#fBtnAstClear").on("click", function(){deleteCookie();});
 $("#fBtnAstShare").on("click", function(){
 var username = $('#fAstName').val();
 if (username != "" && username != null && username !="Nama Lengkap" && username.length != 1) {
-var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
+var dataAstrologi=(window.location.hostname)+"/#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
 var addQuotes = 'whatsapp://send?phone=&text='+a;
