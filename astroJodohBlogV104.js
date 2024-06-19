@@ -77,6 +77,9 @@ if(initialDate[2]!=""&&initialDate[2]!=null){$("#fAstNameMale").val(initialDate[
 if(initialDate[3]!=""&&initialDate[3]!=null){
 $("#fAstDateMale").datepicker("setDate",initialDate[3]);
 runKalkulasiJodoh();
+$("#fAstName").val($("#fAstNameFemale").val());
+$("#fAstDate").datepicker("setDate",$("#fAstDateFemale").datepicker('getDate'));
+runAstrologi();
 }
 if(initialDate[4]!=""&&initialDate[4]!=null&&contentAPN1Jodoh!=initialDate[4]){
 contentAPN2Jodoh=initialDate[4];
