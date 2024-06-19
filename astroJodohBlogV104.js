@@ -148,7 +148,7 @@ var usernameF = $('#fAstNameFemale').val();
 var tglLahirF = $('#fAstDateFemale').val();
 var usernameM = $('#fAstNameMale').val();
 var tglLahirM = $('#fAstDateMale').val();
-var dataAstrologi=(window.location.hostname)+"/#datajdh="+(window.btoa(usernameF))+";"+(window.btoa(tglLahirF))+";"+(window.btoa(usernameM))+";"+(window.btoa(tglLahirM))+";"+contentAPN1Jodoh;
+var dataAstrologi=(window.location.hostname)+"#datajdh="+(window.btoa(usernameF))+";"+(window.btoa(tglLahirF))+";"+(window.btoa(usernameM))+";"+(window.btoa(tglLahirM))+";"+contentAPN1Jodoh;
 var a = 'Kalkulasi Jodoh Online%0A%0AHasil kalkulasi bisa dilihat pada link :%0A'+escape(dataAstrologi)+'%0A%0ADikirim via :%0A'+escape(window.location.hostname);
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
 var addQuotes = 'whatsapp://send?phone=&text='+a;
