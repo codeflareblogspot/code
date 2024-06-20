@@ -83,10 +83,8 @@ runAstrologi();
 }
 if(initialDate[4]!=""&&initialDate[4]!=null&&contentAPN1Jodoh!=initialDate[4]){
 contentAPN2Jodoh=initialDate[4];
-$("#"+contentAPIdJodoh[contentAPN1Jodoh]).hide("slide",{direction : 'right'}, 500);
 $("#titleHeaderJodoh").hide("slide",{direction : 'right'}, 500,
 function (){$("#titleHeaderJodoh").html(contentAPFJodoh[initialDate[4]]+' '+contentAPTJodoh[initialDate[4]]);});
-$("#"+contentAPIdJodoh[contentAPN2Jodoh]).delay(800).show("slide", 500);
 $("#titleHeaderJodoh").delay(300).show("slide", 500);
 contentAPN1Jodoh=contentAPN2Jodoh;
 $('html, body').animate({ scrollTop: $(".astroBlogMainUIJodoh").offset().top }, 500);
