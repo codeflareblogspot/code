@@ -87,6 +87,8 @@ $("#titleHeaderJodoh").hide("slide",{direction : 'right'}, 500,
 function (){$("#titleHeaderJodoh").html(contentAPFJodoh[initialDate[4]]+' '+contentAPTJodoh[initialDate[4]]);});
 $("#titleHeaderJodoh").delay(300).show("slide", 500);
 contentAPN1Jodoh=contentAPN2Jodoh;
+alert("Kalkulasi Jodoh Online\n\n"+initialDate[0]+" 💗 "+initialDate[2]);
+$('html, body').animate({ scrollTop: $(".astroBlogMainUIJodoh").offset().top }, 500);
 }
 }
 /* End Cookie Time */
