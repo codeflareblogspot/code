@@ -264,7 +264,8 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
     text-align: justify;
 }
 #fWarnaAura{
-background: #fbffca;
+background: #fefefe;
+color:#000;
 }
 #fAstZodiak,#fAstShio,#fAstElemen,#fAstDays,#fAstBio {
     float: left;
