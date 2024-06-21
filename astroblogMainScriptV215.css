@@ -6,7 +6,7 @@
 background: #dbeaff;
 min-height: 350px;
 line-height: inherit;
-padding: 5px;
+padding: 5px 5px 0 5px;
 border: 1px #0083da solid;
 font-family: 'Roboto',sans-serif;
 }
