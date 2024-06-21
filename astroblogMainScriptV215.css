@@ -331,8 +331,9 @@ color: #1e1e1e;
 }
 
 .footerFrmAst {
-    position: relative;
-    clear: both;
+position: relative;
+clear: both;
+margin-top: 5px;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 
@@ -362,8 +363,9 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
 }
 
 .footerAttribution {
-    font-size: 10px;
-    height: 24px;
+font-size: 10px;
+height: 24px;
+padding-top: 4px;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
 .footerAttribution span{margin-right:4px;}
