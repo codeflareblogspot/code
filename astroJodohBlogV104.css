@@ -5,7 +5,7 @@ display:block;
 }
 .mainFrmJodoh{
 border:1px #ff0b75 solid;
-padding:5px;
+padding:5px 5px 0 5px;
 font-family:'Roboto',sans-serif;
 }
 .headerFrmJodoh{
