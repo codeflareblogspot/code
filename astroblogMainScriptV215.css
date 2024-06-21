@@ -364,7 +364,6 @@ display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-cont
 
 .footerAttribution {
 font-size: 10px;
-height: 24px;
 padding-top: 4px;
 display:flex;flex-direction:row;flex-wrap:wrap;align-content:center;justify-content:center;align-items:stretch;
 }
