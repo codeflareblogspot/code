@@ -175,7 +175,7 @@ $("#"+contentAPId[contentAPN2]).delay(800).show("slide", 500);
 $("#titleHeaderAst").delay(300).show("slide", 500);
 contentAPN1=parseInt(contentAPN2);
 }
-if(initialDate[0]!=""&&initialDate[0]!=null){getBioImage();}
+if(str.match(name)){getBioImage();}
 });
 }
 /* End Cookie Time */
