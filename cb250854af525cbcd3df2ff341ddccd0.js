@@ -1,3 +1,4 @@
 function setUserData(){
-console.log("sukses ambil data user");
+var codeflare_OATH="getUserDataListActive";
+return codeflare_OATH;
 }
