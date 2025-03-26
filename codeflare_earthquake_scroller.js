@@ -1,14 +1,16 @@
 var dataShow=3;  //Show Data Number
 var dataTime=10;  //Timer to Replace Data in Second
 
-function posGempaHeadTick(event,id) {
-var w = document.querySelector(elmCflBoundary).offsetWidth;
+function posGempaHeadTick(event) {
+var w = window.innerWidth || html.clientWidth  || body.clientWidth  || screen.availWidth;
 var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen.availHeight;
-var elw = document.querySelector('.dataInfoGempaHeadTick').eq(id-1).offsetWidth;
-var elh = document.querySelector('.dataInfoGempaHeadTick').eq(id-1).offsetHeight;
-var l=event.clientX + 10;
-var t=event.clientY + 30;
-if((t + elh + 30) > h){t=t - elh - 40;}
+var elw = document.querySelector('#detailGempaHeadTick').offsetWidth;
+var elh = document.querySelector('#detailGempaHeadTick').offsetHeight;
+var elwx = document.querySelector('#detailGempaHeadTick').width();
+var elwy = document.querySelector('#detailGempaHeadTick').height();
+var l=event.clientX - (elwx/2);
+var t=event.clientY + 10;
+if((t + elh + elwy) > h){t=t - elwy - 40;}
 if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
@@ -16,8 +18,8 @@ $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
 $('#detailGempaHeadTick'+x).show();
-posGempaHeadTick(event,x);
 $('#detailGempaHeadTick').show();
+posGempaHeadTick(event);
 }
 function closeDataHeadTick(x){
 $('#detailGempaHeadTick'+x).hide();
