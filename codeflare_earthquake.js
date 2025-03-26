@@ -24,7 +24,7 @@ function closeDataHeadTick(x){$('.dataInfoGempaHeadTick').eq(x).find('#detailGem
 function openGMap(x,y){
 PopupCenter('https://maps.google.com/maps?q='+x+','+y+'&hl=id&z=0','CodeFlare | Gempa Bumi Terkini',800,600);}
 var tickDataLength='';
-var tickDataTime=dataTime*1000;
+var tickDataTime=10000;
 function startTickData(){
 var b=$('.daftarInfoGempa');
 b.eq(0).hide( "slow", function () {
