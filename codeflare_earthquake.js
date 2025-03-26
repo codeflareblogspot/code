@@ -37,8 +37,7 @@ if(tickDataLength>dataShow){
 for(var i=dataShow;i<tickDataLength;i++){$('.daftarInfoGempa').eq(i).css('display','none');}
 }startTickData();}
 $(document).ready(function(){tickerData();});
-</script>
-<script>
+
 const scrollers = document.querySelectorAll(".scroller");
 // If a user hasn't opted in for recuded motion, then we add the animation
 if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
