@@ -1,4 +1,4 @@
-#codeflareInfoGempaHeadlineTicker{margin:0;}
+#codeflareInfoGempaHeadlineTicker{margin:0;width:max-content;}
 #codeflareInfoGempaHeadlineTicker > li::before{all:unset;content:none;}
 .scroller {
 max-width: 100%;
