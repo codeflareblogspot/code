@@ -4,8 +4,8 @@ var dataTime=10;  //Timer to Replace Data in Second
 function posGempaHeadTick(event,id) {
 var w = document.querySelector(elmCflBoundary).offsetWidth;
 var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen.availHeight;
-var elw = document.querySelector('#detailGempaHeadTick'+id).offsetWidth;
-var elh = document.querySelector('#detailGempaHeadTick'+id).offsetHeight;
+var elw = document.querySelector('.dataInfoGempaHeadTick').eq(id-1).offsetWidth;
+var elh = document.querySelector('.dataInfoGempaHeadTick').eq(id-1).offsetHeight;
 var l=event.clientX + 10;
 var t=event.clientY + 30;
 if((t + elh + 30) > h){t=t - elh - 40;}
