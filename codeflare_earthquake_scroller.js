@@ -3,7 +3,7 @@ var dataTime=10;  //Timer to Replace Data in Second
 
 function openDataHeadTick(x){
 $('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).show();
-$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).css({'position':'fixed','top':'calc(50% - 122px)','left':'calc(50% - 169px)'});
+$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).css({'position':'fixed','top':'calc(50% - 122px)','left':'calc(50% - 169px)','z-index':'+999999'});
 }
 function closeDataHeadTick(x){$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).hide();}
 function openGMap(x,y){
