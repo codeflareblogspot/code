@@ -1,9 +1,15 @@
 var dataShow=3;  //Show Data Number
 var dataTime=10;  //Timer to Replace Data in Second
 
+function posGempaHeadTick(event) {
+    let x = event.clientX;
+    let y = event.clientY;
+    $('#detailGempaHeadTick').css({'position':'fixed','top':y+10+'px','left':x+169+'px','z-index':'+999999'});
+}
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
 $('#detailGempaHeadTick'+x).show();
+posGempaHeadTick(e);
 $('#detailGempaHeadTick').show();
 }
 function closeDataHeadTick(x){
