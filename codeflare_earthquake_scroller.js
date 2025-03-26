@@ -7,8 +7,8 @@ var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen
 var elw = document.querySelector('#detailGempaHeadTick').offsetWidth;
 var elh = document.querySelector('#detailGempaHeadTick').offsetHeight;
 var l=event.clientX;
-var t=event.clientY + 10;
-if((t + elh ) > h){t=t - elh - 20;}
+var t=event.clientY + 40;
+if((t + elh ) > h){t=t - elh - 40;}
 if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw)/2);}
 else if(l+elw > w){l=l-(elw);}
 $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
