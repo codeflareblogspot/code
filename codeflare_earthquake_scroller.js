@@ -6,11 +6,9 @@ var w = window.innerWidth || html.clientWidth  || body.clientWidth  || screen.av
 var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen.availHeight;
 var elw = document.querySelector('#detailGempaHeadTick').offsetWidth;
 var elh = document.querySelector('#detailGempaHeadTick').offsetHeight;
-var elwx = document.querySelector('#detailGempaHeadTick').width();
-var elwy = document.querySelector('#detailGempaHeadTick').height();
-var l=event.clientX - (elwx/2);
+var l=event.clientX - (elw/2);
 var t=event.clientY + 10;
-if((t + elh + elwy) > h){t=t - elwy - 40;}
+if((t + elh ) > h){t=t - 40;}
 if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
 else if(l+elw > w){l=l-(elw+20);}
 $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
