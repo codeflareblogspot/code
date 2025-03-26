@@ -18,3 +18,4 @@ tmpDataList += '��Potensi Tsunami: '+data.Infogempa.gempa[i].Potensi;
 tmpDataList += '</div></div>';
 tmpDataList += '</li>';}
 $('#codeflareInfoGempaHeadlineTicker').html(tmpDataList);});
+$('<div id="detailGempaHeadTick"></div>').appendTo('body');
