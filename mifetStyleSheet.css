@@ -40,7 +40,7 @@ border-style: solid;
 font:14px Roboto, Tahoma, Monospace;
 }
 
-#txtChkD,#txtChkLF,.mainMenuImgBtn button:hover,#btnCloseAbout,.btnTitleMifetDialogBox {cursor: pointer;}
+#txtChkD,#txtChkLF,.mainMenuImgBtn button:hover,#btnCloseAbout,.btnTitleMifetDialogBox {cursor:pointer;color:#000;}
 #thumbImg,.infoBtmBtn,.titleAboutMifet {border: 1px solid #ccc;}
 #btnCloseAbout,.titleThumbImg,.infoBtmBtn,#enableBtn {font-family: Roboto, Tahoma, Monospace;font-weight: 400;}
 #btnCloseAbout,.titleThumbImg,.infoBtmBtn,#enableBtn {font-size: 12px;}
