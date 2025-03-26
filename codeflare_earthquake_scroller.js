@@ -15,11 +15,13 @@ $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
 }
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
+$('#detailGempaHeadTick').css({'position':'fixed'});
 $('#detailGempaHeadTick'+x).show();
 $('#detailGempaHeadTick').show();
 posGempaHeadTick(event);
 }
 function closeDataHeadTick(x){
+$('#detailGempaHeadTick').css({'position':'relative'});
 $('#detailGempaHeadTick'+x).hide();
 $('#detailGempaHeadTick').hide();
 }
