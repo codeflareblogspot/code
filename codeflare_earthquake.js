@@ -19,4 +19,3 @@ tmpDataList += '</div></div>';
 tmpDataList += '</li>';}
 $('#codeflareInfoGempaHeadlineTicker').html(tmpDataList);});
 $('<div id="detailGempaHeadTick" style="display:none;"></div>').appendTo('body');
-$('#detailGempaHeadTick').css({'position':'fixed','top':'calc(50% - 122px)','left':'calc(50% - 169px)','z-index':'+999999'});
