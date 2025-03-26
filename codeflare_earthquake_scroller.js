@@ -3,11 +3,11 @@ var dataTime=10;  //Timer to Replace Data in Second
 
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
-$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).show();
+$('#detailGempaHeadTick'+x).show();
 $('#detailGempaHeadTick').show();
 }
 function closeDataHeadTick(x){
-$('.dataInfoGempaHeadTick,').eq(x).find('#detailGempaHeadTick'+x).hide();
+$('#detailGempaHeadTick'+x).hide();
 $('#detailGempaHeadTick').hide();
 }
 function openGMap(x,y){
