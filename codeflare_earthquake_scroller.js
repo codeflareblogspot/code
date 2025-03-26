@@ -2,6 +2,7 @@ var dataShow=3;  //Show Data Number
 var dataTime=10;  //Timer to Replace Data in Second
 
 function openDataHeadTick(x){
+$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).appendTo('body');
 $('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).show();
 $('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).css({'position':'fixed','top':'calc(50% - 122px)','left':'calc(50% - 169px)','z-index':'+999999'});
 }
