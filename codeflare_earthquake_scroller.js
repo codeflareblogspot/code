@@ -3,9 +3,13 @@ var dataTime=10;  //Timer to Replace Data in Second
 
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
+$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).show();
 $('#detailGempaHeadTick').show();
 }
-function closeDataHeadTick(x){$('.dataInfoGempaHeadTick').eq(x).find('#detailGempaHeadTick'+x).hide();}
+function closeDataHeadTick(x){
+$('.dataInfoGempaHeadTick,').eq(x).find('#detailGempaHeadTick'+x).hide();
+$('#detailGempaHeadTick').hide();
+}
 function openGMap(x,y){
 PopupCenter('https://maps.google.com/maps?q='+x+','+y+'&hl=id&z=0','CodeFlare | Gempa Bumi Terkini',800,600);}
 var tickDataLength='';
