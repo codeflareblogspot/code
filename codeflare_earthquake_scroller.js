@@ -9,7 +9,7 @@ function posGempaHeadTick(event) {
 function openDataHeadTick(x){
 $('#detailGempaHeadTick'+x).appendTo($('#detailGempaHeadTick'));
 $('#detailGempaHeadTick'+x).show();
-posGempaHeadTick();
+posGempaHeadTick(event);
 $('#detailGempaHeadTick').show();
 }
 function closeDataHeadTick(x){
