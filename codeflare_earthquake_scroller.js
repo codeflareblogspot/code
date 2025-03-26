@@ -6,11 +6,11 @@ var w = window.innerWidth || html.clientWidth  || body.clientWidth  || screen.av
 var h = window.innerHeight || html.clientHeight  || body.clientHeight  || screen.availHeight;
 var elw = document.querySelector('#detailGempaHeadTick').offsetWidth;
 var elh = document.querySelector('#detailGempaHeadTick').offsetHeight;
-var l=event.clientX;
-var t=event.clientY + 20;
-if((t + elh + 20) > h){t=t - elh - 40;}
-if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw)/2);}
-else if(l+elw > w){l=l-(elw);}
+var l=event.clientX + 10;
+var t=event.clientY + 30;
+if((t + elh + 30) > h){t=t - elh - 40;}
+if(l > ((w/2)-(elw/2)) && l < ((w/2)+(elw/2))){l=l-((elw+20)/2);}
+else if(l+elw > w){l=l-(elw+20);}
 $('#detailGempaHeadTick').css({'top':t+'px','left':l+'px'});
 }
 function openDataHeadTick(x){
