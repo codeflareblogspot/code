@@ -1,3 +1,6 @@
+var dataShow=3;  //Show Data Number
+var dataTime=10;  //Timer to Replace Data in Second
+
 $.getJSON( "https://data.bmkg.go.id/DataMKG/TEWS/gempaterkini.json", function(data) {
 var tmpDataList='';
 for(var i=0;i<data.Infogempa.gempa.length;i++){
@@ -24,7 +27,7 @@ function closeDataHeadTick(x){$('.dataInfoGempaHeadTick').eq(x).find('#detailGem
 function openGMap(x,y){
 PopupCenter('https://maps.google.com/maps?q='+x+','+y+'&hl=id&z=0','CodeFlare | Gempa Bumi Terkini',800,600);}
 var tickDataLength='';
-var tickDataTime=10000;
+var tickDataTime=dataTime*10000;
 function startTickData(){
 var b=$('.daftarInfoGempa');
 b.eq(0).hide( "slow", function () {
