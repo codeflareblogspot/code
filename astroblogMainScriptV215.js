@@ -205,19 +205,26 @@ var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName'
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
 var shareText = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi);
 if (navigator.canShare){
-try {await navigator.share({'', 'codeflare.net', shareText, window.location.hostname});
-console.log('Successfully sent share');
-}
-catch (error){
-console.log('Error sharing: ' + error);
-if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
-chkBrowserAst(addQuotes,800,600);
-}}else{
+testWebShare('','codeflare.net',shareText,window.location.hostname,a);
+}else{
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
 else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
 chkBrowserAst(addQuotes,800,600);
 }
 });
+
+async function testWebShare(f,t,x,u,a) {
+try {
+await navigator.share({f, t, x, u});
+console.log('Successfully sent share');
+} catch (error) {
+console.log('Error sharing: ' + error);
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
+else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
+chkBrowserAst(addQuotes,800,600);
+}
+}
+
 function chkBrowserAst(e,w,h){
 var chkAgent=navigator.userAgent.toLowerCase();
 var isChkMobile = 
