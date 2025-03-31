@@ -195,7 +195,8 @@ $(document).ready(function(){$('#menuHeaderAst').click(function(){$('.nav-iconba
 $("#fBtnAstSubmit").on("click", function(){getBioImage();});
 $("#fBtnAstSave").on("click", function(){checkCookie();});
 $("#fBtnAstClear").on("click", function(){deleteCookie();});
-$("#fBtnAstShare").on("click", function(){
+const shareButton = document.querySelector('#fBtnAstShare');
+shareButton.addEventListener('click', event => {
 var username = $('#fAstName').val();
 if (username == "" && username == null && username =="Nama Lengkap" && username.length < 2){
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
@@ -204,26 +205,20 @@ $("#fAstName").trigger( "focus" );return;
 var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
 var shareText = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi);
-if (navigator.canShare){
-testWebShare('','codeflare.net',shareText,window.location.hostname,a);
-}else{
+if (navigator.share) {
+    navigator.share({
+      title: 'WebShare API Demo',
+      url: 'https://codepen.io/ayoisaiah/pen/YbNazJ'
+    }).then(() => {
+      console.log('Thanks for sharing!');
+    })
+    .catch(console.error);
+  } else {
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
 else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
 chkBrowserAst(addQuotes,800,600);
-}
+  }
 });
-
-async function testWebShare(f,t,x,u,a) {
-try {
-await navigator.share({f, t, x, u});
-console.log('Successfully sent share');
-} catch (error) {
-console.log('Error sharing: ' + error);
-if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
-else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
-chkBrowserAst(addQuotes,800,600);
-}
-}
 
 function chkBrowserAst(e,w,h){
 var chkAgent=navigator.userAgent.toLowerCase();
