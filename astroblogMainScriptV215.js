@@ -1,8 +1,11 @@
 //<![CDATA[
 /* Start Version */
-var appCFAstVer='2.8.8';
+var appCFAstVer='2.8.9';
 /* End Version */
 /* Start Initial Date Value */
+if (navigator.canShare) {
+$('#fBtnAstShare > i').removeClass('fa-whatsapp').addClass('fa-share-alt');
+}
 $("#fAstDate,#nowDateAst").datepicker({
 changeMonth: true,
 changeYear: true,
