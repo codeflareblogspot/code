@@ -200,13 +200,23 @@ var username = $('#fAstName').val();
 if (username != "" && username != null && username !="Nama Lengkap" && username.length != 1) {
 var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
-if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){
-var addQuotes = 'whatsapp://send?phone=&text='+a;
+var shareText = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi);
+if (navigator.canShare) {
+try {
+        await navigator.share({'', 'codeflare.net', shareText, window.location.hostname});
+        console.log('Successfully sent share');
+      } catch (error) {
+        console.log('Error sharing: ' + error);
+	if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
+	else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
+	chkBrowserAst(addQuotes,800,600);
+      }
 }else{
-var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;
-}
+if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)){var addQuotes = 'whatsapp://send?phone=&text='+a;}
+else{var addQuotes = 'https://web.whatsapp.com/send?phone=&text='+a;}
 chkBrowserAst(addQuotes,800,600);
-}else{
+}}
+else{
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
 $("#fAstName").trigger( "focus" );
 }});
