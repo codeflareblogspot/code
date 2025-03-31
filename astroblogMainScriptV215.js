@@ -208,8 +208,7 @@ var shareText = 'ASTROLOGI reading for ' + $('#fAstName').val() + '\n\nDetail So
 if (navigator.share) {
     navigator.share({
       title: 'codeflare.net',
-      text: shareText,
-      url: window.location.hostname
+      text: shareText
     }).then(() => {
       console.log('Thanks for sharing!');
     })
