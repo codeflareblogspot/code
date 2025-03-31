@@ -197,7 +197,7 @@ $("#fBtnAstSave").on("click", function(){checkCookie();});
 $("#fBtnAstClear").on("click", function(){deleteCookie();});
 $("#fBtnAstShare").on("click", function(){
 var username = $('#fAstName').val();
-if (username != "" && username != null && username !="Nama Lengkap" && username.length != 1){
+if (username == "" && username == null && username =="Nama Lengkap" && username.length < 2){
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
 $("#fAstName").trigger( "focus" );return;
 }
