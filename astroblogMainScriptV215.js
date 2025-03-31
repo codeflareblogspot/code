@@ -200,15 +200,17 @@ shareButton.addEventListener('click', event => {
 var username = $('#fAstName').val();
 if (username == "" && username == null && username =="Nama Lengkap" && username.length < 2){
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
-$("#fAstName").trigger( "focus" );return;
+$("#fAstName").trigger( "focus" );
+return;
 }
 var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
 var shareText = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi);
 if (navigator.share) {
     navigator.share({
-      title: 'WebShare API Demo',
-      url: 'https://codepen.io/ayoisaiah/pen/YbNazJ'
+      title: 'codeflare.net',
+      text: shareText,
+      url: window.location.hostname
     }).then(() => {
       console.log('Thanks for sharing!');
     })
