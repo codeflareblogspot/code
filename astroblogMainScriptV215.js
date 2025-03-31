@@ -198,14 +198,13 @@ $("#fBtnAstClear").on("click", function(){deleteCookie();});
 const shareButton = document.querySelector('#fBtnAstShare');
 shareButton.addEventListener('click', event => {
 var username = $('#fAstName').val();
-if (username == "" || username == null || username =="Nama Lengkap" || username.length < 2){
+if (username == "" || username == null || username.toLowerCase() =="nama lengkap"){
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
-$("#fAstName").trigger( "focus" );
-return;
-}
+$("#fAstName").trigger( "focus" );return;}
+if (username.length < 3){alert("Silakan ketik nama anda dengan benar!");return;}
 var dataAstrologi=(window.location.hostname)+"#data="+(window.btoa($('#fAstName').val()))+";"+(window.btoa($('#fAstDate').val()))+";"+contentAPN1;
 var a = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi)+'%0A%0ASend from :%0A'+escape(window.location.hostname);
-var shareText = 'ASTROLOGI reading for '+escape($('#fAstName').val())+'%0A%0ADetail Source :%0A'+escape(dataAstrologi);
+var shareText = 'ASTROLOGI reading for ' + $('#fAstName').val() + '\n\nDetail Source : \n' + dataAstrologi;
 if (navigator.share) {
     navigator.share({
       title: 'codeflare.net',
