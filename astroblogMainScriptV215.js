@@ -198,7 +198,7 @@ $("#fBtnAstClear").on("click", function(){deleteCookie();});
 const shareButton = document.querySelector('#fBtnAstShare');
 shareButton.addEventListener('click', event => {
 var username = $('#fAstName').val();
-if (username == "" && username == null && username =="Nama Lengkap" && username.length < 2){
+if (username == "" || username == null || username =="Nama Lengkap" || username.length < 2){
 alert("Silakan ketik nama anda terlebih dahulu dan pilih tanggal lahir anda !");
 $("#fAstName").trigger( "focus" );
 return;
