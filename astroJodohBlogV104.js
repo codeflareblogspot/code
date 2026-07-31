@@ -161,7 +161,7 @@ chkBrowserAst(addQuotes,800,600);
 
 var shioJodoh = ['Tikus','Lembu','Macan','Kelinci','Naga','Ular','Kuda','Domba','Monyet','Ayam Jantan','Anjing','Babi'];
 var weekdayJodohBlog=new Array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
-var namaPasaranJawa = ["Legi", "Pahing", "Pon", "Wage", "Kliwon"];
+var namaPasaranJawa = ["Legi", "Pahing", "Pon", "Wage", "Kliwon", "Legi", "Pahing"];
 var neptuPasaranJawa=[0,5,9,7,4,8];
 var neptuPasaranMasehi=[5,4,3,7,8,6,9];
 var primaJodoh=[2,3,5,7,11,13,17,19,23,29,31];
