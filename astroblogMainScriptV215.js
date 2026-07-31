@@ -518,6 +518,7 @@ strNeptuWeton[1]="Anda termasuk orang yang berotak, cerdas dan tidak mudah terpe
 strNeptuWeton[2]="Anda termasuk orang yang cerdas, pandai mencari rejeki dan tidak boros. Berani berkorban, banyak bicara, suka memamerkan harta kekayaan dan yang perlu diingat adalah jika anda marah sangat menakutkan!";
 strNeptuWeton[3]="Anda termasuk orang yang memiliki pendirian teguh dan tidak mudah terpengaruh oleh orang lain, tidak banyak bicara namun berhati keras. Sayangnya, dalam beberapa hal sepertinya anda sedikit lemah dalam berpikir.";
 strNeptuWeton[4]="Anda termasuk orang yang cerdas, pandai bicara dan pandai dalam mencari rejeki sekalipun anda tidak pandai menyimpan uang (alias boros). Anda termasuk tipe orang yang suka menolong, namun demikian sifat anda yang mudah tersinggung perlu untuk dikendalikan.";
+strNeptuWeton[5]=strNeptuWeton[0];strNeptuWeton[6]=strNeptuWeton[1];strNeptuWeton[7]=strNeptuWeton[2];strNeptuWeton[8]=strNeptuWeton[3];strNeptuWeton[9]=strNeptuWeton[4];
 var pN = ["", "Pahing", "Pon", "Wage", "Kliwon","Legi"];
 var pScL = (((new Date(strYear+','+strMonth+','+strDate).getTime() - new Date(100, 0, 1).getTime()) / (24 * 60 * 60 * 1000)) % 5);
 var nameOfDay = new Date(strYear+','+strMonth+','+strDate);
