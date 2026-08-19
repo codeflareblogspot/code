@@ -1,1 +1,584 @@
-function relatedPostsWidget(a){(function(e){var f={blogURL:"",maxPosts:7,maxTags:7,maxPostsPerTag:7,listWidth:175,containerIds:"#comments",containerSelector:"#related_posts",tags:null,loadingText:"Loading...",loadingClass:"",relevantTip:"",MonthNames:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],rlt_summary:100,ShowDate:true,relatedTitle:'<i class="fa fa-fire" aria-hidden="true"></i> Related Posts',readMoretext:" [...]",rlpBlank:"",rlt_thumb:200,recentTitle:'<i class="fa fa-fire" aria-hidden="true"></i> Recent Posts',postScoreClass:"",autoWidth:true,onLoad:false};f=e.extend({},f,a);var k=0,b=null,g=null;function U(a){if(!a)return"";try{var b=new URL(a,location.href);return b.hostname.toLowerCase().replace(/^www\./,"")+b.pathname.toLowerCase().replace(/\/+/g,"/").replace(/\/$/,"")}catch(c){return String(a).toLowerCase().replace(/^https?:\/\//,"").replace(/^www\./,"").split("?")[0].split("#")[0].replace(/\/$/,"")}}var P=U(e('link[rel="canonical"]').attr("href")||location.href);function X(a){return U(a)===P}e(f.containerSelector).length||e(f.containerIds).before('<div id="'+f.containerSelector.substring(1)+'"></div>');var c=function(a){k++;if(a.feed.entry)for(var d=0;d<a.feed.entry.length;d++){var h=a.feed.entry[d],q="",p,C,o,B,n,t,A,v,y;for(var u=0;u<h.link.length;u++)if("alternate"==h.link[u].rel){q=h.link[u].href;break}if(!q||X(q))continue;o="content"in h?h.content.$t:"summary"in h?h.summary.$t:"";var l=/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,r=e("<div></div>").append(o.replace(l,""));B=r.find("img");"media$thumbnail"in h?(p=h.media$thumbnail.url.replace(/=s[0-9]+\-c/g,"=s"+f.rlt_thumb),p=p.replace(/\/s[0-9]+\-c/g,"/s"+f.rlt_thumb)):p=B.length?B[0].src:f.rlpBlank;o=o.replace(/<\S[^>]*>/g,"");o.length>f.rlt_summary&&(o=o.substring(0,f.rlt_summary));C=h.title.$t;y=h.published.$t.substring(0,10);n=y.substring(0,4);t=y.substring(5,7);A=y.substring(8,10);v=f.MonthNames[parseInt(t,10)-1];i(q,C,p,o,n,A,v)}k>=f.tags.length&&(g.attr("class",""),e("#related-posts-loadingtext",b).remove(),f.maxPosts>0&&e("li:gt("+(f.maxPosts-1)+")",g).remove())},i=function(a,d,h,c,n,l,m){if(X(a))return;var p=e("li",g);for(var q=0;q<p.length;q++){var r=e("a",p.eq(q)).first(),s=r.attr("href");if(s&&U(s)===U(a)){var t=j(r);hS(r,++t);for(var v=q-1;v>=0;v--){var w=e("a",p.eq(v)).first();if(j(w)>t){q-v>1&&p.eq(v).after(p.eq(q));return}}q>0&&p.eq(0).before(p.eq(q));return}}g.append('<li><div class="inner"><a class="titleRelatedPost" href="'+a+'" title="'+(f.relevantTip?f.relevantTip.replace("\\d",1):"")+'"><span class="imageRP"><img alt="'+d.replace(/"/g,"&quot;")+'" src="'+h+'"/></span><strong>'+d+"</strong></a><p>"+c+'<a title="'+d.replace(/"/g,"&quot;")+'" href="'+a+'">'+f.readMoretext+"</a>"+(f.ShowDate?'<span class="date"><strong>'+l+"</strong><span>"+m+"</span><span>"+n+"</span></span>":"")+"</p></div></li>")},j=function(a){var b=parseInt(a.attr("score"),10);return b>0?b:1},hS=function(a,b){a.attr("score",b);f.relevantTip&&a.attr("title",f.relevantTip.replace("\\d",b));f.postScoreClass&&a.attr("class",f.postScoreClass+b)},d=function(){if("#related_posts"!=f.containerSelector){var a=e(f.containerSelector);if(1!=a.length)return;b=e('<div id="related_posts"></div>').appendTo(a)}else b=e(f.containerSelector);if(!f.tags){f.tags=[];e('a[rel="tag"]:lt('+f.maxTags+")").each(function(){var a=e.trim(e(this).text().replace(/\n/g,""));a&&-1==e.inArray(a,f.tags)&&f.tags.push(a)})}if(0==f.tags.length&&!f.recentTitle)return;0==f.tags.length?e("<div class='rpTitleH2'>"+f.recentTitle+"</div>").appendTo(b):f.relatedTitle&&e("<div class='rpTitleH2'>"+f.relatedTitle+"</div>").appendTo(b);f.loadingText&&e('<div id="related-posts-loadingtext">'+f.loadingText+"</div>").appendTo(b);g=e("<ul "+(f.loadingClass?'class="'+f.loadingClass+'"':"")+"></ul>").appendTo(b);var d=""===f.blogURL?location.protocol+"//"+location.host:f.blogURL;if(0==f.tags.length)f.tags=["__recent__"],e.get(d+"/feeds/posts/default?max-results="+(f.maxPostsPerTag+1)+"&orderby=published&alt=json-in-script",c,"jsonp");else for(var h=0;h<f.tags.length;h++)e.get(d+"/feeds/posts/default/-/"+encodeURIComponent(f.tags[h])+"?max-results="+(f.maxPostsPerTag+1)+"&orderby=published&alt=json-in-script",c,"jsonp")};d()})(jQuery)}jQuery(document).ready(function(){relatedPostsWidget()});
+function relatedPostsWidget(userConfig){
+(function($){
+
+/* =========================
+   CONFIG - MUDAH DIEDIT
+========================= */
+var CONFIG = {
+  blogURL: "",
+  maxPosts: 7,
+  maxTags: 7,
+  maxPostsPerTag: 7,
+  summaryLength: 100,
+  thumbnailSize: 200,
+  showDate: true,
+
+  relatedTitle:
+    '<i class="fa fa-fire" aria-hidden="true"></i> Related Posts',
+
+  recentTitle:
+    '<i class="fa fa-fire" aria-hidden="true"></i> Recent Posts',
+
+  loadingText: "Loading...",
+  readMoreText: " [...]",
+  blankThumbnail: "",
+
+  containerSelector: "#related_posts",
+  insertBefore: "#comments",
+
+  monthNames: [
+    "Jan","Feb","Mar","Apr","May","Jun",
+    "Jul","Aug","Sep","Oct","Nov","Dec"
+  ]
+};
+
+CONFIG = $.extend({}, CONFIG, userConfig);
+
+
+/* =========================
+   VARIABLE
+========================= */
+var requestDone = 0;
+var container = null;
+var list = null;
+
+
+/* =========================
+   NORMALIZE URL
+========================= */
+function normalizeURL(url){
+  if(!url) return "";
+
+  try{
+    var u = new URL(url, location.href);
+
+    return (
+      u.hostname
+        .toLowerCase()
+        .replace(/^www\./,"") +
+
+      u.pathname
+        .toLowerCase()
+        .replace(/\/+/g,"/")
+        .replace(/\/$/,"")
+    );
+
+  }catch(e){
+
+    return String(url)
+      .toLowerCase()
+      .replace(/^https?:\/\//,"")
+      .replace(/^www\./,"")
+      .split("?")[0]
+      .split("#")[0]
+      .replace(/\/$/,"");
+  }
+}
+
+
+/* =========================
+   CURRENT ARTICLE
+========================= */
+var currentURL = normalizeURL(
+  $('link[rel="canonical"]').attr("href") ||
+  location.href
+);
+
+function isCurrentPost(url){
+  return normalizeURL(url) === currentURL;
+}
+
+
+/* =========================
+   CREATE CONTAINER
+========================= */
+if(!$(CONFIG.containerSelector).length){
+  $(CONFIG.insertBefore).before(
+    '<div id="' +
+    CONFIG.containerSelector.replace("#","") +
+    '"></div>'
+  );
+}
+
+
+/* =========================
+   GET SCORE
+========================= */
+function getScore(anchor){
+  var score = parseInt(
+    anchor.attr("score"),
+    10
+  );
+
+  return score > 0 ? score : 1;
+}
+
+
+/* =========================
+   SET SCORE
+========================= */
+function setScore(anchor, score){
+  anchor.attr("score", score);
+}
+
+
+/* =========================
+   ADD POST
+========================= */
+function addPost(
+  url,
+  title,
+  thumbnail,
+  summary,
+  year,
+  day,
+  month
+){
+
+  /* Filter artikel yang sedang dibaca */
+  if(isCurrentPost(url)){
+    return;
+  }
+
+  var items = $("li", list);
+
+  /* Filter duplicate */
+  for(var i = 0; i < items.length; i++){
+
+    var anchor = $("a", items.eq(i)).first();
+    var existingURL = anchor.attr("href");
+
+    if(
+      existingURL &&
+      normalizeURL(existingURL) === normalizeURL(url)
+    ){
+
+      var score = getScore(anchor);
+
+      setScore(anchor, ++score);
+
+      /* Artikel yang lebih relevan naik */
+      for(var x = i - 1; x >= 0; x--){
+
+        var prevAnchor =
+          $("a", items.eq(x)).first();
+
+        if(getScore(prevAnchor) > score){
+
+          if(i - x > 1){
+            items.eq(x).after(
+              items.eq(i)
+            );
+          }
+
+          return;
+        }
+      }
+
+      if(i > 0){
+        items.eq(0).before(
+          items.eq(i)
+        );
+      }
+
+      return;
+    }
+  }
+
+
+  /* =====================
+     OUTPUT HTML
+  ===================== */
+  list.append(
+    '<li>' +
+
+      '<div class="inner">' +
+
+        '<a class="titleRelatedPost" ' +
+        'href="' + url + '">' +
+
+          '<span class="imageRP">' +
+
+            '<img ' +
+            'alt="' +
+            title.replace(/"/g,"&quot;") +
+            '" ' +
+            'src="' +
+            thumbnail +
+            '"/>' +
+
+          '</span>' +
+
+          '<strong>' +
+          title +
+          '</strong>' +
+
+        '</a>' +
+
+        '<p>' +
+
+          summary +
+
+          '<a href="' +
+          url +
+          '" title="' +
+          title.replace(/"/g,"&quot;") +
+          '">' +
+
+            CONFIG.readMoreText +
+
+          '</a>' +
+
+          (
+            CONFIG.showDate
+
+            ? '<span class="date">' +
+
+                '<strong>' +
+                day +
+                '</strong>' +
+
+                '<span>' +
+                month +
+                '</span>' +
+
+                '<span>' +
+                year +
+                '</span>' +
+
+              '</span>'
+
+            : ""
+          ) +
+
+        '</p>' +
+
+      '</div>' +
+
+    '</li>'
+  );
+}
+
+
+/* =========================
+   FEED CALLBACK
+========================= */
+function feedCallback(data){
+
+  requestDone++;
+
+  if(
+    data.feed &&
+    data.feed.entry
+  ){
+
+    $.each(
+      data.feed.entry,
+      function(index, entry){
+
+        var postURL = "";
+
+        /* Get permalink */
+        $.each(
+          entry.link || [],
+          function(i, link){
+
+            if(link.rel === "alternate"){
+              postURL = link.href;
+              return false;
+            }
+
+          }
+        );
+
+
+        /* Current article filter */
+        if(
+          !postURL ||
+          isCurrentPost(postURL)
+        ){
+          return;
+        }
+
+
+        /* Get content */
+        var content =
+          entry.content
+          ? entry.content.$t
+          : entry.summary
+          ? entry.summary.$t
+          : "";
+
+
+        /* Remove script */
+        content = content.replace(
+          /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+          ""
+        );
+
+
+        var temp =
+          $("<div></div>").append(content);
+
+        var images =
+          temp.find("img");
+
+
+        /* Thumbnail */
+        var thumbnail =
+          CONFIG.blankThumbnail;
+
+        if(entry.media$thumbnail){
+
+          thumbnail =
+            entry.media$thumbnail.url
+            .replace(
+              /=s[0-9]+\-c/g,
+              "=s" +
+              CONFIG.thumbnailSize
+            )
+            .replace(
+              /\/s[0-9]+\-c/g,
+              "/s" +
+              CONFIG.thumbnailSize
+            );
+
+        }else if(images.length){
+
+          thumbnail =
+            images[0].src;
+        }
+
+
+        /* Summary */
+        var summary =
+          content.replace(
+            /<\S[^>]*>/g,
+            ""
+          );
+
+        if(
+          summary.length >
+          CONFIG.summaryLength
+        ){
+
+          summary =
+            summary.substring(
+              0,
+              CONFIG.summaryLength
+            );
+        }
+
+
+        /* Date */
+        var published =
+          entry.published.$t.substring(
+            0,
+            10
+          );
+
+        var year =
+          published.substring(0,4);
+
+        var monthNumber =
+          published.substring(5,7);
+
+        var day =
+          published.substring(8,10);
+
+        var month =
+          CONFIG.monthNames[
+            parseInt(
+              monthNumber,
+              10
+            ) - 1
+          ];
+
+
+        addPost(
+          postURL,
+          entry.title.$t,
+          thumbnail,
+          summary,
+          year,
+          day,
+          month
+        );
+
+      }
+    );
+  }
+
+
+  /* Semua feed selesai */
+  if(
+    requestDone >=
+    CONFIG.tags.length
+  ){
+
+    $("#related-posts-loadingtext")
+      .remove();
+
+    if(CONFIG.maxPosts > 0){
+
+      $("li:gt(" +
+        (CONFIG.maxPosts - 1) +
+        ")",
+        list
+      ).remove();
+    }
+  }
+}
+
+
+/* =========================
+   INIT
+========================= */
+function init(){
+
+  container =
+    $(CONFIG.containerSelector);
+
+
+  /* Get labels */
+  if(!CONFIG.tags){
+
+    CONFIG.tags = [];
+
+    $('a[rel="tag"]:lt(' +
+      CONFIG.maxTags +
+      ')'
+    ).each(function(){
+
+      var tag =
+        $.trim(
+          $(this)
+          .text()
+          .replace(/\n/g,"")
+        );
+
+      if(
+        tag &&
+        $.inArray(
+          tag,
+          CONFIG.tags
+        ) === -1
+      ){
+
+        CONFIG.tags.push(tag);
+      }
+
+    });
+  }
+
+
+  /* Header */
+  if(CONFIG.tags.length){
+
+    container.append(
+      '<div class="rpTitleH2">' +
+      CONFIG.relatedTitle +
+      '</div>'
+    );
+
+  }else{
+
+    container.append(
+      '<div class="rpTitleH2">' +
+      CONFIG.recentTitle +
+      '</div>'
+    );
+  }
+
+
+  /* Loading */
+  if(CONFIG.loadingText){
+
+    container.append(
+      '<div id="related-posts-loadingtext">' +
+      CONFIG.loadingText +
+      '</div>'
+    );
+  }
+
+
+  /* List */
+  list =
+    $("<ul></ul>")
+    .appendTo(container);
+
+
+  var blogURL =
+    CONFIG.blogURL ||
+    (
+      location.protocol +
+      "//" +
+      location.host
+    );
+
+
+  /* Recent posts */
+  if(!CONFIG.tags.length){
+
+    CONFIG.tags = [
+      "__recent__"
+    ];
+
+    $.get(
+      blogURL +
+      "/feeds/posts/default" +
+      "?max-results=" +
+      (CONFIG.maxPostsPerTag + 1) +
+      "&orderby=published" +
+      "&alt=json-in-script",
+
+      feedCallback,
+      "jsonp"
+    );
+
+    return;
+  }
+
+
+  /* Related by labels */
+  $.each(
+    CONFIG.tags,
+    function(index, tag){
+
+      $.get(
+        blogURL +
+        "/feeds/posts/default/-/" +
+        encodeURIComponent(tag) +
+
+        "?max-results=" +
+        (CONFIG.maxPostsPerTag + 1) +
+
+        "&orderby=published" +
+        "&alt=json-in-script",
+
+        feedCallback,
+        "jsonp"
+      );
+
+    }
+  );
+}
+
+
+/* =========================
+   START
+========================= */
+init();
+
+})(jQuery);
+}
+
+
+/* =========================
+   RUN
+========================= */
+jQuery(function(){
+
+  relatedPostsWidget();
+
+});
