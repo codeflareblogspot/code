@@ -6,11 +6,26 @@ function relatedPostsWidget(userConfig){
 ========================= */
 var CONFIG = {
   blogURL: "",
+
+  /* Jumlah artikel tampil */
   maxPosts: 7,
+
+  /* Maksimal label yang dibaca */
   maxTags: 7,
+
+  /* Artikel yang diambil per label */
   maxPostsPerTag: 7,
+
+  /* Acak Related Posts */
+  randomPosts: true,
+
+  /* Panjang deskripsi */
   summaryLength: 100,
+
+  /* Ukuran thumbnail */
   thumbnailSize: 200,
+
+  /* Tampilkan tanggal */
   showDate: true,
 
   relatedTitle:
@@ -39,6 +54,7 @@ CONFIG = $.extend({}, CONFIG, userConfig);
    VARIABLE
 ========================= */
 var requestDone = 0;
+var totalRequests = 0;
 var container = null;
 var list = null;
 
@@ -47,10 +63,15 @@ var list = null;
    NORMALIZE URL
 ========================= */
 function normalizeURL(url){
+
   if(!url) return "";
 
   try{
-    var u = new URL(url, location.href);
+
+    var u = new URL(
+      url,
+      location.href
+    );
 
     return (
       u.hostname
@@ -85,7 +106,12 @@ var currentURL = normalizeURL(
 );
 
 function isCurrentPost(url){
-  return normalizeURL(url) === currentURL;
+
+  return (
+    normalizeURL(url) ===
+    currentURL
+  );
+
 }
 
 
@@ -93,11 +119,13 @@ function isCurrentPost(url){
    CREATE CONTAINER
 ========================= */
 if(!$(CONFIG.containerSelector).length){
+
   $(CONFIG.insertBefore).before(
     '<div id="' +
     CONFIG.containerSelector.replace("#","") +
     '"></div>'
   );
+
 }
 
 
@@ -105,20 +133,113 @@ if(!$(CONFIG.containerSelector).length){
    GET SCORE
 ========================= */
 function getScore(anchor){
+
   var score = parseInt(
     anchor.attr("score"),
     10
   );
 
-  return score > 0 ? score : 1;
+  return score > 0
+    ? score
+    : 1;
 }
 
 
 /* =========================
    SET SCORE
 ========================= */
-function setScore(anchor, score){
-  anchor.attr("score", score);
+function setScore(
+  anchor,
+  score
+){
+
+  anchor.attr(
+    "score",
+    score
+  );
+
+}
+
+
+/* =========================
+   RANDOM / SHUFFLE
+========================= */
+function shufflePosts(){
+
+  if(!CONFIG.randomPosts){
+    return;
+  }
+
+  var items =
+    list.children("li").get();
+
+  /*
+   * Fisher-Yates Shuffle
+   */
+  for(
+    var i = items.length - 1;
+    i > 0;
+    i--
+  ){
+
+    var randomIndex =
+      Math.floor(
+        Math.random() *
+        (i + 1)
+      );
+
+    var temp =
+      items[i];
+
+    items[i] =
+      items[randomIndex];
+
+    items[randomIndex] =
+      temp;
+  }
+
+
+  /* Masukkan kembali urutan random */
+  $.each(
+    items,
+    function(){
+
+      list.append(this);
+
+    }
+  );
+
+}
+
+
+/* =========================
+   FINALIZE POSTS
+========================= */
+function finalizePosts(){
+
+  /* Hapus loading */
+  $("#related-posts-loadingtext")
+    .remove();
+
+
+  /* =====================
+     RANDOM
+  ===================== */
+  shufflePosts();
+
+
+  /* =====================
+     BATASI JUMLAH POST
+  ===================== */
+  if(CONFIG.maxPosts > 0){
+
+    list
+      .children("li")
+      .slice(CONFIG.maxPosts)
+      .remove();
+
+  }
+
 }
 
 
@@ -135,54 +256,52 @@ function addPost(
   month
 ){
 
-  /* Filter artikel yang sedang dibaca */
+  /* =====================
+     FILTER CURRENT POST
+  ===================== */
   if(isCurrentPost(url)){
     return;
   }
 
-  var items = $("li", list);
 
-  /* Filter duplicate */
-  for(var i = 0; i < items.length; i++){
+  var items =
+    list.children("li");
 
-    var anchor = $("a", items.eq(i)).first();
-    var existingURL = anchor.attr("href");
+
+  /* =====================
+     FILTER DUPLICATE
+  ===================== */
+  for(
+    var i = 0;
+    i < items.length;
+    i++
+  ){
+
+    var anchor =
+      $("a", items.eq(i))
+      .first();
+
+    var existingURL =
+      anchor.attr("href");
+
 
     if(
       existingURL &&
-      normalizeURL(existingURL) === normalizeURL(url)
+      normalizeURL(existingURL) ===
+      normalizeURL(url)
     ){
 
-      var score = getScore(anchor);
+      var score =
+        getScore(anchor);
 
-      setScore(anchor, ++score);
-
-      /* Artikel yang lebih relevan naik */
-      for(var x = i - 1; x >= 0; x--){
-
-        var prevAnchor =
-          $("a", items.eq(x)).first();
-
-        if(getScore(prevAnchor) > score){
-
-          if(i - x > 1){
-            items.eq(x).after(
-              items.eq(i)
-            );
-          }
-
-          return;
-        }
-      }
-
-      if(i > 0){
-        items.eq(0).before(
-          items.eq(i)
-        );
-      }
+      setScore(
+        anchor,
+        ++score
+      );
 
       return;
     }
+
   }
 
 
@@ -190,6 +309,7 @@ function addPost(
      OUTPUT HTML
   ===================== */
   list.append(
+
     '<li>' +
 
       '<div class="inner">' +
@@ -210,7 +330,7 @@ function addPost(
           '</span>' +
 
           '<strong>' +
-          title +
+            title +
           '</strong>' +
 
         '</a>' +
@@ -219,9 +339,9 @@ function addPost(
 
           summary +
 
-          '<a href="' +
-          url +
-          '" title="' +
+          '<a ' +
+          'href="' + url + '" ' +
+          'title="' +
           title.replace(/"/g,"&quot;") +
           '">' +
 
@@ -235,15 +355,15 @@ function addPost(
             ? '<span class="date">' +
 
                 '<strong>' +
-                day +
+                  day +
                 '</strong>' +
 
                 '<span>' +
-                month +
+                  month +
                 '</span>' +
 
                 '<span>' +
-                year +
+                  year +
                 '</span>' +
 
               '</span>'
@@ -256,7 +376,9 @@ function addPost(
       '</div>' +
 
     '</li>'
+
   );
+
 }
 
 
@@ -266,6 +388,7 @@ function addPost(
 function feedCallback(data){
 
   requestDone++;
+
 
   if(
     data.feed &&
@@ -278,84 +401,122 @@ function feedCallback(data){
 
         var postURL = "";
 
-        /* Get permalink */
+
+        /* =================
+           GET PERMALINK
+        ================= */
         $.each(
           entry.link || [],
           function(i, link){
 
-            if(link.rel === "alternate"){
-              postURL = link.href;
+            if(
+              link.rel ===
+              "alternate"
+            ){
+
+              postURL =
+                link.href;
+
               return false;
+
             }
 
           }
         );
 
 
-        /* Current article filter */
+        /* =================
+           CURRENT POST
+        ================= */
         if(
           !postURL ||
           isCurrentPost(postURL)
         ){
+
           return;
+
         }
 
 
-        /* Get content */
+        /* =================
+           CONTENT
+        ================= */
         var content =
+
           entry.content
+
           ? entry.content.$t
+
           : entry.summary
+
           ? entry.summary.$t
+
           : "";
 
 
         /* Remove script */
-        content = content.replace(
-          /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-          ""
-        );
+        content =
+          content.replace(
+            /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
+            ""
+          );
 
 
         var temp =
-          $("<div></div>").append(content);
+          $("<div></div>")
+          .append(content);
 
         var images =
           temp.find("img");
 
 
-        /* Thumbnail */
+        /* =================
+           THUMBNAIL
+        ================= */
         var thumbnail =
           CONFIG.blankThumbnail;
 
-        if(entry.media$thumbnail){
+
+        if(
+          entry.media$thumbnail
+        ){
 
           thumbnail =
             entry.media$thumbnail.url
+
             .replace(
               /=s[0-9]+\-c/g,
               "=s" +
               CONFIG.thumbnailSize
             )
+
             .replace(
               /\/s[0-9]+\-c/g,
               "/s" +
               CONFIG.thumbnailSize
             );
 
-        }else if(images.length){
+        }
+
+        else if(
+          images.length
+        ){
 
           thumbnail =
             images[0].src;
+
         }
 
 
-        /* Summary */
+        /* =================
+           SUMMARY
+        ================= */
         var summary =
           content.replace(
             /<\S[^>]*>/g,
             ""
           );
+
 
         if(
           summary.length >
@@ -367,24 +528,41 @@ function feedCallback(data){
               0,
               CONFIG.summaryLength
             );
+
         }
 
 
-        /* Date */
+        /* =================
+           DATE
+        ================= */
         var published =
-          entry.published.$t.substring(
+          entry.published.$t
+          .substring(
             0,
             10
           );
 
+
         var year =
-          published.substring(0,4);
+          published.substring(
+            0,
+            4
+          );
+
 
         var monthNumber =
-          published.substring(5,7);
+          published.substring(
+            5,
+            7
+          );
+
 
         var day =
-          published.substring(8,10);
+          published.substring(
+            8,
+            10
+          );
+
 
         var month =
           CONFIG.monthNames[
@@ -395,6 +573,9 @@ function feedCallback(data){
           ];
 
 
+        /* =================
+           ADD POST
+        ================= */
         addPost(
           postURL,
           entry.title.$t,
@@ -407,27 +588,22 @@ function feedCallback(data){
 
       }
     );
+
   }
 
 
-  /* Semua feed selesai */
+  /* =====================
+     SEMUA FEED SELESAI
+  ===================== */
   if(
     requestDone >=
-    CONFIG.tags.length
+    totalRequests
   ){
 
-    $("#related-posts-loadingtext")
-      .remove();
+    finalizePosts();
 
-    if(CONFIG.maxPosts > 0){
-
-      $("li:gt(" +
-        (CONFIG.maxPosts - 1) +
-        ")",
-        list
-      ).remove();
-    }
   }
+
 }
 
 
@@ -440,10 +616,13 @@ function init(){
     $(CONFIG.containerSelector);
 
 
-  /* Get labels */
+  /* =====================
+     GET ARTICLE LABELS
+  ===================== */
   if(!CONFIG.tags){
 
     CONFIG.tags = [];
+
 
     $('a[rel="tag"]:lt(' +
       CONFIG.maxTags +
@@ -457,6 +636,7 @@ function init(){
           .replace(/\n/g,"")
         );
 
+
       if(
         tag &&
         $.inArray(
@@ -465,51 +645,82 @@ function init(){
         ) === -1
       ){
 
-        CONFIG.tags.push(tag);
+        CONFIG.tags.push(
+          tag
+        );
+
       }
 
     });
+
   }
 
 
-  /* Header */
-  if(CONFIG.tags.length){
+  /* =====================
+     HEADER
+  ===================== */
+  if(
+    CONFIG.tags.length
+  ){
 
     container.append(
+
       '<div class="rpTitleH2">' +
-      CONFIG.relatedTitle +
+        CONFIG.relatedTitle +
       '</div>'
+
     );
 
-  }else{
+  }
+
+  else{
 
     container.append(
+
       '<div class="rpTitleH2">' +
-      CONFIG.recentTitle +
+        CONFIG.recentTitle +
       '</div>'
+
     );
+
   }
 
 
-  /* Loading */
-  if(CONFIG.loadingText){
+  /* =====================
+     LOADING
+  ===================== */
+  if(
+    CONFIG.loadingText
+  ){
 
     container.append(
+
       '<div id="related-posts-loadingtext">' +
-      CONFIG.loadingText +
+        CONFIG.loadingText +
       '</div>'
+
     );
+
   }
 
 
-  /* List */
+  /* =====================
+     LIST
+  ===================== */
   list =
     $("<ul></ul>")
-    .appendTo(container);
+    .appendTo(
+      container
+    );
 
 
+  /* =====================
+     BLOG URL
+  ===================== */
   var blogURL =
+
     CONFIG.blogURL ||
+
     (
       location.protocol +
       "//" +
@@ -517,51 +728,80 @@ function init(){
     );
 
 
-  /* Recent posts */
-  if(!CONFIG.tags.length){
+  /* =====================
+     RECENT POSTS
+  ===================== */
+  if(
+    !CONFIG.tags.length
+  ){
 
-    CONFIG.tags = [
-      "__recent__"
-    ];
+    totalRequests = 1;
+
 
     $.get(
+
       blogURL +
       "/feeds/posts/default" +
+
       "?max-results=" +
       (CONFIG.maxPostsPerTag + 1) +
+
       "&orderby=published" +
+
       "&alt=json-in-script",
 
       feedCallback,
+
       "jsonp"
+
     );
 
+
     return;
+
   }
 
 
-  /* Related by labels */
+  /* =====================
+     TOTAL REQUEST
+  ===================== */
+  totalRequests =
+    CONFIG.tags.length;
+
+
+  /* =====================
+     RELATED BY LABEL
+  ===================== */
   $.each(
     CONFIG.tags,
     function(index, tag){
 
       $.get(
+
         blogURL +
+
         "/feeds/posts/default/-/" +
-        encodeURIComponent(tag) +
+
+        encodeURIComponent(
+          tag
+        ) +
 
         "?max-results=" +
         (CONFIG.maxPostsPerTag + 1) +
 
         "&orderby=published" +
+
         "&alt=json-in-script",
 
         feedCallback,
+
         "jsonp"
+
       );
 
     }
   );
+
 }
 
 
@@ -570,12 +810,13 @@ function init(){
 ========================= */
 init();
 
+
 })(jQuery);
 }
 
 
 /* =========================
-   RUN
+   RUN WIDGET
 ========================= */
 jQuery(function(){
 
