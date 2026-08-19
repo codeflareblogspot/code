@@ -4,6 +4,8 @@
 :root{--rpWidth:33.33%;}
 /* Main Division -------------------- */
 #related_posts{
+background:#fefefe;
+color:#111;
 border: 1px solid var(--rpColor);
 display:inline-block;
 position:relative;
