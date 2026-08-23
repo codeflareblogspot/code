@@ -68,7 +68,7 @@ function escapeHTML(str){
   return $("<div>").text(str==null?"":String(str)).html();
 }
 
-/* RESET */
+/* RESET DATA */
 function resetPosts(){
   posts=[];
   randomizedPosts=[];
@@ -96,7 +96,12 @@ function getResponsivePostCount(){
 
   if(!width)width=$(window).width();
 
-  var count=Math.floor(width/size);
+  /*
+   * thumbnailSize = ukuran ideal.
+   * Math.round membuat jumlah artikel tidak
+   * langsung turun hanya karena selisih sedikit.
+   */
+  var count=Math.round(width/size);
 
   count=Math.max(1,count);
 
@@ -114,7 +119,7 @@ function addPost(url,title,thumbnail,summary,year,day,month){
   var key=normalizeURL(url);
   if(!key)return;
 
-  /* DUPLICATE FILTER */
+  /* FILTER DUPLICATE */
   if(postMap[key]){
     postMap[key].score++;
     return;
@@ -135,7 +140,7 @@ function addPost(url,title,thumbnail,summary,year,day,month){
   posts.push(post);
 }
 
-/* CREATE POST HTML */
+/* POST HTML */
 function createPostHTML(post){
   var title=escapeHTML(post.title);
   var url=escapeHTML(post.url);
@@ -203,7 +208,7 @@ function renderPosts(keepOrder){
   list.html(html);
 }
 
-/* GET PERMALINK */
+/* GET POST URL */
 function getPostURL(entry){
   var links=entry.link||[];
 
@@ -250,9 +255,7 @@ function getSummary(content){
   );
 
   if(CONFIG.summaryLength>0&&summary.length>CONFIG.summaryLength){
-    summary=summary
-      .substring(0,CONFIG.summaryLength)
-      .trim();
+    summary=summary.substring(0,CONFIG.summaryLength).trim();
   }
 
   return summary;
@@ -272,7 +275,6 @@ function feedCallback(data){
 
     if(entry.content&&entry.content.$t){
       content=entry.content.$t;
-
     }else if(entry.summary&&entry.summary.$t){
       content=entry.summary.$t;
     }
@@ -297,9 +299,7 @@ function feedCallback(data){
 
     addPost(
       postURL,
-      entry.title&&entry.title.$t
-        ?entry.title.$t
-        :"",
+      entry.title&&entry.title.$t?entry.title.$t:"",
       getThumbnail(entry,content),
       getSummary(content),
       year,
@@ -345,18 +345,14 @@ function loadRecentPosts(){
   resetPosts();
   prepareRequest();
 
-  container
-    .find(".rpTitleH2")
-    .html(CONFIG.recentTitle);
+  container.find(".rpTitleH2").html(CONFIG.recentTitle);
 
   if(!$("#related-posts-loadingtext").length&&CONFIG.loadingText){
-    container
-      .find(".rpTitleH2")
-      .after(
-        '<div id="related-posts-loadingtext">'+
-          CONFIG.loadingText+
-        '</div>'
-      );
+    container.find(".rpTitleH2").after(
+      '<div id="related-posts-loadingtext">'+
+        CONFIG.loadingText+
+      '</div>'
+    );
   }
 
   list.empty();
@@ -365,10 +361,6 @@ function loadRecentPosts(){
     CONFIG.blogURL||
     (location.protocol+"//"+location.host);
 
-  /*
-   * Ambil lebih banyak dari jumlah maksimal
-   * untuk mengantisipasi current post terfilter.
-   */
   var feedLimit=Math.max(
     CONFIG.maxPosts+2,
     CONFIG.maxPostsPerTag+2
@@ -387,7 +379,7 @@ function loadRecentPosts(){
 function init(){
   container=$(CONFIG.containerSelector);
 
-  /* GET LABEL ARTICLE */
+  /* GET ARTICLE LABELS */
   if(!CONFIG.tags){
     CONFIG.tags=[];
 
@@ -396,15 +388,10 @@ function init(){
       .each(function(){
 
         var tag=$.trim(
-          $(this)
-            .text()
-            .replace(/\s+/g," ")
+          $(this).text().replace(/\s+/g," ")
         );
 
-        if(
-          tag&&
-          $.inArray(tag,CONFIG.tags)===-1
-        ){
+        if(tag&&$.inArray(tag,CONFIG.tags)===-1){
           CONFIG.tags.push(tag);
         }
       });
@@ -444,7 +431,7 @@ function init(){
   resetPosts();
   prepareRequest();
 
-  /* TANPA LABEL = RECENT POSTS */
+  /* NO LABEL = RECENT POSTS */
   if(!hasTags){
     var recentLimit=Math.max(
       CONFIG.maxPosts+2,
@@ -462,7 +449,7 @@ function init(){
     return;
   }
 
-  /* RELATED BY LABEL */
+  /* RELATED POSTS BY LABEL */
   $.each(CONFIG.tags,function(_,tag){
     requestFeed(
       blogURL+
@@ -479,7 +466,7 @@ function init(){
 /* START */
 init();
 
-/* RESPONSIVE RESIZE */
+/* RESPONSIVE */
 $(window)
   .off("resize.relatedPostsWidget")
   .on("resize.relatedPostsWidget",function(){
