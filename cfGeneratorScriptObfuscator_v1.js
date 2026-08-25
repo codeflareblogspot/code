@@ -1,6 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
+var CF_JS_LAB_VERSION='v2.10';
 function _z(a){return String.fromCharCode.apply(null,a)}
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
@@ -14,6 +15,32 @@ var allowed=local
 if(!allowed){tool.style.display='none';if(warning)warning.style.display='flex';return}
 
 function $(id){return document.getElementById(id)}
+function _renderEngineVersion(){
+var candidates=[
+document.getElementById('cfObTitle'),
+document.getElementById('cfObBrand'),
+document.querySelector('#cfObTool .cfObTitle'),
+document.querySelector('#cfObTool .cfObBrand'),
+document.querySelector('#cfObTool [data-cf-js-lab-title]')
+];
+var el=null;
+for(var i=0;i<candidates.length;i++){
+if(candidates[i]&&/CODEFLARE\s+JS\s+LAB/i.test(candidates[i].textContent||'')){el=candidates[i];break}
+}
+if(!el){
+var nodes=document.querySelectorAll('#cfObTool h1,#cfObTool h2,#cfObTool h3,#cfObTool strong,#cfObTool b,#cfObTool span,#cfObTool div');
+for(var j=0;j<nodes.length;j++){
+if(/^\s*CODEFLARE\s+JS\s+LAB(?:\s*[-—|]\s*ENGINE\s+v[\d.]+)?\s*$/i.test(nodes[j].textContent||'')){
+el=nodes[j];break
+}
+}
+}
+if(!el)return;
+var base=(el.textContent||'').replace(/\s*[-—|]\s*ENGINE\s+v[\d.]+\s*$/i,'').trim();
+el.textContent=base+' — ENGINE '+CF_JS_LAB_VERSION;
+el.setAttribute('data-engine-version',CF_JS_LAB_VERSION)
+}
+
 var E={
 input:$('cfObInput'),inputLabel:$('cfObInputLabel'),output:$('cfObOutput'),
 process:$('cfObProcess'),copy:$('cfObCopy'),copyScript:$('cfObCopyScript'),
@@ -2421,7 +2448,55 @@ S.lastSafeOutput=S.normalizedBase
 S.normalizedBase=S.lastSafeOutput;
 say('NORMALIZE SAFETY FALLBACK - LAST VALID OUTPUT RESTORED')
 }
-var finalFlow=_integrityReport(S.normalizedBase,S.originalRawSource||'');
+/* FULL NORMALIZE validates the normalized JavaScript payload only.
+   Blogger/full-source/XML validation belongs to the Inject stage. */
+var finalFlow={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+var normalizeProbe=_syntaxProbe(S.normalizedBase);
+
+if(!normalizeProbe.ok){
+finalFlow.syntax.push(normalizeProbe.message+(normalizeProbe.line?' @ line '+normalizeProbe.line+(normalizeProbe.column?':'+normalizeProbe.column:''):'')+(normalizeProbe.context?' | '+normalizeProbe.context:''))
+}else{
+var normalizeFlow=_flowCheck(S.normalizedBase);
+if(!normalizeFlow.ok)finalFlow.flow=normalizeFlow.issues.slice(0,10);
+
+finalFlow.orphan=_orphanCheck(S.normalizedBase);
+
+var normalizeSemantic=_semanticCheck(S.normalizedBase);
+if(!normalizeSemantic.ok)finalFlow.semantic=normalizeSemantic.issues.slice(0,10);
+if(normalizeSemantic.warnings&&normalizeSemantic.warnings.length){
+finalFlow.warnings=finalFlow.warnings.concat(normalizeSemantic.warnings.slice(0,10))
+}
+
+/* Completeness is informative at Normalize stage. Unresolved readable
+   references do not automatically mean invalid JavaScript. */
+var normalizeComplete=_deobfuscationCompleteness(S.normalizedBase);
+if(!normalizeComplete.complete){
+finalFlow.warnings.push(
+'DEOBFUSCATION INCOMPLETE - HEX '+normalizeComplete.hex+
+' | RGX '+normalizeComplete.rgx+
+' | TABLE '+normalizeComplete.table+
+' | PACKER '+normalizeComplete.packer
+)
+}
+
+if(S.lastSemanticWarnings&&S.lastSemanticWarnings.length){
+finalFlow.warnings=finalFlow.warnings.concat(S.lastSemanticWarnings.slice(0,8))
+}
+if(S.lastTableRollback&&S.lastTableRollback.length){
+finalFlow.warnings.push('TABLE RESOLVE ROLLBACK: '+S.lastTableRollback.join(', '))
+}
+}
+
+finalFlow.hard=[]
+.concat(finalFlow.syntax)
+.concat(finalFlow.flow)
+.concat(finalFlow.orphan)
+.concat(finalFlow.semantic);
+
+finalFlow.safe=finalFlow.hard.length===0;
+finalFlow.ok=finalFlow.safe;
+finalFlow.warnings=Array.from(new Set(finalFlow.warnings));
+
 S.integrity=finalFlow;
 S.normalizeFinal=true;
 S.normalizePassed=!!finalFlow.safe;
@@ -2440,7 +2515,8 @@ updateLayerPanel(S.normalizedBase,'FINAL CHECK');
 setNormalizeFinal(true,finalFlow.safe?'FULL NORMALIZE COMPLETE - INJECT DATA TO SOURCE sekarang aktif.':'FULL NORMALIZE STOPPED - Integrity check belum aman.');
 if(E.resultStatus)E.resultStatus.textContent=finalFlow.safe?(finalFlow.warnings.length?'NORMALIZED + WARNING':'READY TO INJECT'):'NORMALIZE CHECK ERROR';
 if(finalFlow.safe){
-say(finalFlow.warnings.length?'FULL NORMALIZE COMPLETE - READY TO INJECT (WARNING NON-BLOCKING)':'FULL NORMALIZE COMPLETE - READY TO INJECT')
+say(finalFlow.warnings.length?'FULL NORMALIZE COMPLETE - READY TO INJECT (WARNING NON-BLOCKING)':'FULL NORMALIZE COMPLETE - READY TO INJECT');
+say('BLOGGER/XML VALIDATION DEFERRED TO INJECT STAGE')
 }else{
 say('FULL NORMALIZE NOT SAFE - INJECT REMAINS LOCKED - '+_integrityFirstIssue(finalFlow))
 }
@@ -2478,7 +2554,8 @@ function theme(t){S.theme=t;tool.dataset.theme=t;themeBtns.forEach(function(b){b
 themeBtns.forEach(function(b){b.addEventListener('click',function(){theme(b.dataset.theme)})});
 try{theme(localStorage.getItem('cfObTheme')||'auto')}catch(e){theme('auto')}
 
-applyPreset('balanced');mode('obfuscate');analyze();
+applyPreset('balanced');_renderEngineVersion();
+mode('obfuscate');analyze();
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',cfGeneratorInit,{once:true})}
 else{cfGeneratorInit()}
