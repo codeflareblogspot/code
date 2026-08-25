@@ -51,7 +51,9 @@ if(!E.copyScript)return;
 var inject=!!(E.injectFull&&E.injectFull.checked);
 E.copyScript.disabled=inject;
 E.copyScript.setAttribute('aria-disabled',inject?'true':'false');
-E.copyScript.title=inject?'Disabled when Source Inject is active':'Copy output with <script> tag'
+E.copyScript.tabIndex=inject?-1:0;
+E.copyScript.classList.toggle('is-disabled',inject);
+E.copyScript.title=inject?'Copy <script> disabled while Source Inject is active':'Copy output with <script> tag';
 }
 
 function setProgress(n){if(E.progress)E.progress.style.width=Math.max(0,Math.min(100,n))+'%'}
@@ -917,7 +919,11 @@ if(original&&raw.indexOf(original)!==-1)return raw.replace(original,clean);
 return clean
 }
 
-if(E.injectFull)E.injectFull.addEventListener('change',function(){_copyScriptState();say(this.checked?'SOURCE INJECT ENABLED - COPY <SCRIPT> DISABLED':'SOURCE INJECT DISABLED - COPY <SCRIPT> ENABLED');if(S.normalizedBase)_renderNormalizeOutput()});
+if(E.injectFull)E.injectFull.addEventListener('change',function(){
+_copyScriptState();
+say(this.checked?'SOURCE INJECT ACTIVE - COPY <SCRIPT> DISABLED':'SOURCE INJECT OFF - COPY <SCRIPT> ENABLED');
+if(S.normalizedBase)_renderNormalizeOutput()
+});
 if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
 if(S.mode!=='deobfuscate'||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
 var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=16;
