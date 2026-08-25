@@ -73,7 +73,7 @@ return /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(String(raw||''))
 }
 function _pureScriptWrap(js){
 js=_stripCDATADeep(String(js||'').trim());
-var sem=_semanticRepair(js);
+var sem=_conservativeHumanize(js);
 js=_scriptElementSafe(sem.code);
 if(sem.fixes.length)S.lastSemanticFixes=sem.fixes;
 if(sem.warnings.length)S.lastSemanticWarnings=sem.warnings;
@@ -840,70 +840,62 @@ return _nfingerprint(a)!==_nfingerprint(b)
 
 function _a5(s){
 s=String(s||'');
-var current=s,prev='',passes=0,seen={},fp='',step='',report,packed;
+var current=s,seen={},fp='',step='',t,sem,passes=0;
 _p1(current);
 
-for(;passes<8;passes++){
+for(;passes<6;passes++){
 fp=_nfingerprint(current);
 if(seen[fp])break;
 seen[fp]=1;
-prev=current;
 
-/* P.A.C.K.E.R has priority over every table resolver. */
+/* Packer first if still present. */
 if(_packerPresent(current)){
-packed=_b1(current);
-if(packed===current){
-say('NORMALIZE STOP - PACKER COULD NOT BE SAFELY UNPACKED');
-break
-}
-report=_integrityReport(packed,'');
-if(!report.safe){
-say('NORMALIZE PACKER ROLLBACK - '+_integrityFirstIssue(report));
-break
-}
-current=packed;
+step=_b1(current);
+t=_safeTransform(current,step,'PACKER UNPACK');
+if(!t.changed)break;
+current=t.code;
 continue
 }
 
+/* Each transform is checkpointed independently. */
 step=_p2(current);
-step=_d2(step);
-step=_b2(step);
-step=_safeEscapeDecode(step);
-step=_p4(step);
-step=_b5(step);
+t=_safeTransform(current,step,'NORMALIZE STRING TABLE');
+current=t.code;
 
-if(!_nchanged(current,step))break;
+step=_d2(current);
+t=_safeTransform(current,step,'NORMALIZE INDIRECT');
+current=t.code;
 
-report=_integrityReport(step,'');
-if(!report.safe){
-var oldReport=_integrityReport(current,'');
-if(oldReport.safe)break
+step=_safeEscapeDecode(current);
+t=_safeTransform(current,step,'NORMALIZE ESCAPE');
+current=t.code;
+
+step=_b2(current);
+t=_safeTransform(current,step,'NORMALIZE TABLE VALUES');
+current=t.code;
+
+step=_p4(current);
+t=_safeTransform(current,step,'NORMALIZE IDENTIFIER');
+current=t.code;
+
+sem=_conservativeHumanize(current);
+if(sem.code!==current){
+t=_safeTransform(current,sem.code,'NORMALIZE SEMANTIC');
+current=t.code
 }
-current=step
+
+if(!t.changed&&passes>0)break
 }
 
-/* Humanize first. String-table cleanup stays isolated and guarded. */
-step=_b3(current);
-step=_p4(step);
-step=_b5(step);
-
-if(_nchanged(current,step)){
-report=_integrityReport(step,'');
-if(report.safe)current=step
-}
-
+/* Cleanup table only after every resolver pass completed. */
 if(!_packerPresent(current)){
 step=_p3(current);
-if(_nchanged(current,step)){
-report=_integrityReport(step,'');
-if(report.safe)current=step;
-else say('STRING TABLE CLEANUP SKIPPED - SOURCE PRESERVED')
-}
-}else{
-say('STRING TABLE CLEANUP SKIPPED - PACKER TABLE ACTIVE')
+t=_safeTransform(current,step,'FINAL STRING TABLE CLEANUP');
+current=t.code
 }
 
-return S.normalizeFormat==='flush'?_b6(current):beautify(current)
+/* Beautify only when safe. */
+return S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current)
 }
 
 function _a7(s){
@@ -962,61 +954,76 @@ if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!S.deobfuscat
 async function _a6(src){
 S.originalRawSource=String(src||'');
 S.bloggerMode=_detectBloggerMode(S.originalRawSource);
+
 var raw=_stripCDATA(_stripScriptWrapper(S.originalRawSource));
 S.originalSource=raw;
 S.tableCache={};
 
-var current=raw,prev=current,cp,packed;
+var current=raw,t,next,cp,packed,sem;
 _p1(current);
 
+/* Optional CodeFlare decoder first, but checkpointed. */
 var cf=await _a4(current);
 if(cf!==null){
-cp=_checkpoint(String(cf),current,'CODEFLARE DECODE');
-current=cp.code;
-if(cp.rolled)say(cp.reason)
+t=_safeTransform(current,String(cf),'CODEFLARE DECODE');
+current=t.code
 }
 
-/* Highest priority: indirect P.A.C.K.E.R.
-Never resolve/delete its table before unpacking. */
+/* P.A.C.K.E.R must always run before table resolver. */
 if(_packerPresent(current)){
-say('PACKER DETECTED - STRING TABLE LOCKED');
-prev=current;
+say('PACKER DETECTED - PRIORITY UNPACK');
 packed=_b1(current);
 
-if(packed!==current){
-cp=_checkpoint(packed,current,'PACKER UNPACK');
-current=cp.code;
-if(cp.rolled){
-say(cp.reason);
+t=_safeTransform(current,packed,'PACKER UNPACK');
+if(t.rolled||!t.changed){
+say('PACKER UNPACK FAILED - ORIGINAL SCRIPT PRESERVED');
 return current
 }
-say('PACKER RESOLVED - CONTINUE DEOBFUSCATION')
-}else{
-say('PACKER UNPACK FAILED - SOURCE PRESERVED');
-return current
-}
+current=t.code;
+say('PACKER RESOLVED')
 }
 
-prev=current;
-current=_p2(current);
-cp=_checkpoint(current,prev,'STRING TABLE RESOLVE');
-current=cp.code;
-if(cp.rolled)say(cp.reason);
+/* Resolve string references but never delete declarations here. */
+next=_p2(current);
+t=_safeTransform(current,next,'STRING TABLE RESOLVE');
+current=t.code;
 
-prev=current;
-current=_d2(current);
-cp=_checkpoint(current,prev,'INDIRECT RESOLVE');
-current=cp.code;
-if(cp.rolled)say(cp.reason);
+next=_d2(current);
+t=_safeTransform(current,next,'INDIRECT RESOLVE');
+current=t.code;
 
-prev=current;
-current=_safeEscapeDecode(current);
-current=_b2(current);
-current=_p4(current);
-current=_b5(current);
-cp=_checkpoint(current,prev,'DEOBFUSCATION NORMALIZE');
-current=cp.code;
-if(cp.rolled)say(cp.reason);
+/* Escape/hex decode only through guarded implementation. */
+next=_safeEscapeDecode(current);
+t=_safeTransform(current,next,'HEX UNICODE DECODE');
+current=t.code;
+
+/* Limited normalization transforms. */
+next=_b2(current);
+t=_safeTransform(current,next,'TABLE VALUE RESOLVE');
+current=t.code;
+
+next=_p4(current);
+t=_safeTransform(current,next,'IDENTIFIER NORMALIZE');
+current=t.code;
+
+/* Deterministic semantic repair. */
+sem=_conservativeHumanize(current);
+if(sem.code!==current){
+t=_safeTransform(current,sem.code,'SEMANTIC REPAIR');
+current=t.code
+}
+if(sem.fixes.length){
+S.lastSemanticFixes=sem.fixes;
+say('SEMANTIC FIX: '+sem.fixes.slice(0,4).join(', '))
+}
+if(sem.warnings.length)S.lastSemanticWarnings=sem.warnings;
+
+/* Final string-table cleanup only if references are truly gone. */
+if(!_packerPresent(current)){
+next=_p3(current);
+t=_safeTransform(current,next,'STRING TABLE CLEANUP');
+current=t.code
+}
 
 return current
 }
@@ -1232,7 +1239,7 @@ var issues=[];
 if(!/<script\b/i.test(source))return issues;
 
 /* When validating an Inject operation, locate only the injected script.
-   Do not require CDATA on unrelated pre-existing scripts in the template. */
+Do not require CDATA on unrelated pre-existing scripts in the template. */
 if(targetPayload){
 var target=_findInjectedScriptBody(source,targetPayload);
 if(!target){
@@ -1241,7 +1248,7 @@ return issues
 }
 
 /* _findInjectedScriptBody strips CDATA, so inspect the raw script element
-   containing the escaped payload prefix. */
+containing the escaped payload prefix. */
 var safePayload=_scriptElementSafe(_stripCDATADeep(_stripScriptWrapper(targetPayload))).trim();
 var prefix=safePayload.slice(0,Math.min(180,safePayload.length));
 var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,rawBody='';
@@ -1262,7 +1269,7 @@ return issues
 }
 
 /* General source inspection: missing CDATA in existing scripts is advisory,
-   not a hard Inject failure. */
+not a hard Inject failure. */
 return issues
 }
 
@@ -1433,17 +1440,89 @@ return{code:prev,report:pr,rolled:true,reason:label+' ROLLBACK - '+_integrityFir
 return{code:next,report:r,rolled:false,reason:label+' HARD WARNING - '+_integrityFirstIssue(r)}
 }
 
+function _syntaxValid(js){
+js=_stripCDATADeep(String(js||''));
+try{new Function(js);return true}catch(_e){return false}
+}
+
+function _safeTransform(current,next,label){
+current=String(current||'');
+next=String(next||'');
+if(!next||next===current)return{code:current,changed:false,rolled:false};
+
+if(!_syntaxValid(next)){
+say((label||'TRANSFORM')+' ROLLBACK - SYNTAX PRESERVED');
+return{code:current,changed:false,rolled:true}
+}
+
+var oldLen=current.length,newLen=next.length;
+var delta=oldLen?Math.abs(newLen-oldLen)/oldLen:0;
+
+/* Large unexpected size jumps are suspicious after deobfuscation.
+Allow them only for PACKER UNPACK, where expansion is expected. */
+if(label!=='PACKER UNPACK'&&delta>0.60){
+say((label||'TRANSFORM')+' ROLLBACK - LARGE STRUCTURE CHANGE');
+return{code:current,changed:false,rolled:true}
+}
+
+return{code:next,changed:true,rolled:false}
+}
+
+function _conservativeHumanize(js){
+js=String(js||'');
+var r=_semanticRepair(js),out=r.code;
+
+/* Never accept semantic repair if it breaks syntax. */
+if(!_syntaxValid(out))return{code:js,fixes:[],warnings:(r.warnings||[]).concat(['SEMANTIC ROLLBACK'])};
+
+/* Keep only deterministic repairs. */
+return{code:out,fixes:r.fixes||[],warnings:r.warnings||[]}
+}
+
+function _largeExpressionRisk(js){
+js=String(js||'');
+var max=0,cur=0,q=null,esc=false,line=false,block=false;
+for(var i=0;i<js.length;i++){
+var c=js[i],n=js[i+1]||'';
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){
+if(esc)esc=false;
+else if(c==='\\')esc=true;
+else if(c===q)q=null;
+continue
+}
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c===';'||c==='\n'){if(cur>max)max=cur;cur=0}else cur++
+}
+if(cur>max)max=cur;
+return max>1800
+}
+
+function _safeBeautify(js){
+js=String(js||'');
+if(_largeExpressionRisk(js)){
+say('BEAUTIFY CONSERVATIVE - LARGE EXPRESSION PRESERVED');
+return js
+}
+var out;
+try{out=beautify(js)}catch(_e){return js}
+return _syntaxValid(out)?out:js
+}
+
 function _semanticRepair(js){
 js=String(js||'');
 var fixes=[],warnings=[];
 
-/* 1. Common token joins produced by unpack/normalize. */
+/* Deterministic joined keyword repairs only. */
 var joined=[
 [/\breturnfalse\b/g,'return false','returnfalse'],
 [/\breturntrue\b/g,'return true','returntrue'],
 [/\breturnnull\b/g,'return null','returnnull'],
 [/\breturnundefined\b/g,'return undefined','returnundefined'],
-[/\bthrownew\s+/g,'throw new ','thrownew']
+[/\bthrownew\b/g,'throw new','thrownew']
 ];
 joined.forEach(function(x){
 var before=js;
@@ -1451,49 +1530,45 @@ js=js.replace(x[0],x[1]);
 if(js!==before)fixes.push(x[2])
 });
 
-/* 2. Repair case-only function references only when there is exactly one
-   declared function with that lowercase spelling. This avoids guessing
-   between genuinely different identifiers. */
-var decl={},dm;
-var dre=/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g;
-while((dm=dre.exec(js))){
-var low=dm[1].toLowerCase();
-(decl[low]||(decl[low]=[])).push(dm[1])
+/* Case-only function call repair:
+apply only if exactly one declaration exists for the lowercase name. */
+var decl={},m,dre=/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g;
+while((m=dre.exec(js))){
+var low=m[1].toLowerCase();
+(decl[low]||(decl[low]=[])).push(m[1])
 }
+
 Object.keys(decl).forEach(function(low){
 var names=Array.from(new Set(decl[low]));
 if(names.length!==1)return;
 var canonical=names[0];
 var rx=new RegExp('\\b'+low.replace(/[$]/g,'\\$&')+'\\s*\\(','gi');
-js=js.replace(rx,function(m,off,whole){
-var got=m.replace(/\s*\($/,'');
-/* Keep the declaration spelling untouched; normalize calls only. */
-var prefix=whole.slice(Math.max(0,off-12),off);
-if(/\bfunction\s*$/i.test(prefix))return m;
-if(got!==canonical){
+
+js=js.replace(rx,function(hit,off,whole){
+var got=hit.replace(/\s*\($/,'');
+var prefix=whole.slice(Math.max(0,off-16),off);
+
+/* do not rewrite declaration */
+if(/\bfunction\s*$/i.test(prefix))return hit;
+if(got===canonical)return hit;
+
 fixes.push('case:'+got+'→'+canonical);
-return canonical+m.slice(got.length)
-}
-return m
+return canonical+hit.slice(got.length)
 })
 });
 
-/* 3. Detect suspicious regex self-exec. Do not blindly rewrite globally.
-   If a nearby content variable is obvious, repair only the known rgx[n]
-   pattern generated by this unpacker. */
-js=js.replace(/\brgx\[(\d+)\]\.exec\(\s*rgx\[\1\]\s*\)/g,function(m,n,off,whole){
-var left=whole.slice(Math.max(0,off-700),off);
-var candidates=[];
-/* Prefer variables that were just tested with the same regex. */
-var tr=new RegExp('rgx\\['+n+'\\]\\.test\\(([A-Za-z_$][\\w$]*)\\)','g'),mm;
-while((mm=tr.exec(left)))candidates.push(mm[1]);
-if(candidates.length){
-var v=candidates[candidates.length-1];
-fixes.push('rgx['+n+'].exec('+v+')');
-return 'rgx['+n+'].exec('+v+')'
+/* Do NOT auto-rewrite regex self-exec unless context proves source variable. */
+js=js.replace(/\brgx\[(\d+)\]\.exec\(\s*rgx\[\1\]\s*\)/g,function(hit,n,off,whole){
+var left=whole.slice(Math.max(0,off-900),off);
+var rx=new RegExp('rgx\\['+n+'\\]\\.test\\(([A-Za-z_$][\\w$]*)\\)','g'),mm,last='';
+while((mm=rx.exec(left)))last=mm[1];
+
+if(last){
+fixes.push('rgx['+n+'].exec('+last+')');
+return 'rgx['+n+'].exec('+last+')'
 }
-warnings.push('SUSPICIOUS '+m);
-return m
+warnings.push('REGEX SELF EXEC LEFT UNCHANGED: '+hit);
+return hit
 });
 
 return{
@@ -1551,7 +1626,7 @@ if(esc){esc=false;continue}
 if(c==='\\'){esc=true;continue}
 
 /* Template literal interpolation is intentionally treated as part of the
-   template token here. JavaScript parser below remains authoritative. */
+template token here. JavaScript parser below remains authoritative. */
 if(c===q)q=null;
 continue
 }
@@ -1595,7 +1670,7 @@ if(block)issues.push('UNCLOSED BLOCK COMMENT');
 if(stack.length)issues.push('UNCLOSED BLOCK');
 
 /* JavaScript parser is authoritative. If parser accepts the source, scanner
-   mismatches are heuristic false positives and must not block Inject. */
+mismatches are heuristic false positives and must not block Inject. */
 try{
 new Function(js);
 return{ok:true,issues:[],warnings:Array.from(new Set(issues)).slice(0,8)}
@@ -1725,7 +1800,7 @@ var raw=String(S.originalRawSource||S.injectSource||''),clean=String(normalized|
 if(!raw)return clean;
 
 clean=_stripCDATADeep(clean);
-var sem=_semanticRepair(clean);
+var sem=_conservativeHumanize(clean);
 clean=sem.code;
 if(sem.fixes.length)S.lastSemanticFixes=sem.fixes;
 if(sem.warnings.length)S.lastSemanticWarnings=sem.warnings;
