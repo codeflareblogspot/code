@@ -381,10 +381,97 @@ if(x.meta.t&&x.meta.t.shuffle)chunks.reverse();
 if(x.meta.t&&x.meta.t.rotate&&chunks.length){var back=chunks.length-(7%chunks.length);chunks=chunks.slice(back).concat(chunks.slice(0,back))}
 return b64dec(chunks.join(''))
 }
-function _b4(s){
-return String(s).replace(/(?:\\x[0-9a-fA-F]{2})+/g,function(g){return g.replace(/\\x([0-9a-fA-F]{2})/g,function(_,h){var n=parseInt(h,16);return n>=32&&n!==127?String.fromCharCode(n):'\\x'+h})})
-.replace(/(?:\\u[0-9a-fA-F]{4})+/g,function(g){return g.replace(/\\u([0-9a-fA-F]{4})/g,function(_,h){var n=parseInt(h,16);return n>=32?String.fromCharCode(n):'\\u'+h})})
-.replace(/String\.fromCharCode\((\s*(?:0x[0-9a-f]+|\d+)\s*(?:,\s*(?:0x[0-9a-f]+|\d+)\s*)*)\)/gi,function(_,a){try{return JSON.stringify(a.split(',').map(function(x){return String.fromCharCode(parseInt(x.trim(),0))}).join(''))}catch(e){return _}})
+function _b4(src){
+src=String(src||'');
+var out='',i=0;
+
+function decodeQuoted(start){
+var q=src[start],j=start+1,raw='',esc=false;
+for(;j<src.length;j++){
+var c=src[j];
+if(esc){
+raw+='\\'+c;
+esc=false;
+continue
+}
+if(c==='\\'){
+esc=true;
+continue
+}
+if(c===q)break;
+raw+=c
+}
+if(j>=src.length)return null;
+
+var lit=src.slice(start,j+1);
+
+/* Only touch literals that actually contain HEX/Unicode escapes. */
+if(!/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/.test(lit)){
+return{text:lit,end:j+1}
+}
+
+try{
+/* Evaluate a string literal only, never arbitrary source. */
+var value=Function('"use strict";return ('+lit+')')();
+if(typeof value!=='string')return{text:lit,end:j+1};
+
+/* JSON.stringify always escapes quote/backslash safely. */
+return{text:JSON.stringify(value),end:j+1}
+}catch(_e){
+return{text:lit,end:j+1}
+}
+}
+
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+
+/* Comments */
+if(c==='/'&&n==='/'){
+var e=src.indexOf('\n',i+2);
+if(e<0){out+=src.slice(i);break}
+out+=src.slice(i,e+1);i=e+1;continue
+}
+if(c==='/'&&n==='*'){
+var e2=src.indexOf('*/',i+2);
+if(e2<0){out+=src.slice(i);break}
+out+=src.slice(i,e2+2);i=e2+2;continue
+}
+
+/* Normal quoted strings: safe decode + reserialize. */
+if(c==='"'||c==="'"){
+var d=decodeQuoted(i);
+if(d){out+=d.text;i=d.end;continue}
+}
+
+/* Template literal is preserved intact because ${...} makes naive decoding unsafe. */
+if(c==='`'){
+var j=i+1,escT=false;
+for(;j<src.length;j++){
+var t=src[j];
+if(escT){escT=false;continue}
+if(t==='\\'){escT=true;continue}
+if(t==='`'){j++;break}
+}
+out+=src.slice(i,j);i=j;continue
+}
+
+/* String.fromCharCode remains safe to simplify. */
+if(src.startsWith('String.fromCharCode(',i)){
+var tail=src.slice(i);
+var m=tail.match(/^String\.fromCharCode\((\s*(?:0x[0-9a-f]+|\d+)\s*(?:,\s*(?:0x[0-9a-f]+|\d+)\s*)*)\)/i);
+if(m){
+try{
+var val=m[1].split(',').map(function(x){return String.fromCharCode(parseInt(x.trim(),0))}).join('');
+out+=JSON.stringify(val);
+i+=m[0].length;
+continue
+}catch(_e){}
+}
+}
+
+out+=c;i++
+}
+return out
 }
 function _b7(raw){
 var out='';for(var i=0;i<raw.length;i++){var c=raw[i];if(c!=='\\'){out+=c;continue}var n=raw[++i];if(n===undefined){out+='\\';break}
@@ -402,10 +489,25 @@ if(!closed)return null;vals.push(_b7(raw));while(/\s/.test(src[i]||''))i++;if(sr
 return null
 }
 function _b2(src){
-src=String(src);var tables={},ranges=[],re=/(?:var|let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*/g,m;
-while((m=re.exec(src))){var parsed=_b8(src,re.lastIndex);if(!parsed)continue;tables[m[1]]=parsed.vals;var tail=src.slice(parsed.end).match(/^\s*;/);ranges.push([m.index,parsed.end+(tail?tail[0].length:0)]);re.lastIndex=parsed.end}
-Object.keys(tables).forEach(function(name){var vals=tables[name],rx=new RegExp('\\b'+name.replace(/[$]/g,'\\$&')+'\\s*\\[\\s*(\\d+)\\s*\\]','g');src=src.replace(rx,function(all,idx){idx=+idx;return idx<vals.length?JSON.stringify(vals[idx]):all})});
-for(var i=ranges.length-1;i>=0;i--)src=src.slice(0,ranges[i][0])+src.slice(ranges[i][1]);
+src=String(src||'');
+var tables={},re=/(?:var|let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*/g,m;
+while((m=re.exec(src))){
+var parsed=_b8(src,re.lastIndex);
+if(!parsed)continue;
+tables[m[1]]=parsed.vals;
+re.lastIndex=parsed.end
+}
+
+Object.keys(tables).forEach(function(name){
+var vals=tables[name],rx=new RegExp('\\b'+name.replace(/[$]/g,'\\$&')+'\\s*\\[\\s*(\\d+)\\s*\\]','g');
+src=src.replace(rx,function(all,idx){
+idx=+idx;
+return idx<vals.length?JSON.stringify(vals[idx]):all
+})
+});
+
+/* Declaration removal is intentionally delegated to _p3(), which checks
+references, balanced boundaries and syntax before deleting anything. */
 return src
 }
 function _b9(lit){return!lit||lit.length<2?lit:_b7(lit.slice(1,-1))}
@@ -687,6 +789,19 @@ if(k[c])p=p.replace(new RegExp('\\b'+enc(c)+'\\b','g'),k[c])
 try{new Function(_stripCDATA(_stripScriptWrapper(p)))}catch(_e){return src}
 return p
 }
+function _safeEscapeDecode(src){
+src=String(src||'');
+var next=_b4(src);
+if(next===src)return src;
+try{
+new Function(_stripCDATA(_stripScriptWrapper(next)));
+return next
+}catch(_e){
+say('HEX / UNICODE DECODE ROLLBACK - SOURCE PRESERVED');
+return src
+}
+}
+
 function _b5(s){return String(s).replace(/\.\s*\[\s*(["'])([A-Za-z_$][\w$]*)\1\s*\]/g,'.$2').replace(/\[\s*(["'])([A-Za-z_$][\w$]*)\1\s*\]/g,'.$2').replace(/\b!0\b/g,'true').replace(/\b!1\b/g,'false').replace(/\bvoid\s+0\b/g,'undefined')}
 function _b3(s){
 var map={},c={text:0,num:0,flag:0,array:0,object:0,func:0,element:0,regex:0,date:0,data:0};
@@ -741,7 +856,7 @@ continue
 step=_p2(current);
 step=_d2(step);
 step=_b2(step);
-step=_b4(step);
+step=_safeEscapeDecode(step);
 step=_p4(step);
 step=_b5(step);
 
@@ -883,7 +998,7 @@ current=cp.code;
 if(cp.rolled)say(cp.reason);
 
 prev=current;
-current=_b4(current);
+current=_safeEscapeDecode(current);
 current=_b2(current);
 current=_p4(current);
 current=_b5(current);
