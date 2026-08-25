@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.11';
+var CF_JS_LAB_VERSION='v2.12';
 function _z(a){return String.fromCharCode.apply(null,a)}
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
@@ -1154,126 +1154,111 @@ E.paste.addEventListener('click',async function(){try{E.input.value=await naviga
 E.clear.addEventListener('click',function(){
 _lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
-if(E.copyScript)E.copyScript.addEventListener('click',function(){
+if(E.copyScript)E.copyScript.addEventListener('click',async function(){
 if(S.mode==='deobfuscate'&&!S.normalizePassed){
 say('INJECT LOCKED - RUN FULL NORMALIZE FIRST');
 if(E.resultStatus)E.resultStatus.textContent='NORMALIZE REQUIRED';
 _injectButtonState();
 return
 }
-
 if(S.mode==='tools'){
 say('INJECT DATA TO SOURCE NOT AVAILABLE IN CODE TOOLS');
-_injectButtonState();
 return
 }
-if(S.mode!=='obfuscate'&&S.mode!=='deobfuscate'){
-say('INJECT DATA TO SOURCE NOT AVAILABLE');
-return
-}
+if(S.mode!=='obfuscate'&&S.mode!=='deobfuscate')return;
 
+E.copyScript.disabled=true;
+if(E.resultStatus)E.resultStatus.textContent='INJECTING...';
+setProgress(8);
+say('PREPARING INJECT...');
+await _ui();
+
+try{
 var shown=String(E.output.value||'').trim();
 var currentWasFullSource=/<script\b/i.test(shown);
 var payload=_payloadForInject(shown);
 var current=currentWasFullSource?payload:_stripCDATADeep(_stripScriptWrapper(shown)).trim();
 
-if(current&&!_syntaxValid(current)&&S.lastSafeOutput){
-var fallback=_stripCDATADeep(_stripScriptWrapper(String(S.lastSafeOutput||''))).trim();
-if(_syntaxValid(fallback)){
-current=fallback;
-payload=fallback;
-say('INJECT SAFETY FALLBACK - DISPLAY OUTPUT INVALID, USING LAST VALID CHECKPOINT')
+if(!current&&S.lastSafeOutput){
+current=_stripCDATADeep(_stripScriptWrapper(String(S.lastSafeOutput||''))).trim()
 }
+if(!current)throw new Error('NO VALID OUTPUT AVAILABLE');
+if(currentWasFullSource&&!payload&& !S.lastSafeOutput){
+throw new Error('TARGET SCRIPT PAYLOAD NOT FOUND')
 }
-if(current){
-var semCurrent=_semanticRepair(current);
-current=semCurrent.code;
-if(semCurrent.fixes.length){
-S.lastSemanticFixes=semCurrent.fixes;
-say('SEMANTIC REPAIR - '+semCurrent.fixes.slice(0,4).join(', '))
-}
-if(semCurrent.warnings.length)S.lastSemanticWarnings=semCurrent.warnings
-}
-if(!current){say('NO OUTPUT TO INJECT');return}
-if(currentWasFullSource&&!payload){
-say('INJECT BLOCKED - TARGET SCRIPT PAYLOAD NOT FOUND');
-if(E.resultStatus)E.resultStatus.textContent='TARGET ERROR';
-return
-}
-if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
+if(!_getInjectSource())throw new Error('ORIGINAL SOURCE NOT FOUND');
 
-/* First validate the transformed JavaScript itself. */
-var completeness=_deobfuscationCompleteness(current);
-if(!completeness.complete){
-say('INJECT WARNING - HEX '+completeness.hex+' | RGX '+completeness.rgx+' | TABLE '+completeness.table+' | PACKER '+completeness.packer)
-}
-var currentCheck={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
-var probe=_syntaxProbe(current);
-if(!probe.ok){
-var ctx=probe.context||'';
-if(!ctx){
-/* V8 sometimes omits line info for Unexpected token. Find likely malformed
-   close-paren neighborhoods for diagnostics without modifying source. */
-var mm=current.match(/.{0,90}\)\s*[,;})].{0,90}/);
-ctx=mm?mm[0]:''
-}
-currentCheck.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(ctx?' | '+ctx:''));
-currentCheck.hard=currentCheck.syntax.slice();
-currentCheck.safe=false;
-currentCheck.ok=false
+/* IMPORTANT:
+   Deobfuscate payload was already checked by FULL NORMALIZE.
+   Never run semantic repair, table resolver, beautify, flow scan or
+   completeness scan again during Inject. Those were the main UI freeze path. */
+setProgress(24);
+say('USING NORMALIZED SAFE CHECKPOINT...');
+await _ui();
+
+if(S.mode==='deobfuscate'){
+var normalized=String(S.normalizedBase||S.lastSafeOutput||current).trim();
+if(normalized&&_syntaxValid(normalized))current=normalized;
+if(!_syntaxValid(current))throw new Error('NORMALIZED PAYLOAD IS NOT VALID JAVASCRIPT')
 }else{
-var fc=_flowCheck(current);
-if(!fc.ok)currentCheck.flow=fc.issues.slice(0,10);
-currentCheck.orphan=_orphanCheck(current);
-var sc=_semanticCheck(current);
-if(!sc.ok)currentCheck.semantic=sc.issues.slice(0,10);
-currentCheck.hard=[]
-.concat(currentCheck.syntax)
-.concat(currentCheck.flow)
-.concat(currentCheck.orphan)
-.concat(currentCheck.semantic);
-currentCheck.safe=currentCheck.hard.length===0;
-currentCheck.ok=currentCheck.safe
-}
-if(!currentCheck.safe){
-say('INJECT BLOCKED - NO VALID JAVASCRIPT OUTPUT - '+_integrityFirstIssue(currentCheck));
-if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
-return
+if(!_syntaxValid(current))throw new Error('OBFUSCATED OUTPUT IS NOT VALID JAVASCRIPT')
 }
 
-try{
+setProgress(42);
+say('BUILDING SOURCE...');
+await _ui();
+
 var fullSource=_sourceHasScriptWrapper(_getInjectSource());
 var injected=_injectCurrentToSource(current);
+if(!injected)throw new Error('SOURCE BUILD FAILED');
 
-/* Then validate the resulting full source separately. */
-if(S.mode==='deobfuscate'){
-S.integrity=_injectedSourceReport(injected,current);
-if(!S.integrity.safe){
-var issue=_integrityFirstIssue(S.integrity);
-say('INJECT BLOCKED - INJECTED SCRIPT CHECK - '+issue);
-if(S.integrity.syntax&&S.integrity.syntax.length){
-say('POST-INJECT SERIALIZATION ERROR - PAYLOAD BEFORE INJECT REMAINS VALID')
+setProgress(68);
+say('VERIFYING INJECTED TARGET...');
+await _ui();
+
+/* Validate only the exact injected target body. Do not rescan every script
+   in a large Blogger template. */
+if(S.mode==='deobfuscate'&&fullSource){
+var injectedBody=_findInjectedScriptBody(injected,current);
+if(!injectedBody)throw new Error('INJECTED TARGET SCRIPT NOT FOUND');
+
+var cleanBody=_cleanInjectedBody(injectedBody);
+var targetProbe=_syntaxProbe(cleanBody);
+if(!targetProbe.ok){
+throw new Error('INJECTED TARGET SYNTAX: '+targetProbe.message+
+(targetProbe.line?' @ line '+targetProbe.line+(targetProbe.column?':'+targetProbe.column:''):''))
 }
-if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
-return
+
+/* Lightweight Blogger safety checks only on the target script. */
+if(S.bloggerMode){
+if(!/\/\/\s*<!\[CDATA\[/i.test(injectedBody)||
+!(/\/\/\s*\]\]>/i.test(injectedBody)||/\/\*\s*\]\]>\s*\*\//i.test(injectedBody))){
+throw new Error('BLOGGER XML: CDATA MISSING IN INJECTED TARGET')
+}
 }
 }
 
-var finalStatus=S.mode==='deobfuscate'&&S.integrity&&S.integrity.warnings&&S.integrity.warnings.length
-?'SAFE + WARNING'
-:(fullSource?(S.bloggerMode?'BLOGGER SAFE':'SOURCE READY'):'SCRIPT READY');
+setProgress(90);
+say('UPDATING OUTPUT...');
+await _ui();
 
+var finalStatus=fullSource?(S.bloggerMode?'BLOGGER SAFE':'SOURCE READY'):'SCRIPT READY';
 setOutput(injected,fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT',finalStatus);
 
-say(fullSource
-?(S.bloggerMode?'DATA INJECTED TO ORIGINAL SOURCE - CDATA READY':'DATA INJECTED TO ORIGINAL SOURCE - OUTPUT UPDATED')
-:'PURE JAVASCRIPT WRAPPED WITH <SCRIPT> TAG - OUTPUT UPDATED'
-)
+S.injectCompleted=true;
+if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
+setProgress(100);
+say('INJECT COMPLETE - READY TO COPY');
+
 }catch(err){
+if(E.resultStatus)E.resultStatus.textContent='INJECT ERROR';
 say('INJECT FAILED - '+String(err&&err.message||err))
+}finally{
+await _ui();
+setTimeout(function(){setProgress(0)},700);
+_injectButtonState()
 }
 });
-
 E.process.addEventListener('click',async function(){
 var src=E.input.value;if(src.trim())_captureInjectSource(src);
 _lockFullNormalize();if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
