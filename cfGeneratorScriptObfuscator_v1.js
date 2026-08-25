@@ -75,6 +75,64 @@ function _pureScriptWrap(js){
 js=String(js||'').trim();
 return "<script type='text/javascript'>\n"+js+"\n</script>"
 }
+function _findInjectedScriptBody(source,payload){
+source=String(source||'');
+payload=_stripCDATA(_stripScriptWrapper(String(payload||''))).trim();
+if(!source||!payload)return'';
+
+var scripts=_extractInlineScripts(source),pfx=payload.slice(0,Math.min(160,payload.length));
+for(var i=0;i<scripts.length;i++){
+var body=_stripCDATA(scripts[i]).trim();
+if(body===payload)return body;
+if(pfx&&body.indexOf(pfx)!==-1)return body
+}
+
+/* Fallback to the largest inline script because _j1 uses the same strategy
+when the original script cannot be matched exactly. */
+if(scripts.length){
+scripts.sort(function(a,b){return b.length-a.length});
+return _stripCDATA(scripts[0]).trim()
+}
+return''
+}
+
+function _injectedSourceReport(source,payload){
+var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+var body=_findInjectedScriptBody(source,payload);
+
+if(!body){
+report.hard.push('INJECTED SCRIPT BODY NOT FOUND');
+report.safe=false;report.ok=false;
+return report
+}
+
+/* Validate only the transformed script that was injected. Pre-existing inline
+scripts elsewhere in the page must not block this operation. */
+try{new Function(body)}catch(e){report.syntax.push(String(e&&e.message||e))}
+
+var fc=typeof _flowCheck==='function'?_flowCheck(body):{ok:true,issues:[]};
+if(!fc.ok)report.flow=fc.issues.slice(0,10);
+report.orphan=_orphanCheck(body);
+report.identifier=_identifierCaseCheck(body);
+report.scope=_scopeCheck(body);
+
+if(_detectBloggerMode(_getInjectSource())||S.bloggerMode){
+report.blogger=_bloggerXMLCheck(source)
+}
+
+report.hard=[]
+.concat(report.syntax)
+.concat(report.flow)
+.concat(report.orphan)
+.concat(report.blogger);
+report.warnings=[]
+.concat(report.identifier)
+.concat(report.scope);
+report.safe=report.hard.length===0;
+report.ok=report.safe&&report.warnings.length===0;
+return report
+}
+
 function _injectCurrentToSource(current){
 var raw=_getInjectSource(),clean=String(current||'').trim();
 if(!raw)return clean;
@@ -756,9 +814,9 @@ var injected=_injectCurrentToSource(current);
 
 /* Then validate the resulting full source separately. */
 if(S.mode==='deobfuscate'){
-S.integrity=_integrityReport(injected,_getInjectSource());
+S.integrity=_injectedSourceReport(injected,current);
 if(!S.integrity.safe){
-say('INJECT BLOCKED - SOURCE CHECK - '+_integrityFirstIssue(S.integrity));
+say('INJECT BLOCKED - INJECTED SCRIPT CHECK - '+_integrityFirstIssue(S.integrity));
 if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
 return
 }
