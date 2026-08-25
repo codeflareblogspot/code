@@ -907,7 +907,7 @@ current=_deepReadablePass(current);
 var complete=_deobfuscationCompleteness(current);
 S.deobfuscationCompleteness=complete;
 if(!complete.complete){
-say('NORMALIZE INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+' | TABLE '+complete.table+' | PACKER '+complete.packer)
+say('NORMALIZE INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+(complete.rgx?' ['+_unresolvedRgxIndexes(current).join(',')+']':'')+' | TABLE '+complete.table+' | PACKER '+complete.packer)
 }
 return S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current)
 }
@@ -995,7 +995,7 @@ current=_deepReadablePass(current);
 var complete=_deobfuscationCompleteness(current);
 S.deobfuscationCompleteness=complete;
 if(!complete.complete){
-say('DEOBFUSCATION INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+' | TABLE '+complete.table+' | PACKER '+complete.packer)
+say('DEOBFUSCATION INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+(complete.rgx?' ['+_unresolvedRgxIndexes(current).join(',')+']':'')+' | TABLE '+complete.table+' | PACKER '+complete.packer)
 }else{
 say('DEOBFUSCATION COMPLETE')
 }
@@ -1556,25 +1556,90 @@ return{values:vals,start:m.index,end:b.end+(src[b.end]===';'?1:0)}
 }catch(_e){return null}
 }
 
+function _collectIndexedAssignments(src,name){
+src=String(src||'');
+var values={},safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),m;
+
+/* Start with a directly parseable array when available. */
+var base=_parseSimpleArrayDecl(src,name);
+if(base){
+base.values.forEach(function(v,i){values[i]=v})
+}
+
+/* Collect explicit TABLE[n] = literal / regex assignments. */
+var re=new RegExp('\\b'+safe+'\\s*\\[\\s*(\\d+)\\s*\\]\\s*=\\s*','g');
+while((m=re.exec(src))){
+var idx=+m[1],pos=re.lastIndex;
+while(/\s/.test(src[pos]||''))pos++;
+
+var q=src[pos];
+if(q==='"'||q==="'"){
+var j=pos+1,esc=false;
+for(;j<src.length;j++){
+var c=src[j];
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q){j++;break}
+}
+try{values[idx]=Function('"use strict";return ('+src.slice(pos,j)+')')()}catch(_e){}
+re.lastIndex=j;
+continue
+}
+
+/* Regex literal assignment. */
+if(src[pos]==='/'){
+var j=pos+1,esc=false,cls=false;
+for(;j<src.length;j++){
+var c=src[j];
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c==='['){cls=true;continue}
+if(c===']'){cls=false;continue}
+if(c==='/'&&!cls){j++;while(/[a-z]/i.test(src[j]||''))j++;break}
+}
+try{values[idx]=Function('"use strict";return ('+src.slice(pos,j)+')')()}catch(_e){}
+re.lastIndex=j;
+continue
+}
+
+/* primitive assignment */
+var pm=src.slice(pos).match(/^(true|false|null|-?\d+(?:\.\d+)?)/);
+if(pm){
+try{values[idx]=Function('"use strict";return ('+pm[1]+')')()}catch(_e){}
+re.lastIndex=pos+pm[1].length
+}
+}
+return values
+}
+
+function _serializeResolvedValue(v){
+if(typeof v==='string')return JSON.stringify(v);
+if(typeof v==='number'||typeof v==='boolean'||v===null)return String(v);
+if(v instanceof RegExp)return v.toString();
+return null
+}
+
 function _resolveIndexedTable(src,name){
 src=String(src||'');
-var p=_parseSimpleArrayDecl(src,name);
-if(!p)return{code:src,resolved:0,remaining:0};
+var vals=_collectIndexedAssignments(src,name);
+var keys=Object.keys(vals);
+if(!keys.length)return{code:src,resolved:0,remaining:(src.match(new RegExp('\\b'+name.replace(/[$]/g,'\\$&')+'\\s*\\[\\s*\\d+\\s*\\]','g'))||[]).length};
 
-var vals=p.values,resolved=0;
-var safe=name.replace(/[$]/g,'\\$&');
+var resolved=0,safe=name.replace(/[$]/g,'\\$&');
 var rx=new RegExp('\\b'+safe+'\\s*\\[\\s*(\\d+)\\s*\\]','g');
 
-var out=src.replace(rx,function(all,n){
+var out=src.replace(rx,function(all,n,off,whole){
 n=+n;
-if(n>=vals.length)return all;
-var v=vals[n];
+if(!Object.prototype.hasOwnProperty.call(vals,n))return all;
 
-/* Serialize primitives, strings and regex safely. */
-if(typeof v==='string'){resolved++;return JSON.stringify(v)}
-if(typeof v==='number'||typeof v==='boolean'||v===null){resolved++;return String(v)}
-if(v instanceof RegExp){resolved++;return v.toString()}
-return all
+/* Never replace the left side of TABLE[n] = ... */
+var after=whole.slice(off+all.length);
+if(/^\s*=/.test(after)&&!/^\s*==/.test(after))return all;
+
+var serialized=_serializeResolvedValue(vals[n]);
+if(serialized===null)return all;
+resolved++;
+return serialized
 });
 
 var rem=(out.match(rx)||[]).length;
@@ -1681,6 +1746,13 @@ next=_decodeReadablePropertyKeys(current);
 if(_syntaxValid(next))current=next;
 
 return current
+}
+
+function _unresolvedRgxIndexes(js){
+js=String(js||'');
+var a=[],m,re=/\brgx\s*\[\s*(\d+)\s*\]/g;
+while((m=re.exec(js)))a.push(+m[1]);
+return Array.from(new Set(a)).sort(function(x,y){return x-y})
 }
 
 function _deobfuscationCompleteness(js){
