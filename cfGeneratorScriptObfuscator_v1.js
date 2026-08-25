@@ -397,47 +397,37 @@ function _b4(src){
 src=String(src||'');
 var out='',i=0;
 
-function decodeQuoted(start){
-var q=src[start],j=start+1,raw='',esc=false;
+function readQuoted(start){
+var q=src[start],j=start+1,esc=false;
 for(;j<src.length;j++){
 var c=src[j];
-if(esc){
-raw+='\\'+c;
-esc=false;
-continue
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q){j++;break}
 }
-if(c==='\\'){
-esc=true;
-continue
-}
-if(c===q)break;
-raw+=c
-}
-if(j>=src.length)return null;
-
-var lit=src.slice(start,j+1);
-
-/* Only touch literals that actually contain HEX/Unicode escapes. */
-if(!/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/.test(lit)){
-return{text:lit,end:j+1}
+if(j>src.length)return null;
+return{text:src.slice(start,j),end:j}
 }
 
+function decodeLiteral(lit){
+if(!/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/.test(lit))return lit;
 try{
-/* Evaluate a string literal only, never arbitrary source. */
-var value=Function('"use strict";return ('+lit+')')();
-if(typeof value!=='string')return{text:lit,end:j+1};
+var val=Function('"use strict";return ('+lit+')')();
+if(typeof val!=='string')return lit;
 
-/* JSON.stringify always escapes quote/backslash safely. */
-return{text:JSON.stringify(value),end:j+1}
-}catch(_e){
-return{text:lit,end:j+1}
-}
+/* Keep characters that are dangerous in HTML/script embedding escaped. */
+var s=JSON.stringify(val);
+s=s.replace(/</g,function(ch,off,whole){
+if(whole.slice(off,off+9).toLowerCase()==='</script>')return '\\x3C';
+return ch
+});
+return s
+}catch(_e){return lit}
 }
 
 while(i<src.length){
 var c=src[i],n=src[i+1]||'';
 
-/* Comments */
 if(c==='/'&&n==='/'){
 var e=src.indexOf('\n',i+2);
 if(e<0){out+=src.slice(i);break}
@@ -449,13 +439,14 @@ if(e2<0){out+=src.slice(i);break}
 out+=src.slice(i,e2+2);i=e2+2;continue
 }
 
-/* Normal quoted strings: safe decode + reserialize. */
 if(c==='"'||c==="'"){
-var d=decodeQuoted(i);
-if(d){out+=d.text;i=d.end;continue}
+var r=readQuoted(i);
+if(!r){out+=c;i++;continue}
+out+=decodeLiteral(r.text);
+i=r.end;continue
 }
 
-/* Template literal is preserved intact because ${...} makes naive decoding unsafe. */
+/* Preserve template literals: interpolation makes blind rewriting unsafe. */
 if(c==='`'){
 var j=i+1,escT=false;
 for(;j<src.length;j++){
@@ -465,20 +456,6 @@ if(t==='\\'){escT=true;continue}
 if(t==='`'){j++;break}
 }
 out+=src.slice(i,j);i=j;continue
-}
-
-/* String.fromCharCode remains safe to simplify. */
-if(src.startsWith('String.fromCharCode(',i)){
-var tail=src.slice(i);
-var m=tail.match(/^String\.fromCharCode\((\s*(?:0x[0-9a-f]+|\d+)\s*(?:,\s*(?:0x[0-9a-f]+|\d+)\s*)*)\)/i);
-if(m){
-try{
-var val=m[1].split(',').map(function(x){return String.fromCharCode(parseInt(x.trim(),0))}).join('');
-out+=JSON.stringify(val);
-i+=m[0].length;
-continue
-}catch(_e){}
-}
 }
 
 out+=c;i++
@@ -801,6 +778,37 @@ if(k[c])p=p.replace(new RegExp('\\b'+enc(c)+'\\b','g'),k[c])
 try{new Function(_stripCDATA(_stripScriptWrapper(p)))}catch(_e){return src}
 return p
 }
+function _decodeReadablePropertyKeys(src){
+src=String(src||'');
+
+/* Decode quoted object keys such as
+{"\x74\x72...": value}
+to {"transition-duration": value}
+while leaving ordinary string values untouched. */
+var re=/([,{]\s*)(["'])((?:\\.|(?!\2)[\s\S])*?)\2(\s*:)/g;
+var out=src.replace(re,function(all,prefix,q,body,suffix){
+if(!/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/.test(body))return all;
+var lit=q+body+q;
+try{
+var value=Function('"use strict";return ('+lit+')')();
+if(typeof value!=='string')return all;
+return prefix+JSON.stringify(value)+suffix
+}catch(_e){return all}
+});
+
+return _syntaxValid(out)?out:src
+}
+
+function _readabilityPass(src){
+src=String(src||'');
+var current=src,next;
+
+next=_deepReadablePass(current);
+if(_syntaxValid(next))current=next;
+
+return current
+}
+
 function _safeEscapeDecode(src){
 src=String(src||'');
 var next=_b4(src);
@@ -866,7 +874,7 @@ step=_d2(current);
 t=_safeTransform(current,step,'NORMALIZE INDIRECT');
 current=t.code;
 
-step=_safeEscapeDecode(current);
+step=_readabilityPass(current);
 t=_safeTransform(current,step,'NORMALIZE ESCAPE');
 current=t.code;
 
@@ -895,6 +903,12 @@ current=t.code
 }
 
 /* Beautify only when safe. */
+current=_deepReadablePass(current);
+var complete=_deobfuscationCompleteness(current);
+S.deobfuscationCompleteness=complete;
+if(!complete.complete){
+say('NORMALIZE INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+' | TABLE '+complete.table+' | PACKER '+complete.packer)
+}
 return S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current)
 }
 
@@ -977,6 +991,14 @@ packed=_b1(current);
 t=_safeTransform(current,packed,'PACKER UNPACK');
 if(t.rolled||!t.changed){
 say('PACKER UNPACK FAILED - ORIGINAL SCRIPT PRESERVED');
+current=_deepReadablePass(current);
+var complete=_deobfuscationCompleteness(current);
+S.deobfuscationCompleteness=complete;
+if(!complete.complete){
+say('DEOBFUSCATION INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+' | TABLE '+complete.table+' | PACKER '+complete.packer)
+}else{
+say('DEOBFUSCATION COMPLETE')
+}
 return current
 }
 current=t.code;
@@ -993,7 +1015,7 @@ t=_safeTransform(current,next,'INDIRECT RESOLVE');
 current=t.code;
 
 /* Escape/hex decode only through guarded implementation. */
-next=_safeEscapeDecode(current);
+next=_readabilityPass(current);
 t=_safeTransform(current,next,'HEX UNICODE DECODE');
 current=t.code;
 
@@ -1106,6 +1128,10 @@ if(!current){say('NO OUTPUT TO INJECT');return}
 if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
 
 /* First validate the transformed JavaScript itself. */
+var completeness=_deobfuscationCompleteness(current);
+if(!completeness.complete){
+say('INJECT WARNING - HEX '+completeness.hex+' | RGX '+completeness.rgx+' | TABLE '+completeness.table+' | PACKER '+completeness.packer)
+}
 var currentCheck=_integrityReport(current,'');
 if(!currentCheck.safe){
 say('INJECT BLOCKED - NO VALID JAVASCRIPT OUTPUT - '+_integrityFirstIssue(currentCheck));
@@ -1510,6 +1536,160 @@ return js
 var out;
 try{out=beautify(js)}catch(_e){return js}
 return _syntaxValid(out)?out:js
+}
+
+function _parseSimpleArrayDecl(src,name){
+src=String(src||'');
+var safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+var re=new RegExp('\\b(?:var|let|const)\\s+'+safe+'\\s*=\\s*\\[','g'),m=re.exec(src);
+if(!m)return null;
+var start=src.indexOf('[',m.index);
+var b=_scanBalancedLiteral(src,start,'[',']');
+if(!b)return null;
+
+var arrText=b.text;
+try{
+/* Array literal only. No arbitrary program execution. */
+var vals=Function('"use strict";return ('+arrText+')')();
+if(!Array.isArray(vals))return null;
+return{values:vals,start:m.index,end:b.end+(src[b.end]===';'?1:0)}
+}catch(_e){return null}
+}
+
+function _resolveIndexedTable(src,name){
+src=String(src||'');
+var p=_parseSimpleArrayDecl(src,name);
+if(!p)return{code:src,resolved:0,remaining:0};
+
+var vals=p.values,resolved=0;
+var safe=name.replace(/[$]/g,'\\$&');
+var rx=new RegExp('\\b'+safe+'\\s*\\[\\s*(\\d+)\\s*\\]','g');
+
+var out=src.replace(rx,function(all,n){
+n=+n;
+if(n>=vals.length)return all;
+var v=vals[n];
+
+/* Serialize primitives, strings and regex safely. */
+if(typeof v==='string'){resolved++;return JSON.stringify(v)}
+if(typeof v==='number'||typeof v==='boolean'||v===null){resolved++;return String(v)}
+if(v instanceof RegExp){resolved++;return v.toString()}
+return all
+});
+
+var rem=(out.match(rx)||[]).length;
+return{code:out,resolved:resolved,remaining:rem}
+}
+
+function _resolveKnownTablesDeep(src){
+src=String(src||'');
+var names=[],m,re=/\b(?:var|let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*\[/g;
+while((m=re.exec(src))){
+var n=m[1];
+if(/^rgx$/i.test(n)||/^_\$_/.test(n)||/^(?:str|tbl|table|arr)$/i.test(n))names.push(n)
+}
+names=Array.from(new Set(names));
+
+var current=src,total=0,remaining=0;
+names.forEach(function(name){
+var r=_resolveIndexedTable(current,name);
+if(r.code!==current&&_syntaxValid(r.code)){
+current=r.code;
+total+=r.resolved
+}
+remaining+=r.remaining
+});
+return{code:current,resolved:total,remaining:remaining}
+}
+
+function _decodeAllEscapedStrings(src){
+src=String(src||'');
+var out='',i=0;
+
+function readQuoted(start){
+var q=src[start],j=start+1,esc=false;
+for(;j<src.length;j++){
+var c=src[j];
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q){j++;return{text:src.slice(start,j),end:j}}
+}
+return null
+}
+
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+
+if(c==='/'&&n==='/'){
+var e=src.indexOf('\n',i+2);
+if(e<0){out+=src.slice(i);break}
+out+=src.slice(i,e+1);i=e+1;continue
+}
+if(c==='/'&&n==='*'){
+var e2=src.indexOf('*/',i+2);
+if(e2<0){out+=src.slice(i);break}
+out+=src.slice(i,e2+2);i=e2+2;continue
+}
+if(c==='"'||c==="'"){
+var r=readQuoted(i);
+if(!r){out+=c;i++;continue}
+var lit=r.text;
+if(/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/.test(lit)){
+try{
+var v=Function('"use strict";return ('+lit+')')();
+if(typeof v==='string'){
+var s=JSON.stringify(v).replace(/<\/script>/gi,'<\\/script>');
+out+=s;i=r.end;continue
+}
+}catch(_e){}
+}
+out+=lit;i=r.end;continue
+}
+if(c==='`'){
+var j=i+1,escT=false;
+for(;j<src.length;j++){
+var t=src[j];
+if(escT){escT=false;continue}
+if(t==='\\'){escT=true;continue}
+if(t==='`'){j++;break}
+}
+out+=src.slice(i,j);i=j;continue
+}
+out+=c;i++
+}
+return out
+}
+
+function _deepReadablePass(src){
+src=String(src||'');
+var current=src,next,r;
+
+/* Resolve index tables repeatedly until stable. */
+for(var i=0;i<4;i++){
+r=_resolveKnownTablesDeep(current);
+if(r.code===current)break;
+if(!_syntaxValid(r.code))break;
+current=r.code
+}
+
+/* Decode all remaining quoted HEX/Unicode escapes. */
+next=_decodeAllEscapedStrings(current);
+if(_syntaxValid(next))current=next;
+
+/* Existing property-key readability pass. */
+next=_decodeReadablePropertyKeys(current);
+if(_syntaxValid(next))current=next;
+
+return current
+}
+
+function _deobfuscationCompleteness(js){
+js=String(js||'');
+var hex=(js.match(/\\x[0-9a-fA-F]{2}|\\u[0-9a-fA-F]{4}/g)||[]).length;
+var rgx=(js.match(/\brgx\s*\[\s*\d+\s*\]/g)||[]).length;
+var table=(js.match(/\b_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/g)||[]).length;
+var packer=_packerPresent(js)?1:0;
+return{hex:hex,rgx:rgx,table:table,packer:packer,complete:!(hex||rgx||table||packer)}
 }
 
 function _semanticRepair(js){
