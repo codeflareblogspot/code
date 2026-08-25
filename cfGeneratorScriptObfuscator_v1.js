@@ -84,7 +84,7 @@ var scripts=_extractInlineScripts(source);
 var pfx=payload.slice(0,Math.min(220,payload.length));
 
 for(var i=0;i<scripts.length;i++){
-var body=_stripCDATA(scripts[i]).trim();
+var body=_cleanInjectedBody(scripts[i]).trim();
 if(body===payload)return body;
 if(pfx&&body.indexOf(pfx)!==-1)return body
 }
@@ -105,7 +105,11 @@ return report
 
 /* Validate only the transformed script that was injected. Pre-existing inline
 scripts elsewhere in the page must not block this operation. */
-try{new Function(body)}catch(e){report.syntax.push(String(e&&e.message||e))}
+body=_cleanInjectedBody(body);
+var probe=_syntaxProbe(body);
+if(!probe.ok){
+report.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(probe.context?' | '+probe.context:''))
+}
 
 var fc=typeof _flowCheck==='function'?_flowCheck(body):{ok:true,issues:[]};
 if(!fc.ok)report.flow=fc.issues.slice(0,10);
@@ -1242,23 +1246,56 @@ if(body)out.push(body)
 return out
 }
 
+function _stripCDATADeep(s){
+s=String(s||'').trim();
+s=s.replace(/^\s*\/\/\s*<!\[CDATA\[\s*(?:\r?\n)?/,'');
+s=s.replace(/(?:\r?\n)?\s*\/\/\s*\]\]>\s*$/,'');
+s=s.replace(/^\s*\/\*\s*<!\[CDATA\[\s*\*\/\s*/,'');
+s=s.replace(/\s*\/\*\s*\]\]>\s*\*\/\s*$/,'');
+return s.trim()
+}
+
+function _syntaxProbe(js){
+js=_stripCDATADeep(String(js||''));
+try{
+new Function(js);
+return{ok:true,message:'',line:0,column:0,context:''}
+}catch(e){
+var msg=String(e&&e.message||e),line=0,col=0,stack=String(e&&e.stack||'');
+var lm=stack.match(/<anonymous>:(\d+)(?::(\d+))?/);
+if(lm){line=Math.max(1,(+lm[1])-2);col=+(lm[2]||0)}
+var rows=js.split(/\r?\n/),ctx='';
+if(line&&rows[line-1]!==undefined)ctx=rows[line-1].slice(0,180);
+return{ok:false,message:msg,line:line,column:col,context:ctx}
+}
+}
+
+function _cleanInjectedBody(body){
+body=String(body||'');
+return _stripCDATADeep(body)
+}
+
 function _jsSyntaxCheckAny(src){
 src=String(src||'');
 var issues=[];
 
-/* Full HTML/Blogger source: validate only inline JavaScript bodies. */
 if(/<script\b/i.test(src)){
 var scripts=_extractInlineScripts(src);
 if(!scripts.length)return issues;
 scripts.forEach(function(js,i){
-try{new Function(js)}catch(e){issues.push('SCRIPT '+(i+1)+': '+String(e&&e.message||e))}
+var p=_syntaxProbe(_cleanInjectedBody(js));
+if(!p.ok){
+var at=p.line?' @ line '+p.line+(p.column?':'+p.column:''):'';
+issues.push('SCRIPT '+(i+1)+': '+p.message+at+(p.context?' | '+p.context:''))
+}
 });
 return issues
 }
 
-/* Pure JavaScript output. */
-try{new Function(_stripCDATA(_stripScriptWrapper(src)))}catch(e){
-issues.push(String(e&&e.message||e))
+var p=_syntaxProbe(_stripScriptWrapper(src));
+if(!p.ok){
+var at=p.line?' @ line '+p.line+(p.column?':'+p.column:''):'';
+issues.push(p.message+at+(p.context?' | '+p.context:''))
 }
 return issues
 }
@@ -1447,6 +1484,7 @@ S.normalizeFormat='flush'
 
 function _j1(normalized){
 var raw=String(S.originalRawSource||S.injectSource||''),clean=String(normalized||'').trim();
+clean=_stripCDATADeep(clean);
 if(!raw)return clean;
 
 if(/^\s*<script\b/i.test(clean)){
