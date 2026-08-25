@@ -97,7 +97,7 @@ return''
 }
 
 function _injectedSourceReport(source,payload){
-var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
 var body=_findInjectedScriptBody(source,payload);
 
 if(!body){
@@ -132,6 +132,7 @@ report.hard=[]
 .concat(report.syntax)
 .concat(report.flow)
 .concat(report.orphan)
+.concat(report.semantic||[])
 .concat(report.blogger);
 report.warnings=[]
 .concat(report.identifier)
@@ -1085,6 +1086,15 @@ return
 }
 
 var current=_safeOutputForInject(E.output.value);
+if(current){
+var semCurrent=_semanticRepair(current);
+current=semCurrent.code;
+if(semCurrent.fixes.length){
+S.lastSemanticFixes=semCurrent.fixes;
+say('SEMANTIC REPAIR - '+semCurrent.fixes.slice(0,4).join(', '))
+}
+if(semCurrent.warnings.length)S.lastSemanticWarnings=semCurrent.warnings
+}
 if(!current){say('NO OUTPUT TO INJECT');return}
 if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
 
@@ -1323,7 +1333,7 @@ return issues
 function _integrityReport(js,raw){
 js=String(js||'');
 raw=String(raw||'');
-var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
 var hasSourceWrapper=/<script\b/i.test(js);
 
 /* Pure JS and full source use different syntax paths. */
@@ -1358,6 +1368,7 @@ report.hard=[]
 .concat(report.syntax)
 .concat(report.flow)
 .concat(report.orphan)
+.concat(report.semantic||[])
 .concat(report.blogger);
 
 report.warnings=[]
@@ -1398,13 +1409,16 @@ return v
 }
 
 function _integrityFirstIssue(r){
+r=r||{};
 if(r.syntax&&r.syntax.length)return'SYNTAX: '+r.syntax[0];
 if(r.flow&&r.flow.length)return'FLOW: '+r.flow[0];
 if(r.orphan&&r.orphan.length)return'ORPHAN: '+r.orphan[0];
+if(r.semantic&&r.semantic.length)return'SEMANTIC: '+r.semantic[0];
 if(r.blogger&&r.blogger.length)return'BLOGGER XML: '+r.blogger[0];
 if(r.identifier&&r.identifier.length)return'WARNING: '+r.identifier[0];
 if(r.scope&&r.scope.length)return'WARNING: '+r.scope[0];
-return''
+if(r.hard&&r.hard.length)return'CHECK: '+r.hard[0];
+return'UNKNOWN INTEGRITY ERROR'
 }
 
 function _checkpoint(next,prev,label){
@@ -1808,6 +1822,10 @@ if(out.length>250000)await new Promise(function(r){setTimeout(r,16)});
 }
 
 S.normalizedBase=String(out);
+var semFinal=_semanticRepair(S.normalizedBase);
+S.normalizedBase=semFinal.code;
+if(semFinal.fixes.length)S.lastSemanticFixes=semFinal.fixes;
+if(semFinal.warnings.length)S.lastSemanticWarnings=semFinal.warnings;
 _rememberSafeOutput(S.normalizedBase);
 var finalFlow=_integrityReport(S.normalizedBase,S.originalRawSource||'');
 S.integrity=finalFlow;
