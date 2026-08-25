@@ -8,7 +8,9 @@ if(!tool)return;
 var PATH=_z([47,50,48,50,54,47,48,56,47,103,101,110,101,114,97,116,111,114,45,106,97,118,97,115,99,114,105,112,116,45,111,98,102,117,115,99,97,116,101,45,101,110,99,114,121,112,116,105,111,110,46,104,116,109,108]);
 var host=(location.hostname||'').toLowerCase(),path=location.pathname||'';
 var local=/^(localhost|127\.0\.0\.1|0\.0\.0\.0)$/.test(host)||location.protocol==='file:';
-var allowed=local||((host===_z([99,111,100,101,102,108,97,114,101,46,110,101,116])||host===_z([119,119,119,46,99,111,100,101,102,108,97,114,101,46,110,101,116]))&&path===PATH);
+var allowed=local
+||((host===_z([99,111,100,101,102,108,97,114,101,46,110,101,116])||host===_z([119,119,119,46,99,111,100,101,102,108,97,114,101,46,110,101,116]))&&path===PATH)
+||((host===_z([99,111,100,101,102,108,97,114,101,46,109,121,46,105,100])||host===_z([119,119,119,46,99,111,100,101,102,108,97,114,101,46,109,121,46,105,100]))&&path===_z([47,50,48,50,54,47,48,56,47,116,101,115,116,45,97,114,116,105,107,101,108,46,104,116,109,108]));
 if(!allowed){tool.style.display='none';if(warning)warning.style.display='flex';return}
 
 function $(id){return document.getElementById(id)}
@@ -106,6 +108,7 @@ var a=new Blob([E.input.value]).size||1,b=new Blob([v]).size;
 if(E.sizeChange)E.sizeChange.textContent=((b-a)/a*100).toFixed(1)+'%';
 if(E.resultStatus)E.resultStatus.textContent=status||'READY';
 if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||S.normalizeFinal||!(S.mode==='deobfuscate'&&v);
+_injectButtonState();
 }
 function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function unescHTML(s){var ta=document.createElement('textarea');ta.innerHTML=String(s);return ta.value}
@@ -746,16 +749,11 @@ return
 }
 
 /* Always display the final injected code in cfObOutput. */
-E.output.value=injected;
-if(E.outputTitle)E.outputTitle.textContent=fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT';
-if(E.outputMeta)E.outputMeta.textContent='FINAL SOURCE PREVIEW';
-
 var finalStatus=S.mode==='deobfuscate'&&S.integrity&&S.integrity.warnings&&S.integrity.warnings.length
 ?'SAFE + WARNING'
 :(fullSource?'SOURCE READY':'SCRIPT READY');
 
-if(E.resultStatus)E.resultStatus.textContent=finalStatus;
-_injectButtonState();
+setOutput(injected,fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT',finalStatus);
 
 say(fullSource
 ?'DATA INJECTED TO ORIGINAL SOURCE - OUTPUT UPDATED'
