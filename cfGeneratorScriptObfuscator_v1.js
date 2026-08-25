@@ -90,8 +90,68 @@ out+=c;i++}
 return out
 }
 function minify(s){return stripComments(String(s)).replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n[ \t]+/g,'\n').replace(/\n{2,}/g,'\n').replace(/\s*([{};,=:])\s*/g,'$1').trim()}
+
+function _baScanBlock(src,startPos){
+var i=startPos,open=src[i],close=open==='{'?'}':open==='['?']':open==='('?')':null;
+if(!close)return null;
+var depth=0,q=null,esc=false,line=false,block=false;
+for(;i<src.length;i++){
+var c=src[i],n=src[i+1]||'';
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){if(esc)esc=false;else if(c==='\\')esc=true;else if(c===q)q=null;continue}
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c===open)depth++;
+else if(c===close){depth--;if(depth===0)return{end:i+1,text:src.slice(startPos,i+1)}}
+}
+return null
+}
+
+function _baProtectedRanges(src){
+src=String(src||'');
+var ranges=[],re=/(?:^|[;\n])\s*(?:var|let|const)\s+[A-Za-z_$][\w$]*\s*=\s*/g,m;
+while((m=re.exec(src))){
+var pos=re.lastIndex;
+while(/\s/.test(src[pos]||''))pos++;
+var c=src[pos];
+if(c!=='{'&&c!=='['&&c!=='(')continue;
+var block=_baScanBlock(src,pos);
+if(!block)continue;
+var tail=src.slice(block.end).match(/^\s*(?:[;,]|$)/);
+if(!tail)continue;
+var raw=block.text;
+var lines=raw.split(/\r?\n/).length;
+var complex=raw.length>=240||lines>=4||(/[?:]/.test(raw)&&raw.length>=120)||(/\.\s*[A-Za-z_$][\w$]*\s*\(/.test(raw)&&raw.length>=160);
+if(complex)ranges.push({start:pos,end:block.end,text:raw})
+}
+return ranges
+}
+
+function _baMask(src,ranges){
+var out=String(src),store=[];
+for(var i=ranges.length-1;i>=0;i--){
+var token='__CF_BLOCK_AWARE_'+i+'__';
+store[i]=ranges[i].text.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+out=out.slice(0,ranges[i].start)+token+out.slice(ranges[i].end)
+}
+return{src:out,store:store}
+}
+
+function _baRestore(src,store){
+var out=String(src);
+store.forEach(function(raw,i){
+out=out.replace('__CF_BLOCK_AWARE_'+i+'__',raw)
+});
+return out
+}
+
 function beautify(s){
 s=String(s||'').replace(/\r\n?/g,'\n').replace(/\t/g,'  ');
+var protectedData=_baMask(s,_baProtectedRanges(s));
+s=protectedData.src;
+
 var out='',ind=0,q=null,esc=false,lineComment=false,blockComment=false;
 var par=0,br=0,i=0,lineStart=true,pendingSpace=false;
 
@@ -162,27 +222,34 @@ if(!next)nl();
 continue
 }
 
-/* Semicolon is a safe line break only outside (), [].
-This prevents for(;;), function arguments and chained expressions being split. */
 if(c===';'){
 write(';');
 if(par===0&&br===0)nl();
 continue
 }
 
-/* Commas stay inline. Breaking on comma was the main cause of disconnected code. */
 if(c===','){write(',');pendingSpace=true;continue}
 
-/* Never force a newline around operators, ternaries, object properties or chains. */
 write(c)
 }
 
 trimEnd();
-return out
+
+out=out
 .replace(/[ ]+\n/g,'\n')
 .replace(/\n{3,}/g,'\n\n')
 .replace(/^\s*\n/,'')
-.replace(/\n\s*$/,'')
+.replace(/\n\s*$/,'');
+
+out=_baRestore(out,protectedData.store);
+
+/* Final portable cleanup only; protected blocks keep their own line structure. */
+out=out
+.replace(/\t/g,'  ')
+.replace(/[ \t]+$/gm,'')
+.replace(/\n{3,}/g,'\n\n');
+
+return out
 }
 function _b6(s){
 return String(s||'')
@@ -400,7 +467,7 @@ var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);
 formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
 if(S.normalizeFormat==='beautify'&&!_syntaxSafe(formatted)&&_syntaxSafe(base)){
 formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
-say('BEAUTIFY SAFETY FALLBACK - ORIGINAL NORMALIZED STRUCTURE KEPT')
+say('BEAUTIFY SAFETY FALLBACK - BLOCK STRUCTURE PRESERVED')
 }
 var flow=_flowCheck(formatted);
 if(!flow.ok){
