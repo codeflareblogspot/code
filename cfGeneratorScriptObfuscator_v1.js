@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.10';
+var CF_JS_LAB_VERSION='v2.11';
 function _z(a){return String.fromCharCode.apply(null,a)}
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
@@ -2516,7 +2516,7 @@ setNormalizeFinal(true,finalFlow.safe?'FULL NORMALIZE COMPLETE - INJECT DATA TO 
 if(E.resultStatus)E.resultStatus.textContent=finalFlow.safe?(finalFlow.warnings.length?'NORMALIZED + WARNING':'READY TO INJECT'):'NORMALIZE CHECK ERROR';
 if(finalFlow.safe){
 say(finalFlow.warnings.length?'FULL NORMALIZE COMPLETE - READY TO INJECT (WARNING NON-BLOCKING)':'FULL NORMALIZE COMPLETE - READY TO INJECT');
-say('BLOGGER/XML VALIDATION DEFERRED TO INJECT STAGE')
+
 }else{
 say('FULL NORMALIZE NOT SAFE - INJECT REMAINS LOCKED - '+_integrityFirstIssue(finalFlow))
 }
@@ -2529,7 +2529,8 @@ if(E.normalizeState)E.normalizeState.textContent='Normalize dihentikan pada laye
 say(err&&err.message?err.message:'NORMALIZE ERROR');
 setTimeout(function(){setProgress(0)},700)
 }finally{
-_busy(false)
+_busy(false);
+_injectButtonState()
 }
 });
 
