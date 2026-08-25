@@ -1114,10 +1114,19 @@ say('INJECT DATA TO SOURCE NOT AVAILABLE');
 return
 }
 
-var current=_safeOutputForInject(E.output.value);
-var currentWasFullSource=/<script\b/i.test(String(current||''));
-var payload=_payloadForInject(current);
-if(currentWasFullSource&&payload)current=payload;
+var shown=String(E.output.value||'').trim();
+var currentWasFullSource=/<script\b/i.test(shown);
+var payload=_payloadForInject(shown);
+var current=currentWasFullSource?payload:_stripCDATADeep(_stripScriptWrapper(shown)).trim();
+
+if(current&&!_syntaxValid(current)&&S.lastSafeOutput){
+var fallback=_stripCDATADeep(_stripScriptWrapper(String(S.lastSafeOutput||''))).trim();
+if(_syntaxValid(fallback)){
+current=fallback;
+payload=fallback;
+say('INJECT SAFETY FALLBACK - DISPLAY OUTPUT INVALID, USING LAST VALID CHECKPOINT')
+}
+}
 if(current){
 var semCurrent=_semanticRepair(current);
 current=semCurrent.code;
@@ -1143,7 +1152,14 @@ say('INJECT WARNING - HEX '+completeness.hex+' | RGX '+completeness.rgx+' | TABL
 var currentCheck={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
 var probe=_syntaxProbe(current);
 if(!probe.ok){
-currentCheck.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(probe.context?' | '+probe.context:''));
+var ctx=probe.context||'';
+if(!ctx){
+/* V8 sometimes omits line info for Unexpected token. Find likely malformed
+   close-paren neighborhoods for diagnostics without modifying source. */
+var mm=current.match(/.{0,90}\)\s*[,;})].{0,90}/);
+ctx=mm?mm[0]:''
+}
+currentCheck.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(ctx?' | '+ctx:''));
 currentCheck.hard=currentCheck.syntax.slice();
 currentCheck.safe=false;
 currentCheck.ok=false
@@ -2095,8 +2111,25 @@ if(S.mode!=='deobfuscate')return;
 var base=String(S.normalizedBase||E.output.value||'');
 if(!base)return;
 
-var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);
+var formatted;
+if(S.normalizeFormat==='flush'){
+formatted=_b6(base)
+}else{
+formatted=_safeBeautify(base)
+}
+if(!_syntaxValid(formatted)){
+say('FINAL FORMAT ROLLBACK - VALID NORMALIZED SOURCE RESTORED');
+formatted=base
+}
 formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+
+/* Whitespace cleanup itself is checked too. */
+if(!_syntaxValid(formatted)){
+formatted=base;
+say('DISPLAY OUTPUT ROLLBACK - FORMATTER RESULT REJECTED')
+}else{
+S.lastSafeOutput=formatted
+}
 
 var beforeCheck=_integrityReport(base,S.originalRawSource||'');
 var afterCheck=_integrityReport(formatted,S.originalRawSource||'');
@@ -2307,11 +2340,26 @@ if(out.length>250000)await new Promise(function(r){setTimeout(r,16)});
 }
 
 S.normalizedBase=String(out);
-var semFinal=_semanticRepair(S.normalizedBase);
-S.normalizedBase=semFinal.code;
+
+/* Never let the final semantic pass replace valid normalized JS with broken JS. */
+var beforeSemantic=S.normalizedBase;
+var semFinal=_conservativeHumanize(beforeSemantic);
+if(_syntaxValid(semFinal.code)){
+S.normalizedBase=semFinal.code
+}else{
+S.normalizedBase=beforeSemantic;
+say('FINAL SEMANTIC ROLLBACK - VALID SOURCE RESTORED')
+}
 if(semFinal.fixes.length)S.lastSemanticFixes=semFinal.fixes;
 if(semFinal.warnings.length)S.lastSemanticWarnings=semFinal.warnings;
-_rememberSafeOutput(S.normalizedBase);
+
+/* Store checkpoint only when pure JS is actually valid. */
+if(_syntaxValid(S.normalizedBase)){
+S.lastSafeOutput=S.normalizedBase
+}else if(S.lastSafeOutput&&_syntaxValid(S.lastSafeOutput)){
+S.normalizedBase=S.lastSafeOutput;
+say('NORMALIZE SAFETY FALLBACK - LAST VALID OUTPUT RESTORED')
+}
 var finalFlow=_integrityReport(S.normalizedBase,S.originalRawSource||'');
 S.integrity=finalFlow;
 S.normalizeFinal=true;
