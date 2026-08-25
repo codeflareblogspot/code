@@ -36,7 +36,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',normalizedBase:'',normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{}};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{}};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -57,6 +57,15 @@ if(E.normalizePanel)E.normalizePanel.classList.toggle('is-processing',!!on);
 if(msg)say(msg)
 }
 
+function _captureInjectSource(src){
+src=String(src||'');
+if(!src)return;
+S.injectSource=src;
+S.originalRawSource=src
+}
+function _getInjectSource(){
+return String(S.injectSource||S.originalRawSource||'')
+}
 function _sourceHasScriptWrapper(raw){
 return /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(String(raw||''))
 }
@@ -65,24 +74,26 @@ js=String(js||'').trim();
 return "<script type='text/javascript'>\n"+js+"\n</script>"
 }
 function _injectCurrentToSource(current){
-var raw=String(S.originalRawSource||''),clean=String(current||'').trim();
+var raw=_getInjectSource(),clean=String(current||'').trim();
 if(!raw)return clean;
-
-/* Full source / script wrapper: inject transformed result back into original source. */
-if(_sourceHasScriptWrapper(raw))return _j1(clean);
-
-/* Pure JavaScript input: create a ready-to-use script tag. */
+if(_sourceHasScriptWrapper(raw)){
+var keep=S.originalRawSource;
+S.originalRawSource=raw;
+var result=_j1(clean);
+S.originalRawSource=keep||raw;
+return result
+}
 return _pureScriptWrap(_stripCDATA(_stripScriptWrapper(clean)))
 }
 
 function _injectButtonState(){
 if(!E.copyScript)return;
 var toolMode=S.mode==='obfuscate'||S.mode==='deobfuscate';
-var active=toolMode&&!!(E.output&&E.output.value)&&!!S.originalRawSource;
+var active=toolMode&&!!(E.output&&String(E.output.value||'').trim())&&!!_getInjectSource();
 E.copyScript.disabled=!active;
 E.copyScript.setAttribute('aria-disabled',active?'false':'true');
 E.copyScript.tabIndex=active?0:-1;
-E.copyScript.title=!toolMode?'Not available in Code Tools mode':(active?'Inject output to original source / create <script> tag':'Run process first')
+E.copyScript.title=!toolMode?'Not available in Code Tools mode':(active?'Inject current result to source':'Process source first')
 }
 
 function setOutput(v,title,status){
@@ -703,7 +714,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
-E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',function(){
 if(S.mode==='code'){
@@ -718,15 +729,15 @@ return
 
 var current=String(E.output.value||'').trim();
 if(!current){say('NO OUTPUT TO INJECT');return}
-if(!S.originalRawSource){say('ORIGINAL SOURCE NOT FOUND');return}
+if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
 
 try{
-var fullSource=_sourceHasScriptWrapper(S.originalRawSource);
+var fullSource=_sourceHasScriptWrapper(_getInjectSource());
 var injected=_injectCurrentToSource(current);
 
 /* Validate deobfuscation result before displaying injected source. */
 if(S.mode==='deobfuscate'){
-S.integrity=_integrityReport(injected,S.originalRawSource||'');
+S.integrity=_integrityReport(injected,_getInjectSource());
 if(!S.integrity.safe){
 say('INJECT BLOCKED - '+_integrityFirstIssue(S.integrity));
 if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
@@ -757,7 +768,7 @@ say('INJECT FAILED - '+String(err&&err.message||err))
 });
 
 E.process.addEventListener('click',async function(){
-var src=E.input.value;if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
+var src=E.input.value;if(src.trim())_captureInjectSource(src);if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
 setProgress(20);E.process.disabled=true;
 try{
 var out;
@@ -1116,7 +1127,7 @@ _busy(false)
 });
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
