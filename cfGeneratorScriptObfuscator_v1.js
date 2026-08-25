@@ -54,7 +54,7 @@ function setProgress(n){if(E.progress)E.progress.style.width=Math.max(0,Math.min
 function _ui(){return new Promise(function(resolve){if(typeof requestAnimationFrame==='function')requestAnimationFrame(function(){resolve()});else setTimeout(resolve,0)})}
 function _busy(on,msg){
 S.normalizeBusy=!!on;
-if(E.normalizeFull)E.normalizeFull.disabled=!!on||S.normalizeFinal||!(S.mode==='deobfuscate'&&E.output.value);
+if(E.normalizeFull)E.normalizeFull.disabled=!!on||S.normalizeFinal||!S.deobfuscateReady||!(S.mode==='deobfuscate'&&E.output.value);
 if(E.normalizePanel)E.normalizePanel.classList.toggle('is-processing',!!on);
 if(msg)say(msg)
 }
@@ -80,19 +80,16 @@ source=String(source||'');
 payload=_stripCDATA(_stripScriptWrapper(String(payload||''))).trim();
 if(!source||!payload)return'';
 
-var scripts=_extractInlineScripts(source),pfx=payload.slice(0,Math.min(160,payload.length));
+var scripts=_extractInlineScripts(source);
+var pfx=payload.slice(0,Math.min(220,payload.length));
+
 for(var i=0;i<scripts.length;i++){
 var body=_stripCDATA(scripts[i]).trim();
 if(body===payload)return body;
 if(pfx&&body.indexOf(pfx)!==-1)return body
 }
 
-/* Fallback to the largest inline script because _j1 uses the same strategy
-when the original script cannot be matched exactly. */
-if(scripts.length){
-scripts.sort(function(a,b){return b.length-a.length});
-return _stripCDATA(scripts[0]).trim()
-}
+/* Do not validate an unrelated script as fallback. */
 return''
 }
 
@@ -498,15 +495,26 @@ return src
 }
 
 function _p3(src){
-src=String(src);
+src=String(src||'');
+if(_packerPresent(src))return src;
+
 var tables=_p1(src),names=Object.keys(tables);
 if(!names.length)return src;
+
+var removals=[];
 names.forEach(function(name){
-var safe=name.replace(/[$]/g,'\\$&');
-var decl1=new RegExp('(?:var|let|const)\\s+'+safe+'\\s*=\\s*\\[[\\s\\S]*?\\]\\s*;?','g');
-src=src.replace(decl1,'');
-var decl2=new RegExp('(?:var|let|const)\\s+'+safe+'\\s*=\\s*new\\s+Array\\s*\\([\\s\\S]*?\\)\\s*;?','g');
-src=src.replace(decl2,'');
+var d=_findSafeTableDecl(src,name);
+if(!d)return;
+if(_identifierUsedOutside(src,name,d.start,d.end))return;
+removals.push(d)
+});
+
+removals.sort(function(a,b){return b.start-a.start}).forEach(function(d){
+var candidate=src.slice(0,d.start)+src.slice(d.end);
+try{
+new Function(_stripCDATA(_stripScriptWrapper(candidate)));
+if(!_orphanCheck(candidate).length)src=candidate
+}catch(_e){}
 });
 return src
 }
@@ -535,26 +543,148 @@ if(/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,/i.test(src))s
 return score>=2
 }
 
+function _packerPresent(src){
+return /eval\s*\(\s*function\s*\(\s*p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,\s*(?:r|d)\s*\)/i.test(String(src||''))
+}
+
+function _packerArgValue(expr,tables){
+expr=String(expr||'').trim();
+var lit=expr.match(/^(["'])([\s\S]*)\1$/);
+if(lit)return _b9(expr);
+
+var ref=expr.match(/^([A-Za-z_$][\w$]*)\s*\[\s*(\d+)\s*\]$/);
+if(ref&&tables[ref[1]]&&+ref[2]<tables[ref[1]].length)return tables[ref[1]][+ref[2]];
+return null
+}
+
+function _scanBalancedLiteral(src,start,open,close){
+src=String(src||'');
+if(src[start]!==open)return null;
+var depth=0,q=null,esc=false,line=false,block=false,i=start;
+for(;i<src.length;i++){
+var c=src[i],n=src[i+1]||'';
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){
+if(esc)esc=false;
+else if(c==='\\')esc=true;
+else if(c===q)q=null;
+continue
+}
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c===open)depth++;
+else if(c===close){
+depth--;
+if(depth===0)return{start:start,end:i+1,text:src.slice(start,i+1)}
+}
+}
+return null
+}
+
+function _findSafeTableDecl(src,name){
+src=String(src||'');
+var safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+var re=new RegExp('\\b(?:var|let|const)\\s+'+safe+'\\s*=\\s*','g'),m;
+while((m=re.exec(src))){
+var pos=re.lastIndex;
+while(/\s/.test(src[pos]||''))pos++;
+
+if(src[pos]==='['){
+var b=_scanBalancedLiteral(src,pos,'[',']');
+if(!b)return null;
+var end=b.end;
+while(/\s/.test(src[end]||''))end++;
+if(src[end]===';')end++;
+return{start:m.index,end:end}
+}
+
+var rest=src.slice(pos),na=rest.match(/^new\s+Array\s*\(/);
+if(na){
+var p=pos+na[0].lastIndexOf('(');
+var b2=_scanBalancedLiteral(src,p,'(',')');
+if(!b2)return null;
+var end2=b2.end;
+while(/\s/.test(src[end2]||''))end2++;
+if(src[end2]===';')end2++;
+return{start:m.index,end:end2}
+}
+}
+return null
+}
+
+function _identifierUsedOutside(src,name,start,end){
+var safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+var re=new RegExp('\\b'+safe+'\\b');
+return re.test(src.slice(0,start))||re.test(src.slice(end))
+}
+
+function _findObfuscatorScriptMatch(raw){
+raw=String(raw||'');
+var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,best=null;
+while((m=re.exec(raw))){
+var body=String(m[1]||''),score=0;
+if(/\bvar\s+_\$_[A-Za-z0-9_$]+\s*=\s*\[/.test(body))score+=6;
+if(_packerPresent(body))score+=10;
+if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=2;
+if(score&&(!best||score>best.score))best={full:m[0],body:m[1],index:m.index,score:score}
+}
+return best
+}
+
 function _d4(src){
-src=_d2(String(src));
-var re=/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,\s*(?:r|d)\s*\)\s*\{[\s\S]*?\}\s*\(\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\.split\(\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\s*\)\s*,\s*[^,]*\s*,\s*\{\s*\}\s*\)\s*\)/;
-var m=src.match(re);
-if(!m)return null;
+src=String(src||'');
+var tables=_d1(src);
+
+/* Standard literal P.A.C.K.E.R form */
+var direct=/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,\s*(?:r|d)\s*\)\s*\{[\s\S]*?\}\s*\(\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\.split\(\s*((?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'))\s*\)\s*,\s*[^,]*\s*,\s*\{\s*\}\s*\)\s*\)/;
+var m=src.match(direct);
+if(m){
 return{
 payload:_b9(m[1]),
 base:parseInt(m[2],10),
 count:parseInt(m[3],10),
-dict:_b9(m[4]).split(_b9(m[5]))
+dict:_b9(m[4]).split(_b9(m[5])),
+indirect:false
+}
+}
+
+/* Indirect table form:
+eval(function(...)(TABLE[0],62,1989,TABLE[2].split(TABLE[1]),0,{})) */
+var indirect=/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,\s*(?:r|d)\s*\)\s*\{[\s\S]*?\}\s*\(\s*([A-Za-z_$][\w$]*\s*\[\s*\d+\s*\])\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([A-Za-z_$][\w$]*\s*\[\s*\d+\s*\])\.split\(\s*([A-Za-z_$][\w$]*\s*\[\s*\d+\s*\])\s*\)\s*,\s*[^,]*\s*,\s*\{\s*\}\s*\)\s*\)/;
+m=src.match(indirect);
+if(!m)return null;
+
+var payload=_packerArgValue(m[1],tables);
+var dictRaw=_packerArgValue(m[4],tables);
+var delim=_packerArgValue(m[5],tables);
+if(payload===null||dictRaw===null||delim===null)return null;
+
+return{
+payload:payload,
+base:parseInt(m[2],10),
+count:parseInt(m[3],10),
+dict:String(dictRaw).split(String(delim)),
+indirect:true,
+tableName:(m[1].match(/^([A-Za-z_$][\w$]*)/)||[])[1]||''
 }
 }
 
 function _b1(src){
-src=String(src);
-var normalized=_d2(src),x=_d4(normalized);
-if(!x)return normalized;
+src=String(src||'');
+var x=_d4(src);
+if(!x)return src;
+
 var p=x.payload,a=x.base,c=x.count,k=x.dict;
 function enc(n){return(n<a?'':enc(Math.floor(n/a)))+((n%=a)>35?String.fromCharCode(n+29):n.toString(36))}
-while(c--){if(k[c])p=p.replace(new RegExp('\\b'+enc(c)+'\\b','g'),k[c])}
+
+while(c--){
+if(k[c])p=p.replace(new RegExp('\\b'+enc(c)+'\\b','g'),k[c])
+}
+
+/* Accept unpack only if it produces parseable JavaScript. */
+try{new Function(_stripCDATA(_stripScriptWrapper(p)))}catch(_e){return src}
 return p
 }
 function _b5(s){return String(s).replace(/\.\s*\[\s*(["'])([A-Za-z_$][\w$]*)\1\s*\]/g,'.$2').replace(/\[\s*(["'])([A-Za-z_$][\w$]*)\1\s*\]/g,'.$2').replace(/\b!0\b/g,'true').replace(/\b!1\b/g,'false').replace(/\bvoid\s+0\b/g,'undefined')}
@@ -583,7 +713,7 @@ return _nfingerprint(a)!==_nfingerprint(b)
 
 function _a5(s){
 s=String(s||'');
-var current=s,prev='',passes=0,seen={},fp='',step='',report;
+var current=s,prev='',passes=0,seen={},fp='',step='',report,packed;
 _p1(current);
 
 for(;passes<8;passes++){
@@ -592,13 +722,23 @@ if(seen[fp])break;
 seen[fp]=1;
 prev=current;
 
-/* Run transformations as one combined pass. This is much faster for large
-Blogger template scripts than validating after every individual resolver. */
+/* P.A.C.K.E.R has priority over every table resolver. */
+if(_packerPresent(current)){
+packed=_b1(current);
+if(packed===current){
+say('NORMALIZE STOP - PACKER COULD NOT BE SAFELY UNPACKED');
+break
+}
+report=_integrityReport(packed,'');
+if(!report.safe){
+say('NORMALIZE PACKER ROLLBACK - '+_integrityFirstIssue(report));
+break
+}
+current=packed;
+continue
+}
+
 step=_p2(current);
-step=_d2(step);
-step=_b2(step);
-step=_b1(step);
-step=_p2(step);
 step=_d2(step);
 step=_b2(step);
 step=_b4(step);
@@ -607,25 +747,33 @@ step=_b5(step);
 
 if(!_nchanged(current,step))break;
 
-/* Only hard-check the combined result once per pass. */
-report=_integrityReport(step,S.originalRawSource||'');
+report=_integrityReport(step,'');
 if(!report.safe){
-var oldReport=_integrityReport(current,S.originalRawSource||'');
+var oldReport=_integrityReport(current,'');
 if(oldReport.safe)break
 }
-
-current=step;
+current=step
 }
 
-/* Final cleanup only if it really changes the source. */
+/* Humanize first. String-table cleanup stays isolated and guarded. */
 step=_b3(current);
 step=_p4(step);
 step=_b5(step);
-step=_p3(step);
 
 if(_nchanged(current,step)){
-report=_integrityReport(step,S.originalRawSource||'');
+report=_integrityReport(step,'');
 if(report.safe)current=step
+}
+
+if(!_packerPresent(current)){
+step=_p3(current);
+if(_nchanged(current,step)){
+report=_integrityReport(step,'');
+if(report.safe)current=step;
+else say('STRING TABLE CLEANUP SKIPPED - SOURCE PRESERVED')
+}
+}else{
+say('STRING TABLE CLEANUP SKIPPED - PACKER TABLE ACTIVE')
 }
 
 return S.normalizeFormat==='flush'?_b6(current):beautify(current)
@@ -681,7 +829,7 @@ function setNormalizeFinal(on,msg){
 S.normalizeFinal=!!on;
 if(E.normalizePanel)E.normalizePanel.classList.toggle('is-final',!!on);
 if(E.normalizeState)E.normalizeState.textContent=msg||(on?'Final layer reached. Tidak ada layer Normalize yang terdeteksi lagi.':'Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.');
-if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!(S.mode==='deobfuscate'&&E.output.value)
+if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!S.deobfuscateReady||!(S.mode==='deobfuscate'&&E.output.value)
 }
 
 async function _a6(src){
@@ -691,7 +839,7 @@ var raw=_stripCDATA(_stripScriptWrapper(S.originalRawSource));
 S.originalSource=raw;
 S.tableCache={};
 
-var current=raw,prev=current,cp;
+var current=raw,prev=current,cp,packed;
 _p1(current);
 
 var cf=await _a4(current);
@@ -699,6 +847,27 @@ if(cf!==null){
 cp=_checkpoint(String(cf),current,'CODEFLARE DECODE');
 current=cp.code;
 if(cp.rolled)say(cp.reason)
+}
+
+/* Highest priority: indirect P.A.C.K.E.R.
+Never resolve/delete its table before unpacking. */
+if(_packerPresent(current)){
+say('PACKER DETECTED - STRING TABLE LOCKED');
+prev=current;
+packed=_b1(current);
+
+if(packed!==current){
+cp=_checkpoint(packed,current,'PACKER UNPACK');
+current=cp.code;
+if(cp.rolled){
+say(cp.reason);
+return current
+}
+say('PACKER RESOLVED - CONTINUE DEOBFUSCATION')
+}else{
+say('PACKER UNPACK FAILED - SOURCE PRESERVED');
+return current
+}
 }
 
 prev=current;
@@ -714,17 +883,10 @@ current=cp.code;
 if(cp.rolled)say(cp.reason);
 
 prev=current;
-current=_b1(current);
-cp=_checkpoint(current,prev,'PACKER UNPACK');
-current=cp.code;
-if(cp.rolled)say(cp.reason);
-
-prev=current;
-current=_p2(current);
 current=_b4(current);
-current=_d2(current);
 current=_b2(current);
 current=_p4(current);
+current=_b5(current);
 cp=_checkpoint(current,prev,'DEOBFUSCATION NORMALIZE');
 current=cp.code;
 if(cp.rolled)say(cp.reason);
@@ -764,7 +926,7 @@ if(E.deobSupport)E.deobSupport.style.display=m==='deobfuscate'?'block':'none';
 if(E.techBox)E.techBox.style.display=m==='obfuscate'?'block':'none';
 if(E.layerSection)E.layerSection.style.display=m==='deobfuscate'?'block':'none';
 if(E.normalizePanel)E.normalizePanel.style.display=m==='deobfuscate'?'flex':'none';
-if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!(m==='deobfuscate'&&E.output.value);if(m==='deobfuscate')_h1(E.input.value);else if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
+if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!S.deobfuscateReady||!(m==='deobfuscate'&&E.output.value);if(m==='deobfuscate')_h1(E.input.value);else if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
 if(m!=='deobfuscate'&&E.normalizePanel)E.normalizePanel.classList.remove('is-final');
 setTechEnabled(m==='obfuscate');
 if(m==='obfuscate'){E.process.innerHTML='<i class="fa fa-cogs"></i> OBFUSCATE CODE';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT'}
@@ -786,7 +948,7 @@ E.clear.addEventListener('click',function(){
 _lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',function(){
-if(S.mode==='code'){
+if(S.mode==='tools'){
 say('INJECT DATA TO SOURCE NOT AVAILABLE IN CODE TOOLS');
 _injectButtonState();
 return
@@ -1169,36 +1331,39 @@ S.normalizeFormat='flush'
 });
 
 function _j1(normalized){
-var raw=String(S.originalRawSource||''),clean=String(normalized||'').trim();
+var raw=String(S.originalRawSource||S.injectSource||''),clean=String(normalized||'').trim();
 if(!raw)return clean;
 
 if(/^\s*<script\b/i.test(clean)){
 clean=_stripCDATA(_stripScriptWrapper(clean)).trim()
 }
 
-/* Replace inline script body in source awal. */
+var target=_findObfuscatorScriptMatch(raw);
+
+/* Fallback: original script correspondence, then largest inline script. */
+if(!target){
 var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,matches=[];
 while((m=re.exec(raw)))matches.push({full:m[0],body:m[1],index:m.index});
 
 if(matches.length){
-/* Prefer script body that corresponds to source being deobfuscated; otherwise largest body. */
-var target=null,orig=String(S.originalSource||'').trim();
+var orig=String(S.originalSource||'').trim();
 for(var i=0;i<matches.length;i++){
 var b=_stripCDATA(matches[i].body).trim();
 if(orig&&(b===orig||b.indexOf(orig)>=0||orig.indexOf(b)>=0)){target=matches[i];break}
 }
-if(!target)target=matches.reduce(function(a,b){return b.body.length>a.body.length?b:a},matches[0]);
+if(!target)target=matches.reduce(function(a,b){return b.body.length>a.body.length?b:a},matches[0])
+}
+}
 
+if(target){
 var open=(target.full.match(/^<script\b[^>]*>/i)||['<script>'])[0];
-var close='</script>';
 var newBody=(S.bloggerMode||_hasCDATA(target.body))
 ?'//<![CDATA[\n'+clean+'\n//]]>'
 :clean;
-var rebuilt=open+'\n'+newBody+'\n'+close;
+var rebuilt=open+'\n'+newBody+'\n</script>';
 return raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.length)
 }
 
-/* Plain JS source: final normalized result itself is the injected output. */
 return clean
 }
 
