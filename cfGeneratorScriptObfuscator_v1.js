@@ -57,14 +57,34 @@ if(E.normalizePanel)E.normalizePanel.classList.toggle('is-processing',!!on);
 if(msg)say(msg)
 }
 
+function _sourceHasScriptWrapper(raw){
+return /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(String(raw||''))
+}
+function _pureScriptWrap(js){
+js=String(js||'').trim();
+return "<script type='text/javascript'>\n"+js+"\n</script>"
+}
+function _injectCurrentToSource(current){
+var raw=String(S.originalRawSource||''),clean=String(current||'').trim();
+if(!raw)return clean;
+
+/* Full source / script wrapper: inject transformed result back into original source. */
+if(_sourceHasScriptWrapper(raw))return _j1(clean);
+
+/* Pure JavaScript input: create a ready-to-use script tag. */
+return _pureScriptWrap(_stripCDATA(_stripScriptWrapper(clean)))
+}
+
 function _injectButtonState(){
 if(!E.copyScript)return;
-var active=S.mode==='deobfuscate'&&!!(E.output&&E.output.value)&&!!S.originalRawSource;
+var toolMode=S.mode==='obfuscate'||S.mode==='deobfuscate';
+var active=toolMode&&!!(E.output&&E.output.value)&&!!S.originalRawSource;
 E.copyScript.disabled=!active;
 E.copyScript.setAttribute('aria-disabled',active?'false':'true');
 E.copyScript.tabIndex=active?0:-1;
-E.copyScript.title=active?'Inject current output back into original source':'Run Deobfuscate first'
+E.copyScript.title=!toolMode?'Not available in Code Tools mode':(active?'Inject output to original source / create <script> tag':'Run process first')
 }
+
 function setOutput(v,title,status){
 v=String(v||'');E.output.value=v;
 if(E.outCount)E.outCount.textContent=v.length.toLocaleString()+' CHAR';
@@ -471,50 +491,63 @@ Object.keys(map).sort(function(a,b){return b.length-a.length}).forEach(function(
 return s
 }
 function _b6(s){return beautify(s).split('\n').map(function(line){return line.replace(/^\s+/,'')}).join('\n')}
+function _nfingerprint(s){
+s=String(s||'');
+var h=2166136261,i=0,step=Math.max(1,Math.floor(s.length/2048));
+for(i=0;i<s.length;i+=step){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}
+return s.length+':'+(h>>>0)
+}
+
+function _nchanged(a,b){
+return _nfingerprint(a)!==_nfingerprint(b)
+}
+
 function _a5(s){
 s=String(s||'');
-var current=s,prev='',passes=0,cp;
+var current=s,prev='',passes=0,seen={},fp='',step='',report;
 _p1(current);
-for(;passes<12&&current!==prev;passes++){
+
+for(;passes<8;passes++){
+fp=_nfingerprint(current);
+if(seen[fp])break;
+seen[fp]=1;
 prev=current;
 
-var step=_p2(current);
-cp=_checkpoint(step,current,'STRING TABLE PASS');
-current=cp.code;
-if(cp.rolled)break;
-
-step=_d2(current);
-cp=_checkpoint(step,current,'INDIRECT PASS');
-current=cp.code;
-if(cp.rolled)break;
-
-step=_b2(current);
-cp=_checkpoint(step,current,'STRING ARRAY PASS');
-current=cp.code;
-if(cp.rolled)break;
-
-step=_b1(current);
-cp=_checkpoint(step,current,'PACKER PASS');
-current=cp.code;
-if(cp.rolled)break;
-
+/* Run transformations as one combined pass. This is much faster for large
+Blogger template scripts than validating after every individual resolver. */
 step=_p2(current);
+step=_d2(step);
+step=_b2(step);
+step=_b1(step);
+step=_p2(step);
 step=_d2(step);
 step=_b2(step);
 step=_b4(step);
 step=_p4(step);
 step=_b5(step);
-cp=_checkpoint(step,current,'NORMALIZE PASS');
-current=cp.code;
-if(cp.rolled)break
+
+if(!_nchanged(current,step))break;
+
+/* Only hard-check the combined result once per pass. */
+report=_integrityReport(step,S.originalRawSource||'');
+if(!report.safe){
+var oldReport=_integrityReport(current,S.originalRawSource||'');
+if(oldReport.safe)break
 }
 
-var finalStep=_b3(current);
-finalStep=_p4(finalStep);
-finalStep=_b5(finalStep);
-finalStep=_p3(finalStep);
-cp=_checkpoint(finalStep,current,'FINAL CLEANUP');
-current=cp.code;
+current=step;
+}
+
+/* Final cleanup only if it really changes the source. */
+step=_b3(current);
+step=_p4(step);
+step=_b5(step);
+step=_p3(step);
+
+if(_nchanged(current,step)){
+report=_integrityReport(step,S.originalRawSource||'');
+if(report.safe)current=step
+}
 
 return S.normalizeFormat==='flush'?_b6(current):beautify(current)
 }
@@ -673,30 +706,51 @@ E.paste.addEventListener('click',async function(){try{E.input.value=await naviga
 E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',function(){
-if(S.mode!=='deobfuscate'){
-say('INJECT DATA TO SOURCE AVAILABLE IN DEOBFUSCATE MODE');
+if(S.mode==='code'){
+say('INJECT DATA TO SOURCE NOT AVAILABLE IN CODE TOOLS');
+_injectButtonState();
 return
 }
+if(S.mode!=='obfuscate'&&S.mode!=='deobfuscate'){
+say('INJECT DATA TO SOURCE NOT AVAILABLE');
+return
+}
+
 var current=String(E.output.value||'').trim();
-if(!current){
-say('NO OUTPUT TO INJECT');
-return
-}
-if(!S.originalRawSource){
-say('ORIGINAL SOURCE NOT FOUND');
-return
-}
+if(!current){say('NO OUTPUT TO INJECT');return}
+if(!S.originalRawSource){say('ORIGINAL SOURCE NOT FOUND');return}
+
 try{
-var injected=_j1(current);
+var fullSource=_sourceHasScriptWrapper(S.originalRawSource);
+var injected=_injectCurrentToSource(current);
+
+/* Validate deobfuscation result before displaying injected source. */
+if(S.mode==='deobfuscate'){
 S.integrity=_integrityReport(injected,S.originalRawSource||'');
 if(!S.integrity.safe){
 say('INJECT BLOCKED - '+_integrityFirstIssue(S.integrity));
 if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
 return
 }
-setOutput(injected,'INJECTED SOURCE OUTPUT',S.integrity.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'SOURCE READY'));
-if(E.resultStatus)E.resultStatus.textContent=S.integrity.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'SOURCE READY');
-say(S.bloggerMode?'DATA INJECTED TO ORIGINAL SOURCE - CDATA READY':'DATA INJECTED TO ORIGINAL SOURCE');
+}
+
+/* Always display the final injected code in cfObOutput. */
+E.output.value=injected;
+if(E.outputTitle)E.outputTitle.textContent=fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT';
+if(E.outputMeta)E.outputMeta.textContent='FINAL SOURCE PREVIEW';
+
+var finalStatus=S.mode==='deobfuscate'&&S.integrity&&S.integrity.warnings&&S.integrity.warnings.length
+?'SAFE + WARNING'
+:(fullSource?'SOURCE READY':'SCRIPT READY');
+
+if(E.resultStatus)E.resultStatus.textContent=finalStatus;
+_injectButtonState();
+
+say(fullSource
+?'DATA INJECTED TO ORIGINAL SOURCE - OUTPUT UPDATED'
+:'PURE JAVASCRIPT WRAPPED WITH <SCRIPT> TAG - OUTPUT UPDATED'
+);
+
 }catch(err){
 say('INJECT FAILED - '+String(err&&err.message||err))
 }
@@ -707,7 +761,9 @@ var src=E.input.value;if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
 setProgress(20);E.process.disabled=true;
 try{
 var out;
-if(S.mode==='obfuscate'){out=await _a2(src);setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')}
+if(S.mode==='obfuscate'){
+S.originalRawSource=src;S.originalSource=_stripCDATA(_stripScriptWrapper(src));
+out=await _a2(src);setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')}
 else{_h1(src);out=await _a6(src);S.layerIndex=0;S.layerHistory=[];setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');updateLayerPanel(out,'ANALYZED')}
 setProgress(100);say('SUCCESS')
 }catch(e){say(e.message||'PROCESS ERROR');if(E.resultStatus)E.resultStatus.textContent='ERROR'}
@@ -977,23 +1033,35 @@ return clean
 
 if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
 if(S.mode!=='deobfuscate'||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
-var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=16;
+
+var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=8;
+var seen={},lastFp='',fp='';
 _busy(true,'FULL NORMALIZE - PREPARING');
 setProgress(4);
 if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
-if(E.normalizeState)E.normalizeState.textContent='Sedang menganalisis dan membuka layer. Jangan tutup halaman sampai proses selesai.';
+if(E.normalizeState)E.normalizeState.textContent='Sedang menganalisis layer. Proses besar akan dihentikan otomatis bila tidak ada perubahan.';
 await _ui();
 
 try{
 while(guard<maxPass){
+fp=_nfingerprint(out);
+if(seen[fp]){
+say('NORMALIZE STOPPED - REPEATED LAYER DETECTED');
+break
+}
+seen[fp]=1;
+lastFp=fp;
+
 var before=out,layers=_a7(before);
 say('NORMALIZING LAYER '+(guard+1)+' / '+maxPass);
 if(E.normalizeState)E.normalizeState.textContent='Processing layer '+(guard+1)+' dari maksimal '+maxPass+'...';
 setProgress(8+Math.round((guard/maxPass)*82));
 await _ui();
 
+/* One normalize pass only. */
 out=_a5(before);
-var changed=out.trim()!==before.trim();
+fp=_nfingerprint(out);
+var changed=fp!==lastFp;
 
 S.layerIndex++;
 S.layerHistory.push({
@@ -1006,29 +1074,40 @@ setProgress(8+Math.round(((guard+1)/maxPass)*82));
 await _ui();
 
 guard++;
-if(!changed||!_a8(out))break;
+
+/* Stop immediately if second pass produces no meaningful change. */
+if(!changed)break;
+
+/* Avoid repeatedly reprocessing a huge source when no supported layer remains. */
+if(!_a8(out))break;
+
+/* Give the browser a real event-loop break on large source. */
+if(out.length>250000)await new Promise(function(r){setTimeout(r,16)});
 }
 
 S.normalizedBase=String(out);
+var finalFlow=_integrityReport(S.normalizedBase,S.originalRawSource||'');
+S.integrity=finalFlow;
 S.normalizeFinal=true;
+
 setProgress(94);
 say('FORMATTING FINAL OUTPUT');
-if(E.normalizeState)E.normalizeState.textContent='Merapikan hasil akhir sesuai pilihan format...';
+if(E.normalizeState)E.normalizeState.textContent='Merapikan hasil akhir...';
 await _ui();
 
 _renderNormalizeOutput();
 
 setProgress(100);
-updateLayerPanel(S.normalizedBase,'FINAL LAYER');
-setNormalizeFinal(true,false?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
-if(E.resultStatus)E.resultStatus.textContent=S.integrity&&S.integrity.safe?(S.integrity.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID')):'CHECK ERROR';
-say(false?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE');
+updateLayerPanel(S.normalizedBase,'FINAL CHECK');
+setNormalizeFinal(true,finalFlow.safe?'FULL NORMALIZE COMPLETE - Proses berhenti pada layer aman terakhir.':'FULL NORMALIZE COMPLETE - Periksa warning integrity.');
+if(E.resultStatus)E.resultStatus.textContent=finalFlow.safe?(finalFlow.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID')):'CHECK ERROR';
+say(finalFlow.safe?'FULL NORMALIZE COMPLETE':'FULL NORMALIZE COMPLETE WITH WARNING');
 
 await _ui();
 setTimeout(function(){setProgress(0)},700)
 }catch(err){
 if(E.resultStatus)E.resultStatus.textContent='ERROR';
-if(E.normalizeState)E.normalizeState.textContent='Normalize gagal pada layer aktif. Hasil terakhir yang aman tetap dipertahankan.';
+if(E.normalizeState)E.normalizeState.textContent='Normalize dihentikan pada layer terakhir yang aman.';
 say(err&&err.message?err.message:'NORMALIZE ERROR');
 setTimeout(function(){setProgress(0)},700)
 }finally{
