@@ -848,11 +848,7 @@ say('FORMAT SAFETY FALLBACK - '+_integrityFirstIssue(afterCheck))
 var injected=E.injectFull&&E.injectFull.checked&&S.normalizeFinal;
 if(injected){
 try{
-if(S.bloggerMode){
-formatted=_bloggerWrap(_stripCDATA(_stripScriptWrapper(formatted)),S.originalRawSource);
-}else{
 formatted=_j1(formatted)
-}
 }catch(_e){
 injected=false;
 say('INJECT FAILED - NORMALIZE RESULT KEPT')
@@ -865,7 +861,7 @@ setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPU
 if(S.normalizeFinal){
 if(S.integrity.ok){
 if(E.resultStatus)E.resultStatus.textContent=S.bloggerMode?'BLOGGER SAFE':'FINAL VALID';
-say(S.bloggerMode?'FINAL BLOGGER CHECK PASSED - CDATA READY':'FINAL SCRIPT CHECK PASSED')
+say(S.bloggerMode?'NORMALIZE INJECTED TO ORIGINAL SOURCE - BLOGGER SAFE':'NORMALIZE INJECTED TO ORIGINAL SOURCE')
 }else{
 if(E.resultStatus)E.resultStatus.textContent='CHECK WARNING';
 say('FINAL CHECK WARNING - '+_integrityFirstIssue(S.integrity))
@@ -896,36 +892,29 @@ S.normalizeFormat='flush'
 });
 
 function _j1(normalized){
-var raw=String(S.originalRawSource||E.input.value||'');
-var js=String(S.originalSource||extractJS(raw)||'');
-normalized=String(normalized||'');
+var raw=String(S.originalRawSource||''),clean=String(normalized||'').trim();
+if(!raw)return clean;
 
-if(!raw)return normalized;
+/* Source awal berupa tag <script>: ganti HANYA isi script, jangan membuat source baru. */
+var m=raw.match(/^([\s\S]*?<script\b[^>]*>)([\s\S]*?)(<\/script\s*>[\s\S]*)$/i);
+if(m){
+var body=clean;
+if(/^\s*<script\b/i.test(body))body=_stripScriptWrapper(body);
+body=_stripCDATA(body).trim();
 
-/* If original input was a single script wrapper, preserve the wrapper only. */
-var single=raw.match(/^\s*(<script\b[^>]*>)([\s\S]*?)(<\/script\s*>)\s*$/i);
-if(single){
-return single[1]+'\n'+normalized+'\n'+single[3];
+if(S.bloggerMode||_hasCDATA(m[2])){
+return m[1]+'\n//<![CDATA[\n'+body+'\n//]]>\n'+m[3]
+}
+return m[1]+'\n'+body+'\n'+m[3]
 }
 
-/* If input contains mixed HTML/CSS and inline script tags, replace only the
-largest inline script body without touching the DOM or executing anything. */
-var matches=[],re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m;
-while((m=re.exec(raw))){
-matches.push({full:m[0],body:m[1],index:m.index});
-}
-if(matches.length){
-var target=matches.reduce(function(a,b){return b.body.length>a.body.length?b:a},matches[0]);
-var open=target.full.match(/^<script\b[^>]*>/i);
-var close=target.full.match(/<\/script\s*>$/i);
-if(open&&close){
-var rebuilt=open[0]+'\n'+normalized+'\n'+close[0];
-return raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.length);
-}
-}
+/* Bila source bukan wrapper script, pertahankan source container bila placeholder
+normalized sebelumnya masih dapat ditemukan secara aman. */
+var original=String(S.originalSource||'').trim();
+if(original&&raw.indexOf(original)!==-1)return raw.replace(original,clean);
 
-/* Plain JavaScript input: injected result is simply the normalized JS. */
-return normalized;
+/* Fallback: hasil normalize tetap dikembalikan, tidak membuangnya. */
+return clean
 }
 
 if(E.injectFull)E.injectFull.addEventListener('change',function(){_copyScriptState();say(this.checked?'SOURCE INJECT ENABLED - COPY <SCRIPT> DISABLED':'SOURCE INJECT DISABLED - COPY <SCRIPT> ENABLED');if(S.normalizedBase)_renderNormalizeOutput()});
