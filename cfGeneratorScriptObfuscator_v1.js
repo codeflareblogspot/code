@@ -110,8 +110,9 @@ if(!probe.ok){
 report.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(probe.context?' | '+probe.context:''))
 }
 
-var fc=typeof _flowCheck==='function'?_flowCheck(body):{ok:true,issues:[]};
+var fc=typeof _flowCheck==='function'?_flowCheck(body):{ok:true,issues:[],warnings:[]};
 if(!fc.ok)report.flow=fc.issues.slice(0,10);
+if(fc.warnings&&fc.warnings.length)report.scope=(report.scope||[]).concat(fc.warnings.slice(0,5));
 report.orphan=_orphanCheck(body);
 report.identifier=_identifierCaseCheck(body);
 report.scope=_scopeCheck(body);
@@ -1315,8 +1316,9 @@ jsForChecks=parts.length?parts.join('\n'):'';
 }
 
 if(jsForChecks){
-var fc=typeof _flowCheck==='function'?_flowCheck(jsForChecks):{ok:true,issues:[]};
+var fc=typeof _flowCheck==='function'?_flowCheck(jsForChecks):{ok:true,issues:[],warnings:[]};
 if(!fc.ok)report.flow=fc.issues.slice(0,10);
+if(fc.warnings&&fc.warnings.length)report.scope=(report.scope||[]).concat(fc.warnings.slice(0,5));
 report.orphan=_orphanCheck(jsForChecks);
 report.identifier=_identifierCaseCheck(jsForChecks);
 report.scope=_scopeCheck(jsForChecks);
@@ -1395,27 +1397,81 @@ return{code:next,report:r,rolled:false,reason:label+' HARD WARNING - '+_integrit
 }
 
 function _flowCheck(js){
-js=String(js||'');
-var raw=js.replace(/<script\b[^>]*>/gi,'').replace(/<\/script\s*>/gi,''),issues=[],stack=[],q=null,esc=false,line=false,block=false,i=0;
-for(;i<raw.length;i++){
-var c=raw[i],n=raw[i+1]||'';
-if(line){if(c==='\n')line=false;continue}
-if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
-if(q){if(esc)esc=false;else if(c==='\\')esc=true;else if(c===q)q=null;continue}
+js=_stripCDATADeep(String(js||''));
+var issues=[],stack=[],q=null,esc=false,line=false,block=false,regex=false,charClass=false,i=0,prevSig='';
+
+function canStartRegex(prev){
+return !prev||/[({[=,:;!&|?+\-*%^~<>]/.test(prev)
+}
+
+for(;i<js.length;i++){
+var c=js[i],n=js[i+1]||'';
+
+if(line){
+if(c==='\n')line=false;
+continue
+}
+if(block){
+if(c==='*'&&n==='/'){block=false;i++}
+continue
+}
+if(q){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+
+/* Template literal interpolation is intentionally treated as part of the
+   template token here. JavaScript parser below remains authoritative. */
+if(c===q)q=null;
+continue
+}
+if(regex){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c==='['){charClass=true;continue}
+if(c===']'&&charClass){charClass=false;continue}
+if(c==='/'&&!charClass){
+regex=false;
+/* consume flags */
+while(/[A-Za-z]/.test(js[i+1]||''))i++;
+prevSig='/';
+}
+continue
+}
+
 if(c==='/'&&n==='/'){line=true;i++;continue}
 if(c==='/'&&n==='*'){block=true;i++;continue}
 if(c==='"'||c==="'"||c==='`'){q=c;continue}
-if(c==='('||c==='['||c==='{')stack.push(c);
-else if(c===')'||c===']'||c==='}'){
-var need=c===')'?'(':c===']'?'[':'{',last=stack.pop();
+
+/* Skip regex literals so braces/brackets inside regex do not corrupt flow. */
+if(c==='/'&&canStartRegex(prevSig)){
+regex=true;charClass=false;esc=false;continue
+}
+
+if(c==='('||c==='['||c==='{'){
+stack.push(c)
+}else if(c===')'||c===']'||c==='}'){
+var need=c===')'?'(':c===']'?'[':'{';
+var last=stack.length?stack.pop():null;
 if(last!==need)issues.push('UNMATCHED '+c)
 }
+
+if(!/\s/.test(c))prevSig=c
 }
+
 if(q)issues.push('UNCLOSED STRING / TEMPLATE');
+if(regex)issues.push('UNCLOSED REGEX');
 if(block)issues.push('UNCLOSED BLOCK COMMENT');
 if(stack.length)issues.push('UNCLOSED BLOCK');
-try{new Function(raw)}catch(e){issues.push('SYNTAX: '+String(e&&e.message||e))}
-return{ok:issues.length===0,issues:Array.from(new Set(issues)).slice(0,8)}
+
+/* JavaScript parser is authoritative. If parser accepts the source, scanner
+   mismatches are heuristic false positives and must not block Inject. */
+try{
+new Function(js);
+return{ok:true,issues:[],warnings:Array.from(new Set(issues)).slice(0,8)}
+}catch(e){
+issues.push('SYNTAX: '+String(e&&e.message||e));
+return{ok:false,issues:Array.from(new Set(issues)).slice(0,8),warnings:[]}
+}
 }
 
 function _renderNormalizeOutput(){
