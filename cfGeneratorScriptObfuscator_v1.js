@@ -1115,6 +1115,9 @@ return
 }
 
 var current=_safeOutputForInject(E.output.value);
+var currentWasFullSource=/<script\b/i.test(String(current||''));
+var payload=_payloadForInject(current);
+if(currentWasFullSource&&payload)current=payload;
 if(current){
 var semCurrent=_semanticRepair(current);
 current=semCurrent.code;
@@ -1125,6 +1128,11 @@ say('SEMANTIC REPAIR - '+semCurrent.fixes.slice(0,4).join(', '))
 if(semCurrent.warnings.length)S.lastSemanticWarnings=semCurrent.warnings
 }
 if(!current){say('NO OUTPUT TO INJECT');return}
+if(currentWasFullSource&&!payload){
+say('INJECT BLOCKED - TARGET SCRIPT PAYLOAD NOT FOUND');
+if(E.resultStatus)E.resultStatus.textContent='TARGET ERROR';
+return
+}
 if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
 
 /* First validate the transformed JavaScript itself. */
@@ -1132,7 +1140,27 @@ var completeness=_deobfuscationCompleteness(current);
 if(!completeness.complete){
 say('INJECT WARNING - HEX '+completeness.hex+' | RGX '+completeness.rgx+' | TABLE '+completeness.table+' | PACKER '+completeness.packer)
 }
-var currentCheck=_integrityReport(current,'');
+var currentCheck={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+var probe=_syntaxProbe(current);
+if(!probe.ok){
+currentCheck.syntax.push(probe.message+(probe.line?' @ line '+probe.line+(probe.column?':'+probe.column:''):'')+(probe.context?' | '+probe.context:''));
+currentCheck.hard=currentCheck.syntax.slice();
+currentCheck.safe=false;
+currentCheck.ok=false
+}else{
+var fc=_flowCheck(current);
+if(!fc.ok)currentCheck.flow=fc.issues.slice(0,10);
+currentCheck.orphan=_orphanCheck(current);
+var sc=_semanticCheck(current);
+if(!sc.ok)currentCheck.semantic=sc.issues.slice(0,10);
+currentCheck.hard=[]
+.concat(currentCheck.syntax)
+.concat(currentCheck.flow)
+.concat(currentCheck.orphan)
+.concat(currentCheck.semantic);
+currentCheck.safe=currentCheck.hard.length===0;
+currentCheck.ok=currentCheck.safe
+}
 if(!currentCheck.safe){
 say('INJECT BLOCKED - NO VALID JAVASCRIPT OUTPUT - '+_integrityFirstIssue(currentCheck));
 if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
@@ -1424,6 +1452,48 @@ if(!/<script\b/i.test(v)||!S.lastSafeOutput)S.lastSafeOutput=v;
 return true
 }
 return false
+}
+
+function _payloadForInject(v){
+v=String(v||'').trim();
+if(!v)return'';
+
+/* Pure JavaScript output. */
+if(!/<script\b/i.test(v)){
+return _stripCDATADeep(_stripScriptWrapper(v)).trim()
+}
+
+/* If output is already a full source, prefer the script that replaced the
+   original obfuscator block. */
+var sourceTarget=_findObfuscatorScriptMatch(S.originalRawSource||S.injectSource||'');
+var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,candidates=[];
+while((m=re.exec(v))){
+var body=_stripCDATADeep(m[1]).trim();
+if(body)candidates.push({body:body,index:m.index,full:m[0]})
+}
+
+/* Exact/prefix match against last known safe normalized output. */
+var expected=_stripCDATADeep(_stripScriptWrapper(String(S.lastSafeOutput||S.normalizedBase||''))).trim();
+if(expected){
+var pfx=expected.slice(0,Math.min(220,expected.length));
+for(var i=0;i<candidates.length;i++){
+if(candidates[i].body===expected)return candidates[i].body;
+if(pfx&&candidates[i].body.indexOf(pfx)!==-1)return candidates[i].body
+}
+}
+
+/* Match position of original obfuscator script when available. */
+if(sourceTarget&&candidates.length){
+var best=null,dist=Infinity;
+for(var j=0;j<candidates.length;j++){
+var d=Math.abs(candidates[j].index-sourceTarget.index);
+if(d<dist){dist=d;best=candidates[j]}
+}
+if(best)return best.body
+}
+
+/* Do not fall back to validating every script. */
+return''
 }
 
 function _safeOutputForInject(v){
