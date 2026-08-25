@@ -19,7 +19,7 @@ paste:$('cfObPaste'),clear:$('cfObClear'),tools:$('cfObCodeTools'),
 passBox:$('cfObPasswordOption'),passEnable:$('cfObPasswordEnable'),
 pass:$('cfObPassword'),pass2:$('cfObPasswordConfirm'),
 accessBox:$('cfObPasswordAccess'),access:$('cfObAccessPassword'),
-normalizePanel:$('cfObNormalizePanel'),normalize:$('cfObNormalizeOutput'),normalizeFull:$('cfObNormalizeFull'),
+normalizePanel:$('cfObNormalizePanel'),normalizeFull:$('cfObNormalizeFull'),injectFull:$('cfObInjectFull'),
 normalizeReset:$('cfObNormalizeReset'),normalizeState:$('cfObNormalizeState'),
 normalizeBeautify:$('cfObNormalizeBeautify'),normalizeFlush:$('cfObNormalizeFlush'),
 layerSection:$('cfObLayerSection'),layerStatus:$('cfObLayerStatus'),
@@ -36,7 +36,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',tableCache:{}};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',normalizedBase:'',normalizeBusy:false,tableCache:{}};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -47,6 +47,15 @@ strong:{rename:1,array:1,encode:1,shuffle:1,rotate:1,split:1,numbers:1,objectKey
 function say(t){if(E.message)E.message.textContent=t;if(E.status)E.status.innerHTML='<i></i> '+t}
 function kb(s){return(new Blob([String(s||'')]).size/1024).toFixed(2)+' KB'}
 function setProgress(n){if(E.progress)E.progress.style.width=Math.max(0,Math.min(100,n))+'%'}
+
+function _ui(){return new Promise(function(resolve){if(typeof requestAnimationFrame==='function')requestAnimationFrame(function(){resolve()});else setTimeout(resolve,0)})}
+function _busy(on,msg){
+S.normalizeBusy=!!on;
+if(E.normalizeFull)E.normalizeFull.disabled=!!on||S.normalizeFinal||!(S.mode==='deobfuscate'&&E.output.value);
+if(E.normalizePanel)E.normalizePanel.classList.toggle('is-processing',!!on);
+if(msg)say(msg)
+}
+
 function setOutput(v,title,status){
 v=String(v||'');E.output.value=v;
 if(E.outCount)E.outCount.textContent=v.length.toLocaleString()+' CHAR';
@@ -56,7 +65,7 @@ if(E.resultSize)E.resultSize.textContent=kb(v);
 var a=new Blob([E.input.value]).size||1,b=new Blob([v]).size;
 if(E.sizeChange)E.sizeChange.textContent=((b-a)/a*100).toFixed(1)+'%';
 if(E.resultStatus)E.resultStatus.textContent=status||'READY';
-if(E.normalize)E.normalize.disabled=S.normalizeFinal||!(S.mode==='deobfuscate'&&v);if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!(S.mode==='deobfuscate'&&v);
+if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||S.normalizeFinal||!(S.mode==='deobfuscate'&&v);
 }
 function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function unescHTML(s){var ta=document.createElement('textarea');ta.innerHTML=String(s);return ta.value}
@@ -447,8 +456,9 @@ function setNormalizeFinal(on,msg){
 S.normalizeFinal=!!on;
 if(E.normalizePanel)E.normalizePanel.classList.toggle('is-final',!!on);
 if(E.normalizeState)E.normalizeState.textContent=msg||(on?'Final layer reached. Tidak ada layer Normalize yang terdeteksi lagi.':'Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.');
-if(E.normalize){E.normalize.disabled=!!on||!(S.mode==='deobfuscate'&&E.output.value);E.normalize.innerHTML=on?'<i class="fa fa-check-circle"></i> FINAL LAYER':'<i class="fa fa-magic"></i> NORMALIZE OUTPUT'}if(E.normalizeFull)E.normalizeFull.disabled=!!on||!(S.mode==='deobfuscate'&&E.output.value);
+if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!(S.mode==='deobfuscate'&&E.output.value)
 }
+
 async function _a6(src){
 S.originalSource=extractJS(src);
 src=S.originalSource;
@@ -498,7 +508,7 @@ if(E.deobSupport)E.deobSupport.style.display=m==='deobfuscate'?'block':'none';
 if(E.techBox)E.techBox.style.display=m==='obfuscate'?'block':'none';
 if(E.layerSection)E.layerSection.style.display=m==='deobfuscate'?'block':'none';
 if(E.normalizePanel)E.normalizePanel.style.display=m==='deobfuscate'?'flex':'none';
-if(E.normalize)E.normalize.disabled=S.normalizeFinal||!(m==='deobfuscate'&&E.output.value);if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!(m==='deobfuscate'&&E.output.value);if(m==='deobfuscate')_h1(E.input.value);else if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
+if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!(m==='deobfuscate'&&E.output.value);if(m==='deobfuscate')_h1(E.input.value);else if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
 if(m!=='deobfuscate'&&E.normalizePanel)E.normalizePanel.classList.remove('is-final');
 setTechEnabled(m==='obfuscate');
 if(m==='obfuscate'){E.process.innerHTML='<i class="fa fa-cogs"></i> OBFUSCATE CODE';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT'}
@@ -516,7 +526,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
-E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');if(E.normalize)E.normalize.disabled=true;updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',async function(){if(!E.output.value)return;var code=E.output.value.replace(/^\s*<script\b[^>]*>/i,'').replace(/<\/script\s*>\s*$/i,'').trim(),wrapped='<script>\n'+code+'\n<\/script>';try{await navigator.clipboard.writeText(wrapped);say('SCRIPT TAG COPIED')}catch(e){var ta=document.createElement('textarea');ta.value=wrapped;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);say('SCRIPT TAG COPIED')}});
 
@@ -526,28 +536,45 @@ setProgress(20);E.process.disabled=true;
 try{
 var out;
 if(S.mode==='obfuscate'){out=await _a2(src);setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')}
-else{_h1(src);out=await _a6(src);S.layerIndex=0;S.layerHistory=[];setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');if(E.normalize)E.normalize.disabled=!out;updateLayerPanel(out,'ANALYZED')}
+else{_h1(src);out=await _a6(src);S.layerIndex=0;S.layerHistory=[];setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');updateLayerPanel(out,'ANALYZED')}
 setProgress(100);say('SUCCESS')
 }catch(e){say(e.message||'PROCESS ERROR');if(E.resultStatus)E.resultStatus.textContent='ERROR'}
 finally{E.process.disabled=false;setTimeout(function(){setProgress(0)},500)}
 });
 
-function reformatNormalizedOutput(){
-if(S.mode!=='deobfuscate'||!E.output.value)return;
-var formatted=S.normalizeFormat==='flush'?_b6(E.output.value):beautify(E.output.value);
-setOutput(formatted,'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?'FINAL LAYER':'NORMALIZED');
+function _renderNormalizeOutput(){
+if(S.mode!=='deobfuscate')return;
+var base=String(S.normalizedBase||E.output.value||'');
+if(!base)return;
+var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);
+var injected=E.injectFull&&E.injectFull.checked&&S.normalizeFinal;
+if(injected){
+try{formatted=_j1(formatted)}catch(_e){injected=false}
+}
+setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?'FINAL LAYER':'NORMALIZED');
 if(S.normalizeFinal&&E.resultStatus)E.resultStatus.textContent='FINAL LAYER'
 }
-if(E.normalizeBeautify)E.normalizeBeautify.addEventListener('change',function(){if(this.checked){E.normalizeFlush.checked=false;S.normalizeFormat='beautify';reformatNormalizedOutput()}else if(!E.normalizeFlush.checked){this.checked=true;S.normalizeFormat='beautify'}});
-if(E.normalizeFlush)E.normalizeFlush.addEventListener('change',function(){if(this.checked){E.normalizeBeautify.checked=false;S.normalizeFormat='flush';reformatNormalizedOutput()}else if(!E.normalizeBeautify.checked){this.checked=true;S.normalizeFormat='flush'}});
-if(E.normalize)E.normalize.addEventListener('click',function(){
-if(S.mode!=='deobfuscate'||!E.output.value)return;if(S.normalizeFinal){say('FINAL LAYER REACHED');return}
-var before=E.output.value,layers=_a7(before),out=_a5(before),changed=out.trim()!==before.trim();
-S.layerIndex++;S.layerHistory.push({name:layers.length?layers[0]:'NORMALIZE / BEAUTIFY',status:changed?'RESOLVED':'NO CHANGE'});
-setOutput(out,'HUMAN READABLE CODE OUTPUT','NORMALIZED');
-var remain=_a8(out);updateLayerPanel(out,remain?'NEXT LAYER':'FINAL CHECK');
-if(!remain||!changed){setNormalizeFinal(true,'FINAL LAYER REACHED - Hasil sudah berada pada layer terakhir yang dapat dinormalisasi otomatis.');updateLayerPanel(out,'FINAL LAYER');if(E.resultStatus)E.resultStatus.textContent='FINAL LAYER';say('FINAL LAYER REACHED')}
-else{setNormalizeFinal(false,'Layer lain masih terdeteksi. Tekan NORMALIZE OUTPUT untuk melanjutkan.');E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE NEXT LAYER';say('NEXT LAYER DETECTED')}
+
+if(E.normalizeBeautify)E.normalizeBeautify.addEventListener('change',function(){
+if(this.checked){
+if(E.normalizeFlush)E.normalizeFlush.checked=false;
+S.normalizeFormat='beautify';
+_renderNormalizeOutput()
+}else if(!E.normalizeFlush||!E.normalizeFlush.checked){
+this.checked=true;
+S.normalizeFormat='beautify'
+}
+});
+
+if(E.normalizeFlush)E.normalizeFlush.addEventListener('change',function(){
+if(this.checked){
+if(E.normalizeBeautify)E.normalizeBeautify.checked=false;
+S.normalizeFormat='flush';
+_renderNormalizeOutput()
+}else if(!E.normalizeBeautify||!E.normalizeBeautify.checked){
+this.checked=true;
+S.normalizeFormat='flush'
+}
 });
 
 function _j1(normalized){
@@ -583,35 +610,74 @@ return raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.leng
 return normalized;
 }
 
-if(E.injectFull)E.injectFull.addEventListener('change',function(){say(this.checked?'SOURCE INJECT ENABLED':'SOURCE INJECT DISABLED')});
-if(E.normalizeFull)E.normalizeFull.addEventListener('click',function(){
-if(S.mode!=='deobfuscate'||!E.output.value||S.normalizeFinal)return;
-var out=E.output.value,guard=0;
-while(guard<16){
+if(E.injectFull)E.injectFull.addEventListener('change',function(){say(this.checked?'SOURCE INJECT ENABLED':'SOURCE INJECT DISABLED');if(S.normalizedBase)_renderNormalizeOutput()});
+if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
+if(S.mode!=='deobfuscate'||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
+var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=16;
+_busy(true,'FULL NORMALIZE - PREPARING');
+setProgress(4);
+if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
+if(E.normalizeState)E.normalizeState.textContent='Sedang menganalisis dan membuka layer. Jangan tutup halaman sampai proses selesai.';
+await _ui();
+
+try{
+while(guard<maxPass){
 var before=out,layers=_a7(before);
+say('NORMALIZING LAYER '+(guard+1)+' / '+maxPass);
+if(E.normalizeState)E.normalizeState.textContent='Processing layer '+(guard+1)+' dari maksimal '+maxPass+'...';
+setProgress(8+Math.round((guard/maxPass)*82));
+await _ui();
+
 out=_a5(before);
 var changed=out.trim()!==before.trim();
+
 S.layerIndex++;
-S.layerHistory.push({name:layers.length?layers[0]:'NORMALIZE / BEAUTIFY',status:changed?'RESOLVED':'NO CHANGE'});
+S.layerHistory.push({
+name:layers.length?layers[0]:'NORMALIZE / BEAUTIFY',
+status:changed?'RESOLVED':'NO CHANGE'
+});
 updateLayerPanel(out,changed?'RESOLVED':'NO CHANGE');
+
+setProgress(8+Math.round(((guard+1)/maxPass)*82));
+await _ui();
+
+guard++;
 if(!changed||!_a8(out))break;
-guard++
 }
-var injected=E.injectFull&&E.injectFull.checked;
-if(injected){try{out=_j1(out)}catch(_inj){say('INJECT FAILED - NORMALIZE RESULT KEPT');injected=false}}
-setOutput(out,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT','FULL NORMALIZED');
-updateLayerPanel(out,'FINAL CHECK');
-setNormalizeFinal(true,injected?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
+
+S.normalizedBase=String(out);
+S.normalizeFinal=true;
+setProgress(94);
+say('FORMATTING FINAL OUTPUT');
+if(E.normalizeState)E.normalizeState.textContent='Merapikan hasil akhir sesuai pilihan format...';
+await _ui();
+
+_renderNormalizeOutput();
+
+setProgress(100);
+updateLayerPanel(S.normalizedBase,'FINAL LAYER');
+setNormalizeFinal(true,E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
 if(E.resultStatus)E.resultStatus.textContent='FINAL LAYER';
-say(injected?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE')
+say(E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE');
+
+await _ui();
+setTimeout(function(){setProgress(0)},700)
+}catch(err){
+if(E.resultStatus)E.resultStatus.textContent='ERROR';
+if(E.normalizeState)E.normalizeState.textContent='Normalize gagal pada layer aktif. Hasil terakhir yang aman tetap dipertahankan.';
+say(err&&err.message?err.message:'NORMALIZE ERROR');
+setTimeout(function(){setProgress(0)},700)
+}finally{
+_busy(false)
+}
 });
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
-if(E.normalize){E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';E.normalize.disabled=true}if(E.normalizeFull)E.normalizeFull.disabled=true;if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
+if(E.normalizeFull)E.normalizeFull.disabled=true;if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
 updateLayerPanel('','WAITING');analyze();E.input.focus();say('READY FOR NEW CODE')
 });
 
