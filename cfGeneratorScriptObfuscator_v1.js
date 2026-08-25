@@ -852,13 +852,57 @@ if(!decl.test(before)&&!param.test(before))issues.push('POSSIBLE UNDECLARED ARRA
 return Array.from(new Set(issues)).slice(0,10)
 }
 
-function _bloggerXMLCheck(wrapped){
-wrapped=String(wrapped||'');
+function _bloggerXMLCheck(source){
+source=String(source||'');
 var issues=[];
-if(!/<script\b/i.test(wrapped)||!/<\/script\s*>/i.test(wrapped))issues.push('SCRIPT WRAPPER MISSING');
-if(!/\/\/\s*<!\[CDATA\[/i.test(wrapped)||!/\/\/\s*\]\]>/i.test(wrapped))issues.push('CDATA MISSING');
-var body=_stripCDATA(_stripScriptWrapper(wrapped));
-if(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-f]+;)/i.test(wrapped.replace(body,'')))issues.push('XML ENTITY RISK');
+var scripts=_extractInlineScripts(source);
+
+if(/<script\b/i.test(source)&&!scripts.length){
+issues.push('INLINE SCRIPT BODY NOT FOUND')
+}
+
+/* If injected inline script exists, CDATA is recommended/required for Blogger template use. */
+if(scripts.length&&(_detectBloggerMode(S.originalRawSource||'')||S.bloggerMode)){
+var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,index=0;
+while((m=re.exec(source))){
+index++;
+if(!/\/\/\s*<!\[CDATA\[[\s\S]*\/\/\s*\]\]>/.test(m[1])){
+issues.push('CDATA MISSING IN SCRIPT '+index)
+break
+}
+}
+}
+return issues
+}
+
+function _extractInlineScripts(src){
+src=String(src||'');
+var out=[],re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m;
+while((m=re.exec(src))){
+var body=_stripCDATA(m[1]).trim();
+if(body)out.push(body)
+}
+return out
+}
+
+function _jsSyntaxCheckAny(src){
+src=String(src||'');
+var issues=[];
+
+/* Full HTML/Blogger source: validate only inline JavaScript bodies. */
+if(/<script\b/i.test(src)){
+var scripts=_extractInlineScripts(src);
+if(!scripts.length)return issues;
+scripts.forEach(function(js,i){
+try{new Function(js)}catch(e){issues.push('SCRIPT '+(i+1)+': '+String(e&&e.message||e))}
+});
+return issues
+}
+
+/* Pure JavaScript output. */
+try{new Function(_stripCDATA(_stripScriptWrapper(src)))}catch(e){
+issues.push(String(e&&e.message||e))
+}
 return issues
 }
 
@@ -866,22 +910,30 @@ function _integrityReport(js,raw){
 js=String(js||'');
 var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
 
-try{new Function(_stripCDATA(_stripScriptWrapper(js)))}catch(e){report.syntax.push(String(e&&e.message||e))}
+report.syntax=_jsSyntaxCheckAny(js);
 
-var fc=typeof _flowCheck==='function'?_flowCheck(js):{ok:true,issues:[]};
-if(!fc.ok)report.flow=fc.issues.slice(0,10);
-
-report.orphan=_orphanCheck(js);
-report.identifier=_identifierCaseCheck(js);
-report.scope=_scopeCheck(js);
-
-if(_detectBloggerMode(raw)||S.bloggerMode){
-var wrapped=/<script\b/i.test(js)?js:_bloggerWrap(js,raw);
-report.blogger=_bloggerXMLCheck(wrapped)
+/* Flow/orphan/identifier/scope checks apply to JavaScript, not surrounding HTML. */
+var jsForChecks=js;
+if(/<script\b/i.test(js)){
+var parts=_extractInlineScripts(js);
+jsForChecks=parts.length?parts.join('\n'):'';
 }
 
-/* HARD = transformations that can prove code is broken.
-Identifier/scope checks are heuristic warnings only. */
+if(jsForChecks){
+var fc=typeof _flowCheck==='function'?_flowCheck(jsForChecks):{ok:true,issues:[]};
+if(!fc.ok)report.flow=fc.issues.slice(0,10);
+report.orphan=_orphanCheck(jsForChecks);
+report.identifier=_identifierCaseCheck(jsForChecks);
+report.scope=_scopeCheck(jsForChecks);
+}
+
+if(_detectBloggerMode(raw)||S.bloggerMode||/<script\b/i.test(js)){
+/* XML/Blogger validation is performed on the full injected source. */
+if(_detectBloggerMode(raw)||S.bloggerMode){
+report.blogger=_bloggerXMLCheck(js)
+}
+}
+
 report.hard=[]
 .concat(report.syntax)
 .concat(report.flow)
