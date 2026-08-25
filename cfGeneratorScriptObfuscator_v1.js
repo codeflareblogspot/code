@@ -1538,22 +1538,90 @@ try{out=beautify(js)}catch(_e){return js}
 return _syntaxValid(out)?out:js
 }
 
+function _scanJSArrayLiteral(src,start){
+src=String(src||'');
+if(src[start]!=='[')return null;
+
+var depth=0,q=null,esc=false,line=false,block=false,regex=false,charClass=false;
+var prevSig='',i=start;
+
+function regexCanStart(prev){
+return !prev||/[[(,{:=;!&|?+\-*%^~<>]/.test(prev)
+}
+
+for(;i<src.length;i++){
+var c=src[i],n=src[i+1]||'';
+
+if(line){
+if(c==='\n')line=false;
+continue
+}
+if(block){
+if(c==='*'&&n==='/'){block=false;i++}
+continue
+}
+if(q){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q)q=null;
+continue
+}
+if(regex){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c==='['){charClass=true;continue}
+if(c===']'&&charClass){charClass=false;continue}
+if(c==='/'&&!charClass){
+regex=false;
+while(/[a-z]/i.test(src[i+1]||''))i++;
+prevSig='/'
+}
+continue
+}
+
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+
+/* Regex literal inside array. */
+if(c==='/'&&regexCanStart(prevSig)){
+regex=true;charClass=false;esc=false;continue
+}
+
+if(c==='[')depth++;
+else if(c===']'){
+depth--;
+if(depth===0)return{start:start,end:i+1,text:src.slice(start,i+1)}
+}
+
+if(!/\s/.test(c))prevSig=c
+}
+return null
+}
+
 function _parseSimpleArrayDecl(src,name){
 src=String(src||'');
 var safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 var re=new RegExp('\\b(?:var|let|const)\\s+'+safe+'\\s*=\\s*\\[','g'),m=re.exec(src);
 if(!m)return null;
+
 var start=src.indexOf('[',m.index);
-var b=_scanBalancedLiteral(src,start,'[',']');
+var b=_scanJSArrayLiteral(src,start);
 if(!b)return null;
 
 var arrText=b.text;
 try{
-/* Array literal only. No arbitrary program execution. */
 var vals=Function('"use strict";return ('+arrText+')')();
 if(!Array.isArray(vals))return null;
-return{values:vals,start:m.index,end:b.end+(src[b.end]===';'?1:0)}
-}catch(_e){return null}
+
+var end=b.end;
+while(/\s/.test(src[end]||''))end++;
+if(src[end]===';')end++;
+
+return{values:vals,start:m.index,end:end}
+}catch(_e){
+return null
+}
 }
 
 function _collectIndexedAssignments(src,name){
@@ -1648,22 +1716,34 @@ return{code:out,resolved:resolved,remaining:rem}
 
 function _resolveKnownTablesDeep(src){
 src=String(src||'');
-var names=[],m,re=/\b(?:var|let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*\[/g;
-while((m=re.exec(src))){
+var current=src,total=0,remaining=0;
+
+/* rgx receives priority because it commonly mixes regex and string entries. */
+var priority=['rgx'],names=[],m,re=/\b(?:var|let|const)\s+([A-Za-z_$][\w$]*)\s*=\s*\[/g;
+while((m=re.exec(current))){
 var n=m[1];
-if(/^rgx$/i.test(n)||/^_\$_/.test(n)||/^(?:str|tbl|table|arr)$/i.test(n))names.push(n)
+if(/^_\$_/.test(n)||/^(?:str|tbl|table|arr)$/i.test(n))names.push(n)
 }
+names=priority.concat(names);
 names=Array.from(new Set(names));
 
-var current=src,total=0,remaining=0;
+for(var pass=0;pass<4;pass++){
+var changed=false;
 names.forEach(function(name){
 var r=_resolveIndexedTable(current,name);
 if(r.code!==current&&_syntaxValid(r.code)){
 current=r.code;
-total+=r.resolved
+total+=r.resolved;
+changed=true
 }
-remaining+=r.remaining
 });
+if(!changed)break
+}
+
+var rgxRem=(current.match(/\brgx\s*\[\s*\d+\s*\]/g)||[]).length;
+var tblRem=(current.match(/\b_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/g)||[]).length;
+remaining=rgxRem+tblRem;
+
 return{code:current,resolved:total,remaining:remaining}
 }
 
@@ -1746,6 +1826,14 @@ next=_decodeReadablePropertyKeys(current);
 if(_syntaxValid(next))current=next;
 
 return current
+}
+
+function _rgxResolutionPreview(js){
+js=String(js||'');
+var p=_parseSimpleArrayDecl(js,'rgx');
+if(!p)return'RGX ARRAY PARSE FAILED';
+var v=p.values;
+return'RGX ARRAY OK - '+v.length+' ITEMS'+(v.length>31?' | [31]='+String(v[31]):'')
 }
 
 function _unresolvedRgxIndexes(js){
