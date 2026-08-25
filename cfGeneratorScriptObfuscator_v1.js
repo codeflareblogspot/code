@@ -38,7 +38,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{}};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{}};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -107,6 +107,7 @@ if(E.resultSize)E.resultSize.textContent=kb(v);
 var a=new Blob([E.input.value]).size||1,b=new Blob([v]).size;
 if(E.sizeChange)E.sizeChange.textContent=((b-a)/a*100).toFixed(1)+'%';
 if(E.resultStatus)E.resultStatus.textContent=status||'READY';
+_rememberSafeOutput(v);
 if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||S.normalizeFinal||!(S.mode==='deobfuscate'&&v);
 _injectButtonState();
 }
@@ -717,7 +718,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
-E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.lastSafeOutput='';if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',function(){
 if(S.mode==='code'){
@@ -730,8 +731,14 @@ say('INJECT DATA TO SOURCE NOT AVAILABLE');
 return
 }
 
-var current=String(E.output.value||'').trim();
+var current=_safeOutputForInject(E.output.value);
 if(!current){say('NO OUTPUT TO INJECT');return}
+var currentCheck=_integrityReport(current,S.originalRawSource||S.injectSource||'');
+if(!currentCheck.safe){
+say('INJECT BLOCKED - NO VALID OUTPUT AVAILABLE - '+_integrityFirstIssue(currentCheck));
+if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
+return
+}
 if(!_getInjectSource()){say('ORIGINAL SOURCE NOT FOUND');return}
 
 try{
@@ -949,6 +956,32 @@ report.ok=report.safe&&report.warnings.length===0;
 return report
 }
 
+function _rememberSafeOutput(v){
+v=String(v||'');
+if(!v)return false;
+var r=_integrityReport(v,S.originalRawSource||S.injectSource||'');
+if(r.safe){
+S.lastSafeOutput=v;
+return true
+}
+return false
+}
+
+function _safeOutputForInject(v){
+v=String(v||'').trim();
+if(!v)return'';
+var r=_integrityReport(v,S.originalRawSource||S.injectSource||'');
+if(r.safe)return v;
+if(S.lastSafeOutput){
+var sr=_integrityReport(S.lastSafeOutput,S.originalRawSource||S.injectSource||'');
+if(sr.safe){
+say('INJECT SAFETY FALLBACK - USING LAST VALID OUTPUT');
+return S.lastSafeOutput
+}
+}
+return v
+}
+
 function _integrityFirstIssue(r){
 if(r.syntax&&r.syntax.length)return'SYNTAX: '+r.syntax[0];
 if(r.flow&&r.flow.length)return'FLOW: '+r.flow[0];
@@ -1130,6 +1163,7 @@ name:layers.length?layers[0]:'NORMALIZE / BEAUTIFY',
 status:changed?'RESOLVED':'NO CHANGE'
 });
 updateLayerPanel(out,changed?'RESOLVED':'NO CHANGE');
+if(changed)_rememberSafeOutput(out);
 
 setProgress(8+Math.round(((guard+1)/maxPass)*82));
 await _ui();
@@ -1147,6 +1181,7 @@ if(out.length>250000)await new Promise(function(r){setTimeout(r,16)});
 }
 
 S.normalizedBase=String(out);
+_rememberSafeOutput(S.normalizedBase);
 var finalFlow=_integrityReport(S.normalizedBase,S.originalRawSource||'');
 S.integrity=finalFlow;
 S.normalizeFinal=true;
@@ -1177,7 +1212,7 @@ _busy(false)
 });
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.lastSafeOutput='';
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
