@@ -91,29 +91,36 @@ return out
 }
 function minify(s){return stripComments(String(s)).replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n[ \t]+/g,'\n').replace(/\n{2,}/g,'\n').replace(/\s*([{};,=:])\s*/g,'$1').trim()}
 function beautify(s){
-s=String(s||'').replace(/\r\n?/g,'\n').replace(/^\t+/gm,function(t){return'  '.repeat(t.length)});
-var out='',ind=0,q=null,esc=false,comment=null,i=0,lineStart=true;
+s=String(s||'').replace(/\r\n?/g,'\n').replace(/\t/g,'  ');
+var out='',ind=0,q=null,esc=false,lineComment=false,blockComment=false;
+var par=0,br=0,i=0,lineStart=true,pendingSpace=false;
+
 function pad(){return'  '.repeat(Math.max(0,ind))}
-function trimEnd(){out=out.replace(/[ \t]+$/,'')}
-function nl(force){
+function trimEnd(){out=out.replace(/[ ]+$/,'')}
+function nl(){
 trimEnd();
-if(force||!out.endsWith('\n'))out+='\n';
-lineStart=true
+if(!out.endsWith('\n'))out+='\n';
+lineStart=true;
+pendingSpace=false
 }
 function write(x){
-if(lineStart&&x!=='\n'){out+=pad();lineStart=false}
+if(lineStart){out+=pad();lineStart=false}
+if(pendingSpace&&out&&!/[ \n]$/.test(out)&&x!==';'&&x!==','&&x!==')'&&x!==']')out+=' ';
+pendingSpace=false;
 out+=x
 }
+
 for(;i<s.length;i++){
 var c=s[i],n=s[i+1]||'';
-if(comment==='line'){
+
+if(lineComment){
 write(c);
-if(c==='\n'){comment=null;lineStart=true}
+if(c==='\n'){lineComment=false;lineStart=true}
 continue
 }
-if(comment==='block'){
+if(blockComment){
 write(c);
-if(c==='*'&&n==='/'){write('/');i++;comment=null}
+if(c==='*'&&n==='/'){write('/');i++;blockComment=false}
 continue
 }
 if(q){
@@ -123,53 +130,66 @@ else if(c==='\\')esc=true;
 else if(c===q)q=null;
 continue
 }
-if(c==='/'&&n==='/'){write('//');i++;comment='line';continue}
-if(c==='/'&&n==='*'){write('/*');i++;comment='block';continue}
+
+if(c==='/'&&n==='/'){write('//');i++;lineComment=true;continue}
+if(c==='/'&&n==='*'){write('/*');i++;blockComment=true;continue}
 if(c==='"'||c==="'"||c==='`'){write(c);q=c;continue}
-if(/\s/.test(c)){
-if(c==='\n'&&!lineStart)nl(false);
-continue
-}
+
+if(/\s/.test(c)){pendingSpace=true;continue}
+
+if(c==='('){write(c);par++;continue}
+if(c===')'){write(c);par=Math.max(0,par-1);continue}
+if(c==='['){write(c);br++;continue}
+if(c===']'){write(c);br=Math.max(0,br-1);continue}
+
 if(c==='{'){
 if(!lineStart&&out&&!/[ \n]$/.test(out))out+=' ';
-write('{');ind++;nl(true);continue
+write('{');
+ind++;
+nl();
+continue
 }
+
 if(c==='}'){
 trimEnd();
-if(!lineStart)nl(true);
+if(!lineStart)nl();
 ind=Math.max(0,ind-1);
 write('}');
-var rest=s.slice(i+1).match(/^\s*([;,)]|else\b|catch\b|finally\b)/);
-if(!rest)nl(true);
+var tail=s.slice(i+1).match(/^\s*(else\b|catch\b|finally\b|while\s*\()/);
+if(tail){out+=' ';continue}
+var next=s.slice(i+1).match(/^\s*([;,)\]])/);
+if(!next)nl();
 continue
 }
+
+/* Semicolon is a safe line break only outside (), [].
+This prevents for(;;), function arguments and chained expressions being split. */
 if(c===';'){
-write(';');nl(true);continue
-}
-if(c===','){
-write(',');
-if(ind>0)out+=' ';
+write(';');
+if(par===0&&br===0)nl();
 continue
 }
-if(c===':'){
-write(': ');
-continue
-}
+
+/* Commas stay inline. Breaking on comma was the main cause of disconnected code. */
+if(c===','){write(',');pendingSpace=true;continue}
+
+/* Never force a newline around operators, ternaries, object properties or chains. */
 write(c)
 }
+
 trimEnd();
-out=out
-.replace(/[ \t]+\n/g,'\n')
+return out
+.replace(/[ ]+\n/g,'\n')
 .replace(/\n{3,}/g,'\n\n')
 .replace(/^\s*\n/,'')
-.replace(/\n\s*$/,'');
-return out
+.replace(/\n\s*$/,'')
 }
 function _b6(s){
 return String(s||'')
 .replace(/\r\n?/g,'\n')
-.replace(/^[ \t]+/gm,'')
-.replace(/[ \t]+$/gm,'')
+.replace(/\t/g,'  ')
+.replace(/^[ ]+/gm,'')
+.replace(/[ ]+$/gm,'')
 .replace(/\n{3,}/g,'\n\n')
 .trim()
 }
@@ -334,11 +354,65 @@ setProgress(100);say('SUCCESS')
 finally{E.process.disabled=false;setTimeout(function(){setProgress(0)},500)}
 });
 
+function _flowCheck(js){
+js=String(js||'');
+var raw=js.replace(/<script\b[^>]*>/gi,'').replace(/<\/script\s*>/gi,'');
+var issues=[],stack=[],q=null,esc=false,line=false,block=false,i=0;
+for(;i<raw.length;i++){
+var c=raw[i],n=raw[i+1]||'';
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){if(esc)esc=false;else if(c==='\\')esc=true;else if(c===q)q=null;continue}
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c==='('||c==='['||c==='{')stack.push({c:c,p:i});
+else if(c===')'||c===']'||c==='}'){
+var need=c===')'?'(':c===']'?'[':'{',last=stack.pop();
+if(!last||last.c!==need)issues.push('UNMATCHED '+c+' @ '+i)
+}
+}
+if(q)issues.push('UNCLOSED STRING / TEMPLATE');
+if(block)issues.push('UNCLOSED BLOCK COMMENT');
+while(stack.length){var x=stack.pop();issues.push('UNCLOSED '+x.c+' @ '+x.p)}
+try{new Function(raw)}catch(e){issues.push('SYNTAX: '+String(e&&e.message||e))}
+var lines=raw.split('\n');
+lines.forEach(function(line,idx){
+var s=line.trim();
+if(!s)return;
+if(/^[.+*/%?:]|^(?:&&|\|\|)/.test(s))issues.push('SUSPICIOUS LINE START @ '+(idx+1));
+if(/[=+\-*/%?:.,&|]\s*$/.test(s)&&!/^[ \t]*\/\//.test(s))issues.push('SUSPICIOUS LINE END @ '+(idx+1))
+});
+return{ok:issues.length===0,issues:Array.from(new Set(issues)).slice(0,12)}
+}
+
+function _syntaxSafe(js){
+js=String(js||'');
+if(/<\/?script\b/i.test(js))return true;
+try{new Function(js);return true}catch(e){return false}
+}
+
 function _renderNormalizeOutput(){
 if(S.mode!=='deobfuscate')return;
 var base=String(S.normalizedBase||E.output.value||'');
 if(!base)return;
-var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);
+formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+if(S.normalizeFormat==='beautify'&&!_syntaxSafe(formatted)&&_syntaxSafe(base)){
+formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+say('BEAUTIFY SAFETY FALLBACK - ORIGINAL NORMALIZED STRUCTURE KEPT')
+}
+var flow=_flowCheck(formatted);
+if(!flow.ok){
+if(_flowCheck(base).ok){
+formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+say('FLOW SAFETY FALLBACK - POSSIBLE BROKEN SCRIPT PATH DETECTED')
+}else{
+say('FINAL CHECK WARNING - '+flow.issues[0])
+}
+}else if(S.normalizeFinal){
+say('FINAL SCRIPT CHECK PASSED - NO BROKEN PATH DETECTED')
+}
 var injected=E.injectFull&&E.injectFull.checked&&S.normalizeFinal;
 if(injected){
 try{formatted=_j1(formatted)}catch(_e){injected=false}
@@ -442,6 +516,12 @@ if(!changed||!_a8(out))break;
 }
 
 S.normalizedBase=String(out);
+var finalFlow=_flowCheck(S.normalizedBase);
+if(!finalFlow.ok){
+if(E.resultStatus)E.resultStatus.textContent='CHECK WARNING';
+if(E.normalizeState)E.normalizeState.textContent='Final check menemukan kemungkinan jalur script terputus: '+finalFlow.issues[0];
+say('FINAL CHECK WARNING - '+finalFlow.issues[0])
+}
 S.normalizeFinal=true;
 setProgress(94);
 say('FORMATTING FINAL OUTPUT');
