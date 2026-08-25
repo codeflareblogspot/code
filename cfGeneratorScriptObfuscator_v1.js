@@ -72,24 +72,23 @@ function _sourceHasScriptWrapper(raw){
 return /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(String(raw||''))
 }
 function _pureScriptWrap(js){
-js=String(js||'').trim();
+js=_scriptElementSafe(_stripCDATADeep(String(js||'').trim()));
 return "<script type='text/javascript'>\n"+js+"\n</script>"
 }
 function _findInjectedScriptBody(source,payload){
 source=String(source||'');
-payload=_stripCDATA(_stripScriptWrapper(String(payload||''))).trim();
+payload=_stripCDATADeep(_stripScriptWrapper(String(payload||''))).trim();
 if(!source||!payload)return'';
 
+var safePayload=_scriptElementSafe(payload);
 var scripts=_extractInlineScripts(source);
-var pfx=payload.slice(0,Math.min(220,payload.length));
+var pfx=safePayload.slice(0,Math.min(220,safePayload.length));
 
 for(var i=0;i<scripts.length;i++){
 var body=_cleanInjectedBody(scripts[i]).trim();
-if(body===payload)return body;
+if(body===safePayload)return body;
 if(pfx&&body.indexOf(pfx)!==-1)return body
 }
-
-/* Do not validate an unrelated script as fallback. */
 return''
 }
 
@@ -1482,18 +1481,74 @@ S.normalizeFormat='flush'
 }
 });
 
+function _escapeScriptEndInStrings(src){
+src=String(src||'');
+var out='',i=0,q=null,esc=false,line=false,block=false;
+
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+
+if(line){
+out+=c;
+if(c==='\n')line=false;
+i++;
+continue
+}
+if(block){
+out+=c;
+if(c==='*'&&n==='/'){out+='/';i+=2;block=false;continue}
+i++;
+continue
+}
+
+if(q){
+/* Inside string/template literal: neutralize literal </script so HTML parser
+cannot terminate the surrounding script element. */
+if(!esc&&c==='<'&&src.slice(i,i+9).toLowerCase()==='</script>'){
+out+='<\\/script>';
+i+=9;
+continue
+}
+out+=c;
+if(esc)esc=false;
+else if(c==='\\')esc=true;
+else if(c===q)q=null;
+i++;
+continue
+}
+
+if(c==='/'&&n==='/'){out+='//';i+=2;line=true;continue}
+if(c==='/'&&n==='*'){out+='/*';i+=2;block=true;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;out+=c;i++;continue}
+
+out+=c;i++
+}
+return out
+}
+
+function _scriptElementSafe(src){
+src=String(src||'');
+/* Only neutralize closing script tokens that occur inside JS literals.
+Regex literals and source code are otherwise preserved. */
+return _escapeScriptEndInStrings(src)
+}
+
 function _j1(normalized){
 var raw=String(S.originalRawSource||S.injectSource||''),clean=String(normalized||'').trim();
-clean=_stripCDATADeep(clean);
 if(!raw)return clean;
 
+clean=_stripCDATADeep(clean);
+
 if(/^\s*<script\b/i.test(clean)){
-clean=_stripCDATA(_stripScriptWrapper(clean)).trim()
+clean=_stripCDATADeep(_stripScriptWrapper(clean)).trim()
 }
+
+/* Critical for HTML/Blogger: literal </script> inside a JavaScript string must
+become <\/script>, otherwise the HTML parser closes the target script early. */
+clean=_scriptElementSafe(clean);
 
 var target=_findObfuscatorScriptMatch(raw);
 
-/* Fallback: original script correspondence, then largest inline script. */
 if(!target){
 var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,matches=[];
 while((m=re.exec(raw)))matches.push({full:m[0],body:m[1],index:m.index});
@@ -1501,7 +1556,7 @@ while((m=re.exec(raw)))matches.push({full:m[0],body:m[1],index:m.index});
 if(matches.length){
 var orig=String(S.originalSource||'').trim();
 for(var i=0;i<matches.length;i++){
-var b=_stripCDATA(matches[i].body).trim();
+var b=_stripCDATADeep(matches[i].body).trim();
 if(orig&&(b===orig||b.indexOf(orig)>=0||orig.indexOf(b)>=0)){target=matches[i];break}
 }
 if(!target)target=matches.reduce(function(a,b){return b.body.length>a.body.length?b:a},matches[0])
