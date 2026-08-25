@@ -36,7 +36,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',normalizedBase:'',normalizeBusy:false,tableCache:{}};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',normalizedBase:'',normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{}};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -471,27 +471,51 @@ return s
 }
 function _b6(s){return beautify(s).split('\n').map(function(line){return line.replace(/^\s+/,'')}).join('\n')}
 function _a5(s){
-s=String(s);var prev='',passes=0;
-_p1(s);
-for(;passes<12&&s!==prev;passes++){
-prev=s;
-s=_p2(s);
-s=_d2(s);
-s=_b2(s);
-s=_b1(s);
-s=_p2(s);
-s=_d2(s);
-s=_b2(s);
-s=_b4(s);
-s=_p4(s);
-s=_b5(s)
+s=String(s||'');
+var current=s,prev='',passes=0,cp;
+_p1(current);
+for(;passes<12&&current!==prev;passes++){
+prev=current;
+
+var step=_p2(current);
+cp=_checkpoint(step,current,'STRING TABLE PASS');
+current=cp.code;
+if(cp.rolled)break;
+
+step=_d2(current);
+cp=_checkpoint(step,current,'INDIRECT PASS');
+current=cp.code;
+if(cp.rolled)break;
+
+step=_b2(current);
+cp=_checkpoint(step,current,'STRING ARRAY PASS');
+current=cp.code;
+if(cp.rolled)break;
+
+step=_b1(current);
+cp=_checkpoint(step,current,'PACKER PASS');
+current=cp.code;
+if(cp.rolled)break;
+
+step=_p2(current);
+step=_d2(step);
+step=_b2(step);
+step=_b4(step);
+step=_p4(step);
+step=_b5(step);
+cp=_checkpoint(step,current,'NORMALIZE PASS');
+current=cp.code;
+if(cp.rolled)break
 }
-s=_p2(s);
-s=_b3(s);
-s=_p4(s);
-s=_b5(s);
-s=_p3(s);
-return S.normalizeFormat==='flush'?_b6(s):beautify(s)
+
+var finalStep=_b3(current);
+finalStep=_p4(finalStep);
+finalStep=_b5(finalStep);
+finalStep=_p3(finalStep);
+cp=_checkpoint(finalStep,current,'FINAL CLEANUP');
+current=cp.code;
+
+return S.normalizeFormat==='flush'?_b6(current):beautify(current)
 }
 
 function _a7(s){
@@ -548,20 +572,51 @@ if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!(S.mode==='d
 }
 
 async function _a6(src){
-S.originalSource=extractJS(src);
-src=S.originalSource;
+S.originalRawSource=String(src||'');
+S.bloggerMode=_detectBloggerMode(S.originalRawSource);
+var raw=_stripCDATA(_stripScriptWrapper(S.originalRawSource));
+S.originalSource=raw;
 S.tableCache={};
-_p1(src);
-var cf=await _a4(src);if(cf!==null)return beautify(cf);
-src=_p2(src);
-src=_d2(src);
-var out=_b1(src);
-out=_p2(out);
-out=_b4(out);
-out=_d2(out);
-out=_b2(out);
-out=_p4(out);
-return beautify(out)
+
+var current=raw,prev=current,cp;
+_p1(current);
+
+var cf=await _a4(current);
+if(cf!==null){
+cp=_checkpoint(String(cf),current,'CODEFLARE DECODE');
+current=cp.code;
+if(cp.rolled)say(cp.reason)
+}
+
+prev=current;
+current=_p2(current);
+cp=_checkpoint(current,prev,'STRING TABLE RESOLVE');
+current=cp.code;
+if(cp.rolled)say(cp.reason);
+
+prev=current;
+current=_d2(current);
+cp=_checkpoint(current,prev,'INDIRECT RESOLVE');
+current=cp.code;
+if(cp.rolled)say(cp.reason);
+
+prev=current;
+current=_b1(current);
+cp=_checkpoint(current,prev,'PACKER UNPACK');
+current=cp.code;
+if(cp.rolled)say(cp.reason);
+
+prev=current;
+current=_p2(current);
+current=_b4(current);
+current=_d2(current);
+current=_b2(current);
+current=_p4(current);
+cp=_checkpoint(current,prev,'DEOBFUSCATION NORMALIZE');
+current=cp.code;
+if(cp.rolled)say(cp.reason);
+
+return current
 }
 
 function analyze(){
@@ -614,9 +669,11 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
-E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',async function(){
+if(E.injectFull&&E.injectFull.checked){_copyScriptState();say('COPY <SCRIPT> DISABLED - SOURCE INJECT ACTIVE');return}
+
 if(E.injectFull&&E.injectFull.checked){_copyScriptState();say('COPY <SCRIPT> DISABLED - SOURCE INJECT ACTIVE');return}if(!E.output.value)return;var code=E.output.value.replace(/^\s*<script\b[^>]*>/i,'').replace(/<\/script\s*>\s*$/i,'').trim(),wrapped='<script>\n'+code+'\n<\/script>';try{await navigator.clipboard.writeText(wrapped);say('SCRIPT TAG COPIED')}catch(e){var ta=document.createElement('textarea');ta.value=wrapped;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);say('SCRIPT TAG COPIED')}});
 
 E.process.addEventListener('click',async function(){
@@ -630,6 +687,124 @@ setProgress(100);say('SUCCESS')
 }catch(e){say(e.message||'PROCESS ERROR');if(E.resultStatus)E.resultStatus.textContent='ERROR'}
 finally{E.process.disabled=false;setTimeout(function(){setProgress(0)},500)}
 });
+
+function _stripScriptWrapper(src){
+src=String(src||'');
+var m=src.match(/^\s*<script\b[^>]*>([\s\S]*?)<\/script\s*>\s*$/i);
+return m?m[1]:src
+}
+
+function _hasCDATA(src){
+return /\/\/\s*<!\[CDATA\[|\/\*\s*<!\[CDATA\[\s*\*\//i.test(String(src||''))
+}
+
+function _stripCDATA(src){
+return String(src||'')
+.replace(/^\s*\/\/\s*<!\[CDATA\[\s*/i,'')
+.replace(/\s*\/\/\s*\]\]>\s*$/i,'')
+.replace(/^\s*\/\*\s*<!\[CDATA\[\s*\*\/\s*/i,'')
+.replace(/\s*\/\*\s*\]\]>\s*\*\/\s*$/i,'')
+}
+
+function _detectBloggerMode(raw){
+raw=String(raw||'');
+return /<script\b/i.test(raw)&&(
+/\/\/\s*<!\[CDATA\[/i.test(raw)||
+/<b:(?:skin|if|section|widget)\b/i.test(raw)||
+/expr:[A-Za-z-]+\s*=/.test(raw)||
+/data:blog\./.test(raw)
+)
+}
+
+function _bloggerWrap(js,raw){
+js=String(js||'').trim();
+raw=String(raw||'');
+var open=(raw.match(/<script\b[^>]*>/i)||["<script type='text/javascript'>"])[0];
+if(!/\btype\s*=/.test(open))open=open.replace(/>$/," type='text/javascript'>");
+return open+'\n//<![CDATA[\n'+js+'\n//]]>\n</script>'
+}
+
+function _orphanCheck(js){
+js=String(js||'').trim();
+var issues=[];
+if(/^["'][^;\n]{0,300}["']\s*,/.test(js))issues.push('ORPHAN STRING TABLE AT START');
+if(/^[,\]\)]/.test(js))issues.push('ORPHAN TOKEN AT START');
+if(/(?:^|[;\n])\s*,\s*[A-Za-z_$]/.test(js))issues.push('ORPHAN COMMA EXPRESSION');
+if(/\{\s*,\s*[A-Za-z_$]/.test(js))issues.push('BROKEN BLOCK START');
+return issues
+}
+
+function _identifierCaseCheck(js){
+js=String(js||'');
+var defs={},uses={},issues=[];
+var d=/\bfunction\s+([A-Za-z_$][\w$]*)\s*\(/g,m;
+while((m=d.exec(js)))defs[m[1].toLowerCase()]=m[1];
+var c=/\b([A-Za-z_$][\w$]*)\s*\(/g;
+while((m=c.exec(js))){
+var n=m[1],l=n.toLowerCase();
+if(defs[l]&&defs[l]!==n&&n!=='function')issues.push('IDENTIFIER CASE: '+n+' -> '+defs[l])
+}
+return Array.from(new Set(issues)).slice(0,10)
+}
+
+function _scopeCheck(js){
+js=String(js||'');
+var issues=[];
+var pushUse=/\b([A-Za-z_$][\w$]*)\.push\s*\(/g,m;
+while((m=pushUse.exec(js))){
+var n=m[1];
+var before=js.slice(Math.max(0,m.index-5000),m.index);
+var decl=new RegExp('\\b(?:var|let|const)\\s+'+n.replace(/[$]/g,'\\$&')+'\\b');
+var param=new RegExp('function\\s*[^()]*\\([^)]*\\b'+n.replace(/[$]/g,'\\$&')+'\\b[^)]*\\)');
+if(!decl.test(before)&&!param.test(before))issues.push('POSSIBLE UNDECLARED ARRAY: '+n)
+}
+return Array.from(new Set(issues)).slice(0,10)
+}
+
+function _bloggerXMLCheck(wrapped){
+wrapped=String(wrapped||'');
+var issues=[];
+if(!/<script\b/i.test(wrapped)||!/<\/script\s*>/i.test(wrapped))issues.push('SCRIPT WRAPPER MISSING');
+if(!/\/\/\s*<!\[CDATA\[/i.test(wrapped)||!/\/\/\s*\]\]>/i.test(wrapped))issues.push('CDATA MISSING');
+var body=_stripCDATA(_stripScriptWrapper(wrapped));
+if(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-f]+;)/i.test(wrapped.replace(body,'')))issues.push('XML ENTITY RISK');
+return issues
+}
+
+function _integrityReport(js,raw){
+js=String(js||'');
+var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],ok:true};
+try{new Function(_stripCDATA(_stripScriptWrapper(js)))}catch(e){report.syntax.push(String(e&&e.message||e))}
+var fc=typeof _flowCheck==='function'?_flowCheck(js):{ok:true,issues:[]};
+if(!fc.ok)report.flow=fc.issues.slice(0,10);
+report.orphan=_orphanCheck(js);
+report.identifier=_identifierCaseCheck(js);
+report.scope=_scopeCheck(js);
+if(_detectBloggerMode(raw)||S.bloggerMode){
+var wrapped=/<script\b/i.test(js)?js:_bloggerWrap(js,raw);
+report.blogger=_bloggerXMLCheck(wrapped)
+}
+report.ok=!report.syntax.length&&!report.flow.length&&!report.orphan.length&&!report.identifier.length&&!report.scope.length&&!report.blogger.length;
+return report
+}
+
+function _integrityFirstIssue(r){
+if(r.syntax&&r.syntax.length)return'SYNTAX: '+r.syntax[0];
+if(r.flow&&r.flow.length)return'FLOW: '+r.flow[0];
+if(r.orphan&&r.orphan.length)return'ORPHAN: '+r.orphan[0];
+if(r.identifier&&r.identifier.length)return r.identifier[0];
+if(r.scope&&r.scope.length)return r.scope[0];
+if(r.blogger&&r.blogger.length)return'BLOGGER XML: '+r.blogger[0];
+return''
+}
+
+function _checkpoint(next,prev,label){
+var r=_integrityReport(next,S.originalRawSource||'');
+if(r.ok)return{code:next,report:r,rolled:false};
+var pr=_integrityReport(prev,S.originalRawSource||'');
+if(pr.ok)return{code:prev,report:pr,rolled:true,reason:label+' ROLLBACK - '+_integrityFirstIssue(r)};
+return{code:next,report:r,rolled:false,reason:label+' WARNING - '+_integrityFirstIssue(r)}
+}
 
 function _flowCheck(js){
 js=String(js||'');
@@ -659,14 +834,43 @@ function _renderNormalizeOutput(){
 if(S.mode!=='deobfuscate')return;
 var base=String(S.normalizedBase||E.output.value||'');
 if(!base)return;
+
 var formatted=S.normalizeFormat==='flush'?_b6(base):beautify(base);
-var _fc=_flowCheck(formatted);if(!_fc.ok&&_flowCheck(base).ok){formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');say('BEAUTIFY SAFETY FALLBACK - BLOCK STRUCTURE PRESERVED')}
+formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+
+var beforeCheck=_integrityReport(base,S.originalRawSource||'');
+var afterCheck=_integrityReport(formatted,S.originalRawSource||'');
+if(!afterCheck.ok&&beforeCheck.ok){
+formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
+say('FORMAT SAFETY FALLBACK - '+_integrityFirstIssue(afterCheck))
+}
+
 var injected=E.injectFull&&E.injectFull.checked&&S.normalizeFinal;
 if(injected){
-try{formatted=_j1(formatted)}catch(_e){injected=false}
+try{
+if(S.bloggerMode){
+formatted=_bloggerWrap(_stripCDATA(_stripScriptWrapper(formatted)),S.originalRawSource);
+}else{
+formatted=_j1(formatted)
 }
-setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?'FINAL LAYER':'NORMALIZED');
-if(S.normalizeFinal&&E.resultStatus)E.resultStatus.textContent='FINAL LAYER'
+}catch(_e){
+injected=false;
+say('INJECT FAILED - NORMALIZE RESULT KEPT')
+}
+}
+
+S.integrity=_integrityReport(formatted,S.originalRawSource||'');
+setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?(S.integrity.ok?'FINAL VALID':'CHECK WARNING'):'NORMALIZED');
+
+if(S.normalizeFinal){
+if(S.integrity.ok){
+if(E.resultStatus)E.resultStatus.textContent=S.bloggerMode?'BLOGGER SAFE':'FINAL VALID';
+say(S.bloggerMode?'FINAL BLOGGER CHECK PASSED - CDATA READY':'FINAL SCRIPT CHECK PASSED')
+}else{
+if(E.resultStatus)E.resultStatus.textContent='CHECK WARNING';
+say('FINAL CHECK WARNING - '+_integrityFirstIssue(S.integrity))
+}
+}
 }
 
 if(E.normalizeBeautify)E.normalizeBeautify.addEventListener('change',function(){
@@ -771,7 +975,7 @@ _renderNormalizeOutput();
 setProgress(100);
 updateLayerPanel(S.normalizedBase,'FINAL LAYER');
 setNormalizeFinal(true,E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
-if(E.resultStatus)E.resultStatus.textContent='FINAL LAYER';
+if(E.resultStatus)E.resultStatus.textContent=S.integrity&&S.integrity.ok?(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID'):'CHECK WARNING';
 say(E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE');
 
 await _ui();
@@ -787,7 +991,7 @@ _busy(false)
 });
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.tableCache={};S.originalSource='';S.originalRawSource='';if(E.injectFull)E.injectFull.checked=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
