@@ -36,7 +36,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[]};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',tableCache:{}};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -74,7 +74,7 @@ return out
 }
 function minify(s){return stripComments(String(s)).replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n[ \t]+/g,'\n').replace(/\n{2,}/g,'\n').replace(/\s*([{};,=:])\s*/g,'$1').trim()}
 function beautify(s){
-s=String(s).replace(/^\t+/gm,function(t){return'  '.repeat(t.length)}).replace(/\r/g,'').trim();var out='',ind=0,q=null,esc=false,paren=0;
+s=String(s).replace(/\r/g,'').trim();var out='',ind=0,q=null,esc=false,paren=0;
 function pad(){return'  '.repeat(Math.max(0,ind))}
 for(var i=0;i<s.length;i++){var c=s[i];
 if(q){out+=c;if(esc)esc=false;else if(c==='\\')esc=true;else if(c===q)q=null;continue}
@@ -268,15 +268,63 @@ return obj+'.'+key
 })
 }
 
-function _d2(src){
+function _p1(src){
 src=String(src);
-src=_e2(src);
-var tables=_d1(src),names=Object.keys(tables);
+var found=_d1(src),names=Object.keys(found);
+names.forEach(function(name){if(found[name]&&found[name].length)S.tableCache[name]=found[name].slice()});
+return S.tableCache
+}
+
+function _p2(src){
+src=String(src);
+var tables=_p1(src),names=Object.keys(tables);
+if(!names.length)return src;
+var pass=0,prev='';
+while(pass<8&&src!==prev){
+prev=src;
+names.forEach(function(name){
+var vals=tables[name],safe=name.replace(/[$]/g,'\\$&');
+var rx=new RegExp('\\b'+safe+'\\s*\\[\\s*([^\\]]+)\\s*\\]','g');
+src=src.replace(rx,function(all,expr){
+var idx=null,e=String(expr||'').trim();
+if(/^0x[0-9a-f]+$/i.test(e))idx=parseInt(e,16);
+else if(/^\d+$/.test(e))idx=parseInt(e,10);
+else if(/^[0-9xXa-fA-F+\-*/%() <>&|^~]+$/.test(e)){
+try{var v=Function('"use strict";return ('+e+')')();if(Number.isFinite(v)&&Math.floor(v)===v)idx=v}catch(_e){}
+}
+return idx!==null&&idx>=0&&idx<vals.length?JSON.stringify(vals[idx]):all
+});
+});
+pass++;
+}
+return src
+}
+
+function _p3(src){
+src=String(src);
+var tables=_p1(src),names=Object.keys(tables);
 if(!names.length)return src;
 names.forEach(function(name){
-var vals=tables[name],rx=new RegExp('\\b'+name.replace(/[$]/g,'\\$&')+'\\s*\\[\\s*(\\d+)\\s*\\]','g');
-src=src.replace(rx,function(all,idx){idx=+idx;return idx<vals.length?JSON.stringify(vals[idx]):all})
+var safe=name.replace(/[$]/g,'\\$&');
+var decl1=new RegExp('(?:var|let|const)\\s+'+safe+'\\s*=\\s*\\[[\\s\\S]*?\\]\\s*;?','g');
+src=src.replace(decl1,'');
+var decl2=new RegExp('(?:var|let|const)\\s+'+safe+'\\s*=\\s*new\\s+Array\\s*\\([\\s\\S]*?\\)\\s*;?','g');
+src=src.replace(decl2,'');
 });
+return src
+}
+
+function _p4(src){
+src=String(src);
+return src.replace(/([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\[[^\]]+\])*)\s*\[\s*(["'])([A-Za-z_$][\w$]*)\2\s*\]/g,function(all,obj,q,key){
+return obj+'.'+key
+})
+}
+
+function _d2(src){
+src=String(src);
+_p1(src);
+src=_p2(src);
 return src
 }
 
@@ -327,22 +375,25 @@ return s
 function _b6(s){return beautify(s).split('\n').map(function(line){return line.replace(/^\s+/,'')}).join('\n')}
 function _a5(s){
 s=String(s);var prev='',passes=0;
-for(;passes<10&&s!==prev;passes++){
+_p1(s);
+for(;passes<12&&s!==prev;passes++){
 prev=s;
+s=_p2(s);
 s=_d2(s);
-s=_e2(s);
 s=_b2(s);
 s=_b1(s);
+s=_p2(s);
 s=_d2(s);
-s=_e2(s);
 s=_b2(s);
 s=_b4(s);
-s=_e3(s);
+s=_p4(s);
 s=_b5(s)
 }
+s=_p2(s);
 s=_b3(s);
-s=_e3(s);
+s=_p4(s);
 s=_b5(s);
+s=_p3(s);
 return S.normalizeFormat==='flush'?_b6(s):beautify(s)
 }
 
@@ -390,7 +441,7 @@ if(E.layerStatus)E.layerStatus.textContent=status||'ANALYZED';
 if(E.layerResult)E.layerResult.textContent=S.normalizeFinal?'FINAL LAYER':remaining?'LAYER DETECTED':'READY';
 if(!E.layerList)return;
 if(!S.layerHistory.length){E.layerList.innerHTML='<span>No layer processed yet.</span>';return}
-E.layerList.innerHTML=S.layerHistory.map(function(x,i){return'<div class="cfObLayerItem"><b>Layer '+(i+1)+' - '+x.name+'</b><em>'+x.status+'</em></div>'}).join('')
+E.layerList.innerHTML=S.layerHistory.map(function(x,i){return'<div class="cfObLayerItem"><b>Layer '+(i+1)+' - '+x.name+'</b><em>'+x.status+'</em></div>'}).join('');var _last=E.layerList.lastElementChild;if(_last){try{_last.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(_e){E.layerList.scrollTop=E.layerList.scrollHeight}}
 }
 function setNormalizeFinal(on,msg){
 S.normalizeFinal=!!on;
@@ -399,14 +450,19 @@ if(E.normalizeState)E.normalizeState.textContent=msg||(on?'Final layer reached. 
 if(E.normalize){E.normalize.disabled=!!on||!(S.mode==='deobfuscate'&&E.output.value);E.normalize.innerHTML=on?'<i class="fa fa-check-circle"></i> FINAL LAYER':'<i class="fa fa-magic"></i> NORMALIZE OUTPUT'}if(E.normalizeFull)E.normalizeFull.disabled=!!on||!(S.mode==='deobfuscate'&&E.output.value);
 }
 async function _a6(src){
-src=extractJS(src);var cf=await _a4(src);if(cf!==null)return beautify(cf);
+src=extractJS(src);
+S.originalSource=src;
+S.tableCache={};
+_p1(src);
+var cf=await _a4(src);if(cf!==null)return beautify(cf);
+src=_p2(src);
 src=_d2(src);
-src=_e2(src);
 var out=_b1(src);
+out=_p2(out);
 out=_b4(out);
-out=_e2(out);
+out=_d2(out);
 out=_b2(out);
-out=_e3(out);
+out=_p4(out);
 return beautify(out)
 }
 
@@ -460,7 +516,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
-E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');if(E.normalize)E.normalize.disabled=true;updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+E.clear.addEventListener('click',function(){E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.tableCache={};S.originalSource='';if(E.injectFull)E.injectFull.checked=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');if(E.normalize)E.normalize.disabled=true;updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
 if(E.copyScript)E.copyScript.addEventListener('click',async function(){if(!E.output.value)return;var code=E.output.value.replace(/^\s*<script\b[^>]*>/i,'').replace(/<\/script\s*>\s*$/i,'').trim(),wrapped='<script>\n'+code+'\n<\/script>';try{await navigator.clipboard.writeText(wrapped);say('SCRIPT TAG COPIED')}catch(e){var ta=document.createElement('textarea');ta.value=wrapped;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);say('SCRIPT TAG COPIED')}});
 
@@ -493,27 +549,46 @@ var remain=_a8(out);updateLayerPanel(out,remain?'NEXT LAYER':'FINAL CHECK');
 if(!remain||!changed){setNormalizeFinal(true,'FINAL LAYER REACHED - Hasil sudah berada pada layer terakhir yang dapat dinormalisasi otomatis.');updateLayerPanel(out,'FINAL LAYER');if(E.resultStatus)E.resultStatus.textContent='FINAL LAYER';say('FINAL LAYER REACHED')}
 else{setNormalizeFinal(false,'Layer lain masih terdeteksi. Tekan NORMALIZE OUTPUT untuk melanjutkan.');E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE NEXT LAYER';say('NEXT LAYER DETECTED')}
 });
+
+function _j1(normalized){
+var base=String(S.originalSource||E.input.value||'');
+if(!base)return normalized;
+var scripts=[],re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m;
+while((m=re.exec(base)))scripts.push({full:m[0],body:m[1]});
+if(scripts.length===1){
+return base.replace(scripts[0].body,normalized)
+}
+if(scripts.length>1){
+var target=scripts.reduce(function(a,b){return b.body.length>a.body.length?b:a},scripts[0]);
+return base.replace(target.body,normalized)
+}
+return normalized
+}
+
 if(E.normalizeFull)E.normalizeFull.addEventListener('click',function(){
 if(S.mode!=='deobfuscate'||!E.output.value||S.normalizeFinal)return;
 var out=E.output.value,guard=0;
-while(guard<12){
+while(guard<16){
 var before=out,layers=_a7(before);
 out=_a5(before);
 var changed=out.trim()!==before.trim();
 S.layerIndex++;
 S.layerHistory.push({name:layers.length?layers[0]:'NORMALIZE / BEAUTIFY',status:changed?'RESOLVED':'NO CHANGE'});
+updateLayerPanel(out,changed?'RESOLVED':'NO CHANGE');
 if(!changed||!_a8(out))break;
-guard++;
+guard++
 }
-setOutput(out,'HUMAN READABLE CODE OUTPUT','FULL NORMALIZED');
+var injected=E.injectFull&&E.injectFull.checked;
+if(injected)out=_j1(out);
+setOutput(out,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT','FULL NORMALIZED');
 updateLayerPanel(out,'FINAL CHECK');
-setNormalizeFinal(true,'FULL NORMALIZE COMPLETE - Semua layer yang dapat dikenali engine sudah diproses otomatis.');
+setNormalizeFinal(true,injected?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
 if(E.resultStatus)E.resultStatus.textContent='FINAL LAYER';
-say('FULL NORMALIZE COMPLETE');
+say(injected?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE')
 });
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.tableCache={};S.originalSource='';if(E.injectFull)E.injectFull.checked=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
