@@ -53,7 +53,7 @@ E.copyScript.disabled=inject;
 E.copyScript.setAttribute('aria-disabled',inject?'true':'false');
 E.copyScript.tabIndex=inject?-1:0;
 E.copyScript.classList.toggle('is-disabled',inject);
-E.copyScript.title=inject?'Copy <script> disabled while Source Inject is active':'Copy output with <script> tag';
+E.copyScript.title=inject?'Copy <script> disabled while Source Inject is active':'Copy output with <script> tag'
 }
 
 function setProgress(n){if(E.progress)E.progress.style.width=Math.max(0,Math.min(100,n))+'%'}
@@ -775,18 +775,36 @@ return issues
 
 function _integrityReport(js,raw){
 js=String(js||'');
-var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],ok:true};
+var report={syntax:[],flow:[],orphan:[],identifier:[],scope:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
+
 try{new Function(_stripCDATA(_stripScriptWrapper(js)))}catch(e){report.syntax.push(String(e&&e.message||e))}
+
 var fc=typeof _flowCheck==='function'?_flowCheck(js):{ok:true,issues:[]};
 if(!fc.ok)report.flow=fc.issues.slice(0,10);
+
 report.orphan=_orphanCheck(js);
 report.identifier=_identifierCaseCheck(js);
 report.scope=_scopeCheck(js);
+
 if(_detectBloggerMode(raw)||S.bloggerMode){
 var wrapped=/<script\b/i.test(js)?js:_bloggerWrap(js,raw);
 report.blogger=_bloggerXMLCheck(wrapped)
 }
-report.ok=!report.syntax.length&&!report.flow.length&&!report.orphan.length&&!report.identifier.length&&!report.scope.length&&!report.blogger.length;
+
+/* HARD = transformations that can prove code is broken.
+Identifier/scope checks are heuristic warnings only. */
+report.hard=[]
+.concat(report.syntax)
+.concat(report.flow)
+.concat(report.orphan)
+.concat(report.blogger);
+
+report.warnings=[]
+.concat(report.identifier)
+.concat(report.scope);
+
+report.safe=report.hard.length===0;
+report.ok=report.safe&&report.warnings.length===0;
 return report
 }
 
@@ -794,18 +812,22 @@ function _integrityFirstIssue(r){
 if(r.syntax&&r.syntax.length)return'SYNTAX: '+r.syntax[0];
 if(r.flow&&r.flow.length)return'FLOW: '+r.flow[0];
 if(r.orphan&&r.orphan.length)return'ORPHAN: '+r.orphan[0];
-if(r.identifier&&r.identifier.length)return r.identifier[0];
-if(r.scope&&r.scope.length)return r.scope[0];
 if(r.blogger&&r.blogger.length)return'BLOGGER XML: '+r.blogger[0];
+if(r.identifier&&r.identifier.length)return'WARNING: '+r.identifier[0];
+if(r.scope&&r.scope.length)return'WARNING: '+r.scope[0];
 return''
 }
 
 function _checkpoint(next,prev,label){
 var r=_integrityReport(next,S.originalRawSource||'');
-if(r.ok)return{code:next,report:r,rolled:false};
+if(r.safe)return{code:next,report:r,rolled:false,warning:r.warnings.length?label+' WARNING - '+r.warnings[0]:''};
+
 var pr=_integrityReport(prev,S.originalRawSource||'');
-if(pr.ok)return{code:prev,report:pr,rolled:true,reason:label+' ROLLBACK - '+_integrityFirstIssue(r)};
-return{code:next,report:r,rolled:false,reason:label+' WARNING - '+_integrityFirstIssue(r)}
+if(pr.safe){
+return{code:prev,report:pr,rolled:true,reason:label+' ROLLBACK - '+_integrityFirstIssue(r)}
+}
+
+return{code:next,report:r,rolled:false,reason:label+' HARD WARNING - '+_integrityFirstIssue(r)}
 }
 
 function _flowCheck(js){
@@ -842,9 +864,11 @@ formatted=formatted.replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
 
 var beforeCheck=_integrityReport(base,S.originalRawSource||'');
 var afterCheck=_integrityReport(formatted,S.originalRawSource||'');
-if(!afterCheck.ok&&beforeCheck.ok){
+if(!afterCheck.safe&&beforeCheck.safe){
 formatted=String(base).replace(/\t/g,'  ').replace(/[ \t]+$/gm,'');
 say('FORMAT SAFETY FALLBACK - '+_integrityFirstIssue(afterCheck))
+}else if(afterCheck.safe&&afterCheck.warnings.length){
+say('NORMALIZE SAFE - '+afterCheck.warnings[0])
 }
 
 var injected=E.injectFull&&E.injectFull.checked&&S.normalizeFinal;
@@ -861,12 +885,12 @@ S.integrity=_integrityReport(formatted,S.originalRawSource||'');
 setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?(S.integrity.ok?'FINAL VALID':'CHECK WARNING'):'NORMALIZED');
 
 if(S.normalizeFinal){
-if(S.integrity.ok){
-if(E.resultStatus)E.resultStatus.textContent=S.bloggerMode?'BLOGGER SAFE':'FINAL VALID';
-say(S.bloggerMode?'NORMALIZE INJECTED TO ORIGINAL SOURCE - BLOGGER SAFE':'NORMALIZE INJECTED TO ORIGINAL SOURCE')
+if(S.integrity.safe){
+if(E.resultStatus)E.resultStatus.textContent=S.integrity.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID');
+say(injected?(S.bloggerMode?'NORMALIZE INJECTED - BLOGGER SAFE':'NORMALIZE INJECTED TO ORIGINAL SOURCE'):(S.integrity.warnings.length?'FINAL SAFE - '+S.integrity.warnings[0]:'FINAL SCRIPT CHECK PASSED'))
 }else{
-if(E.resultStatus)E.resultStatus.textContent='CHECK WARNING';
-say('FINAL CHECK WARNING - '+_integrityFirstIssue(S.integrity))
+if(E.resultStatus)E.resultStatus.textContent='CHECK ERROR';
+say('FINAL CHECK ERROR - '+_integrityFirstIssue(S.integrity))
 }
 }
 }
@@ -897,25 +921,33 @@ function _j1(normalized){
 var raw=String(S.originalRawSource||''),clean=String(normalized||'').trim();
 if(!raw)return clean;
 
-/* Source awal berupa tag <script>: ganti HANYA isi script, jangan membuat source baru. */
-var m=raw.match(/^([\s\S]*?<script\b[^>]*>)([\s\S]*?)(<\/script\s*>[\s\S]*)$/i);
-if(m){
-var body=clean;
-if(/^\s*<script\b/i.test(body))body=_stripScriptWrapper(body);
-body=_stripCDATA(body).trim();
-
-if(S.bloggerMode||_hasCDATA(m[2])){
-return m[1]+'\n//<![CDATA[\n'+body+'\n//]]>\n'+m[3]
-}
-return m[1]+'\n'+body+'\n'+m[3]
+if(/^\s*<script\b/i.test(clean)){
+clean=_stripCDATA(_stripScriptWrapper(clean)).trim()
 }
 
-/* Bila source bukan wrapper script, pertahankan source container bila placeholder
-normalized sebelumnya masih dapat ditemukan secara aman. */
-var original=String(S.originalSource||'').trim();
-if(original&&raw.indexOf(original)!==-1)return raw.replace(original,clean);
+/* Replace inline script body in source awal. */
+var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,matches=[];
+while((m=re.exec(raw)))matches.push({full:m[0],body:m[1],index:m.index});
 
-/* Fallback: hasil normalize tetap dikembalikan, tidak membuangnya. */
+if(matches.length){
+/* Prefer script body that corresponds to source being deobfuscated; otherwise largest body. */
+var target=null,orig=String(S.originalSource||'').trim();
+for(var i=0;i<matches.length;i++){
+var b=_stripCDATA(matches[i].body).trim();
+if(orig&&(b===orig||b.indexOf(orig)>=0||orig.indexOf(b)>=0)){target=matches[i];break}
+}
+if(!target)target=matches.reduce(function(a,b){return b.body.length>a.body.length?b:a},matches[0]);
+
+var open=(target.full.match(/^<script\b[^>]*>/i)||['<script>'])[0];
+var close='</script>';
+var newBody=(S.bloggerMode||_hasCDATA(target.body))
+?'//<![CDATA[\n'+clean+'\n//]]>'
+:clean;
+var rebuilt=open+'\n'+newBody+'\n'+close;
+return raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.length)
+}
+
+/* Plain JS source: final normalized result itself is the injected output. */
 return clean
 }
 
@@ -970,7 +1002,7 @@ _renderNormalizeOutput();
 setProgress(100);
 updateLayerPanel(S.normalizedBase,'FINAL LAYER');
 setNormalizeFinal(true,E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE - Hasil source siap digunakan.':'FULL NORMALIZE COMPLETE - Semua layer yang dikenali sudah diproses.');
-if(E.resultStatus)E.resultStatus.textContent=S.integrity&&S.integrity.ok?(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID'):'CHECK WARNING';
+if(E.resultStatus)E.resultStatus.textContent=S.integrity&&S.integrity.safe?(S.integrity.warnings.length?'SAFE + WARNING':(S.bloggerMode?'BLOGGER SAFE':'FINAL VALID')):'CHECK ERROR';
 say(E.injectFull&&E.injectFull.checked?'FULL NORMALIZE + INJECT COMPLETE':'FULL NORMALIZE COMPLETE');
 
 await _ui();
