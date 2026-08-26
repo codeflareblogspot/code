@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.47';
+var CF_JS_LAB_VERSION='v2.49';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2004,7 +2004,7 @@ if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
    deobfuscation can reveal literal </script> inside strings used by
    postscribe/dynamic widgets. In an inline script HTML parses that as the
    real closing tag, causing the remaining JavaScript to render as page text. */
-var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1);
+var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1);
 
 if(!isMarkerInject){
 var rawSafe=_protectHtmlRawTextEndTags(payload);
@@ -2034,12 +2034,24 @@ var fullSource=!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
 if(fullSource){
-if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
-injected=_buildBatchInjectedSource();
-if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
+/* Marker reconstruction is authoritative whenever collection exists,
+   including ONE block. This is important after SELF ENGINE UNPACK because
+   the normalized payload may no longer resemble the original obfuscated
+   fragment closely enough for a second heuristic target search. */
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
+  if(S.markerBlocks.length===1){
+    var singleMap=_parseMarkerOutput(E.output&&E.output.value||'');
+    if(singleMap[S.markerBlocks[0].id]){
+      S.markerBlocks[0].processed=singleMap[S.markerBlocks[0].id]
+    }else if(payload&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(payload)){
+      S.markerBlocks[0].processed=payload
+    }
+  }
+  injected=_buildBatchInjectedSource();
+  if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
 }else{
-injected=_fastInjectBuild(payload);
-if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
+  injected=_fastInjectBuild(payload);
+  if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
 }
 
 /* Full-source reconstruction must preserve external dependencies. */
@@ -2115,23 +2127,58 @@ await _ui();
 out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
-/* Own-engine output can be a single large base64 wrapper rather than a
-   conventional obfuscated script block. Decode it statically first. */
-var ownPack=_tryUnpackOwnEngineWrapper(src);
-if(ownPack){
-say('SELF ENGINE WRAPPER DETECTED - STATIC UNPACK');
+/* Native CodeFlare v5 decoder.
+   IMPORTANT: use the metadata written by this engine itself (_a3/_a4).
+   This is more reliable than reverse-engineering the generated wrapper shape,
+   because shuffle/rotate/control-flow/debug/password options can change it. */
+var nativePack=_a3(src);
+if(nativePack){
+say('CODEFLARE ENGINE SIGNATURE DETECTED - NATIVE DECODE');
 setProgress(12);
 await _ui();
 
-src=ownPack.decoded;
-E.input.value=src;
-if(E.inCount)E.inCount.textContent=src.length.toLocaleString()+' CHAR';
+var nativeDecoded=await _a4(src);
+if(typeof nativeDecoded!=='string'||!nativeDecoded.length){
+throw new Error('CODEFLARE NATIVE DECODE RETURNED EMPTY SOURCE')
+}
+nativeDecoded=_protectHtmlRawTextEndTags(nativeDecoded);
 
-/* From this point Inject/marker logic works against the recovered original,
-   not against the temporary eval wrapper. */
-_captureInjectSource(src);
+var nativeProbe=_syntaxProbe(nativeDecoded);
+if(!nativeProbe.ok){
+throw new Error('CODEFLARE NATIVE DECODE SYNTAX - '+nativeProbe.message)
+}
+
+/* Direct recovery is the final deobfuscation result. Do NOT feed our own
+   recovered engine back through the generic _0x/legacy pipeline: doing so can
+   mistake legitimate internal engine code for another obfuscation layer. */
+S.layerIndex=0;
+S.layerHistory=[];
+S.deobfuscateReady=true;
+S.normalizePassed=true;
+S.normalizeFinal=true;
+S.injectCompleted=false;
+S.normalizedBase=nativeDecoded;
+S.lastSafeOutput=nativeDecoded;
+
+setOutput(nativeDecoded,'CODEFLARE NATIVE DEOBFUSCATION OUTPUT','SUCCESS');
+setNormalizeFinal(true,'CodeFlare engine wrapper decoded directly from its embedded metadata. Generic legacy transforms skipped.');
+setProgress(100);
+await _ui();
+updateLayerPanel(nativeDecoded,'CODEFLARE NATIVE DECODE COMPLETE');
+_injectButtonState();
+say('CODEFLARE NATIVE DECODE COMPLETE - ORIGINAL SOURCE RECOVERED');
+return
+}
+
+/* Fallback for older/self wrappers that do not contain current metadata. */
+var ownPack=_tryUnpackOwnEngineWrapper(src);
+if(ownPack){
+say('LEGACY SELF WRAPPER DETECTED - STATIC UNPACK');
+setProgress(12);
+await _ui();
+src=ownPack.decoded;
 work=_prepareProcessingSource(src);
-say('SELF ENGINE UNPACKED - '+ownPack.chunks.toLocaleString()+' CHUNKS - ANALYZING RECOVERED SOURCE')
+say('LEGACY SELF WRAPPER UNPACKED - ANALYZING RECOVERED SOURCE')
 }
 
 if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
