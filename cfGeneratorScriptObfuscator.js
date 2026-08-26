@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.53';
+var CF_JS_LAB_VERSION='v2.54';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2062,13 +2062,13 @@ say('ADD TAG SCRIPT - OBFUSCATED OUTPUT WRAPPED')
    the normalized payload may no longer resemble the original obfuscated
    fragment closely enough for a second heuristic target search. */
 if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
-  if(S.markerBlocks.length===1){
-    var singleMap=_parseMarkerOutput(E.output&&E.output.value||'');
-    if(singleMap[S.markerBlocks[0].id]){
-      S.markerBlocks[0].processed=singleMap[S.markerBlocks[0].id]
-    }else if(payload&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(payload)){
-      S.markerBlocks[0].processed=payload
-    }
+  /* Last-mile synchronization before rebuilding the original source. */
+  _syncNormalizedOutputToMarkers(String(S.normalizedBase||E.output.value||payload));
+
+  if(S.markerBlocks.length===1&&
+     (!S.markerBlocks[0].processed||!String(S.markerBlocks[0].processed).trim())&&
+     payload&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(payload)){
+    S.markerBlocks[0].processed=payload
   }
   injected=_buildBatchInjectedSource();
   if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
@@ -4049,6 +4049,41 @@ return{ok:false,issues:Array.from(new Set(issues)).slice(0,8),warnings:[]}
 }
 }
 
+
+function _syncNormalizedOutputToMarkers(text){
+text=String(text||'');
+if(!S.markerCollectionReady||!S.markerBlocks||!S.markerBlocks.length)return false;
+
+var parsed=_parseMarkerOutput(text);
+var changed=0;
+
+for(var i=0;i<S.markerBlocks.length;i++){
+var b=S.markerBlocks[i];
+var next=parsed[b.id];
+
+if(typeof next==='string'&&next.trim()){
+next=next.trim();
+if(_syntaxValid(_protectHtmlRawTextEndTags(next))){
+b.processed=next;
+changed++
+}
+}
+}
+
+/* A single collected block is displayed as plain normalized JavaScript,
+   without marker wrapper comments. */
+if(S.markerBlocks.length===1&&changed===0){
+var single=text.trim();
+if(single&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(single)&&
+   _syntaxValid(_protectHtmlRawTextEndTags(single))){
+S.markerBlocks[0].processed=single;
+changed=1
+}
+}
+
+return changed===S.markerBlocks.length
+}
+
 function _renderNormalizeOutput(){
 if(S.mode!=='deobfuscate')return;
 var base=String(S.normalizedBase||E.output.value||'');
@@ -4094,6 +4129,15 @@ say('INJECT FAILED - NORMALIZE RESULT KEPT')
 }
 
 S.integrity=_integrityReport(formatted,S.originalRawSource||'');
+
+/* The exact final normalized output shown in the textarea is authoritative
+   for the later Inject operation. */
+if(S.normalizeFinal&&S.integrity.safe){
+S.normalizedBase=formatted;
+S.lastSafeOutput=formatted;
+_syncNormalizedOutputToMarkers(formatted)
+}
+
 setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?(S.integrity.ok?'FINAL VALID':'CHECK WARNING'):'NORMALIZED');
 
 if(S.normalizeFinal){
