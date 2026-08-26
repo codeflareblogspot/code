@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.46';
+var CF_JS_LAB_VERSION='v2.47';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -484,6 +484,67 @@ if(/\/\*__CF_OBF_BLOCK_\d{3}__\*\//.test(out)){
 throw new Error('MARKER RESTORE INCOMPLETE')
 }
 return out
+}
+
+
+function _tryUnpackOwnEngineWrapper(src){
+src=String(src||'');
+/* Exact structural guard: array -> reverse -> rotate -> join -> atob ->
+   Uint8Array -> TextDecoder -> indirect eval. No eval is executed here. */
+if(!/\batob\s*\(/.test(src)||!/\bTextDecoder\s*\(\s*\)\s*\.decode\s*\(/.test(src)||
+   !/\(\s*0\s*,\s*eval\s*\)\s*\(/.test(src)||!/\.reverse\s*\(\s*\)/.test(src)||
+   !/\.join\s*\(\s*["']{2}\s*\)/.test(src))return null;
+
+var m=/var\s+([A-Za-z_$][\w$]*)\s*=\s*(\[(?:(?:\s*"(?:(?:\\.)|[^"\\])*"\s*,?)+)\])\s*;/.exec(src);
+if(!m)return null;
+
+var arrName=m[1],literal=m[2],arr;
+try{arr=JSON.parse(literal)}catch(_e){return null}
+if(!Array.isArray(arr)||arr.length<2)return null;
+for(var i=0;i<arr.length;i++){
+if(typeof arr[i]!=='string'||!/^[A-Za-z0-9+/=]*$/.test(arr[i]))return null
+}
+
+var esc=arrName.replace(/[$]/g,'\\$&');
+var reverseRe=new RegExp('\\b'+esc+'\\s*\\.\\s*reverse\\s*\\(\\s*\\)');
+if(!reverseRe.test(src))return null;
+
+/* Resolve the rotation amount from:
+   var _back = arr.length - (((N)) % arr.length);
+   arr = arr.slice(_back).concat(arr.slice(0,_back)); */
+var backRe=new RegExp(
+'var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*'+esc+'\\.length\\s*-\\s*\\(\\s*\\(\\s*\\(?\\s*(\\d+)\\s*\\+\\s*(\\d+)\\s*\\)?\\s*\\)\\s*%\\s*'+esc+'\\.length\\s*\\)'
+);
+var bm=backRe.exec(src);
+if(!bm)return null;
+
+var backName=bm[1].replace(/[$]/g,'\\$&');
+var rotateRe=new RegExp(
+esc+'\\s*=\\s*'+esc+'\\.slice\\s*\\(\\s*'+backName+'\\s*\\)\\s*\\.concat\\s*\\(\\s*'+esc+'\\.slice\\s*\\(\\s*0\\s*,\\s*'+backName+'\\s*\\)\\s*\\)'
+);
+if(!rotateRe.test(src))return null;
+
+arr.reverse();
+var amount=(parseInt(bm[2],10)+parseInt(bm[3],10))%arr.length;
+var back=arr.length-amount;
+arr=arr.slice(back).concat(arr.slice(0,back));
+
+var packed=arr.join(''),binary;
+try{binary=atob(packed)}catch(_e2){return null}
+
+var bytes=new Uint8Array(binary.length);
+for(var j=0;j<binary.length;j++)bytes[j]=binary.charCodeAt(j);
+var decoded;
+try{decoded=new TextDecoder().decode(bytes)}catch(_e3){return null}
+
+if(!decoded||decoded.length<32)return null;
+return{
+decoded:decoded,
+arrayName:arrName,
+chunks:arr.length,
+packedLength:packed.length,
+decodedLength:decoded.length
+}
 }
 
 function _captureInjectSource(src){
@@ -2054,6 +2115,25 @@ await _ui();
 out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
+/* Own-engine output can be a single large base64 wrapper rather than a
+   conventional obfuscated script block. Decode it statically first. */
+var ownPack=_tryUnpackOwnEngineWrapper(src);
+if(ownPack){
+say('SELF ENGINE WRAPPER DETECTED - STATIC UNPACK');
+setProgress(12);
+await _ui();
+
+src=ownPack.decoded;
+E.input.value=src;
+if(E.inCount)E.inCount.textContent=src.length.toLocaleString()+' CHAR';
+
+/* From this point Inject/marker logic works against the recovered original,
+   not against the temporary eval wrapper. */
+_captureInjectSource(src);
+work=_prepareProcessingSource(src);
+say('SELF ENGINE UNPACKED - '+ownPack.chunks.toLocaleString()+' CHUNKS - ANALYZING RECOVERED SOURCE')
+}
+
 if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
 throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
 }
