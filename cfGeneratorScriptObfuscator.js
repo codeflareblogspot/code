@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.05-stable';;
+var CF_JS_LAB_VERSION='v3.06-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2131,6 +2131,41 @@ await _ui();
 out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
+/* CODEFLARE SELF-OBFUSCATED SOURCE:
+   File size is irrelevant. If the input carries CodeFlare's own metadata,
+   open/decode it directly with the native decoder BEFORE generic target scan. */
+var cfNativeMeta=null;
+try{cfNativeMeta=_a3(src)}catch(_cfMetaErr){cfNativeMeta=null}
+
+if(cfNativeMeta){
+say('CODEFLARE ENGINE SOURCE DETECTED - OPENING NATIVE WRAPPER');
+setProgress(12);
+await _ui();
+
+var cfOpened=await _a4(src);
+if(typeof cfOpened!=='string'||!cfOpened.length){
+throw new Error('CODEFLARE ENGINE OPEN FAILED')
+}
+
+/* Native decode already returns the original source. Do not send it through
+   generic _0x target detection or LARGE SOURCE MODE. */
+S.largeSourceMode=false;
+S.processingSource=cfOpened;
+S.deobfuscateReady=true;
+S.normalizePassed=true;
+S.normalizeFinal=true;
+S.normalizedBase=cfOpened;
+S.lastSafeOutput=cfOpened;
+S.injectCompleted=false;
+
+setOutput(cfOpened,'CODEFLARE NATIVE DEOBFUSCATION OUTPUT','SOURCE OPENED');
+setProgress(100);
+await _ui();
+_injectButtonState();
+say('CODEFLARE ENGINE SOURCE OPENED - READY TO COPY');
+return
+}
+
 if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
 throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
 }
