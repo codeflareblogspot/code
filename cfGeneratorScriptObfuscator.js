@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.54';
+var CF_JS_LAB_VERSION='v2.55';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -1856,7 +1856,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
 E.clear.addEventListener('click',function(){
-_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;S.directFullSourceRecovery=false;S.directFullSourceRecovery=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
 if(!E.output.value)return;
 try{
@@ -2000,9 +2000,25 @@ payload=_stripCDATADeep(_stripScriptWrapper(payload)).trim()
 
 if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
 
-/* Recovered full-source guard. A complete Blogger/XML/HTML document is already
-   the final source and must never be searched for a target SCRIPT to replace. */
-if(S.mode==='deobfuscate'&&_looksLikeRecoveredFullSource(payload)){
+/* Full-source handling.
+   IMPORTANT: a full Blogger/XML/HTML source must NOT be skipped when marker
+   blocks exist. In that case Inject must rebuild the ORIGINAL source and put
+   the final normalized JavaScript back at every marker position.
+
+   Only a native CodeFlare wrapper that decoded directly into a complete source
+   AND has no marker collection is already final. */
+var hasMarkerInject=!!(
+  S.markerCollectionReady &&
+  S.markerBlocks &&
+  S.markerBlocks.length
+);
+
+if(
+  S.mode==='deobfuscate' &&
+  S.directFullSourceRecovery &&
+  !hasMarkerInject &&
+  _looksLikeRecoveredFullSource(payload)
+){
   S.injectCompleted=true;
   S.normalizePassed=true;
   S.normalizeFinal=true;
@@ -2012,7 +2028,7 @@ if(S.mode==='deobfuscate'&&_looksLikeRecoveredFullSource(payload)){
   if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
   setProgress(100);
   _injectButtonState();
-  say('FULL SOURCE ALREADY RECOVERED - INJECT SKIPPED - READY TO COPY');
+  say('DIRECT FULL SOURCE RECOVERY COMPLETE - NO MARKER INJECTION REQUIRED');
   return
 }
 
@@ -2046,6 +2062,10 @@ setProgress(35);
 await _ui();
 
 var raw=_getInjectSource();
+
+/* Marker reconstruction has priority in DEOBFUSCATE mode. The raw source may
+   be a complete Blogger/XML/HTML template; that is exactly where normalized
+   blocks need to be restored. */
 /* In OBFUSCATE mode this button is "Add Tag Script", NOT source injection.
    Even when the original input was a full Blogger/HTML document containing
    <script>, the generated obfuscated payload must simply be wrapped. */
@@ -2160,6 +2180,7 @@ return{blocked:false,hard:false,score:score,reason:reasons.join(' + ')}
 
 E.process.addEventListener('click',async function(){
 S.injectCompleted=false;
+S.directFullSourceRecovery=false;
 _injectButtonState();
 
 var src=String(E.input.value||'');
@@ -2250,7 +2271,8 @@ S.lastSafeOutput=nativeDecoded;
 /* A recovered full Blogger/XML/HTML document needs no Inject step: the source
    is already reconstructed. Mark Inject complete so the button cannot try to
    locate a target script inside the recovered document. */
-S.injectCompleted=!!nativeIsFullSource;
+S.injectCompleted=false;
+S.directFullSourceRecovery=!!nativeIsFullSource;
 
 setOutput(
 nativeDecoded,
@@ -4667,7 +4689,7 @@ _injectButtonState()
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.largeTargets=[];S.batchReplacements=[];S.batchMode=false;S.markerSource='';S.markerBlocks=[];S.markerCollectionReady=false;S.lastSafeOutput='';S.deobfuscateReady=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.largeTargets=[];S.batchReplacements=[];S.batchMode=false;S.markerSource='';S.markerBlocks=[];S.markerCollectionReady=false;S.lastSafeOutput='';S.deobfuscateReady=false;S.directFullSourceRecovery=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
