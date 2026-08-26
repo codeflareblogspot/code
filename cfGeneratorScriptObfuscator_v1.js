@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.24';
+var CF_JS_LAB_VERSION='v2.25';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -295,10 +295,10 @@ S.normalizedBase='';
 if(E.normalizeFull)E.normalizeFull.disabled=true
 }
 function _injectButtonState(){
-if(!E.copyScript)return;
+if(!E||!E.copyScript)return;
 
 var hasOutput=!!(E.output&&String(E.output.value||'').trim());
-var hasSource=!!_getInjectSource();
+var hasSource=!!(S&&(S.injectSource||S.originalRawSource));
 var active=false,title='';
 
 if(S.injectCompleted){
@@ -346,6 +346,17 @@ _rememberSafeOutput(v);
 if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||S.normalizeFinal||!S.deobfuscateReady||!(S.mode==='deobfuscate'&&v);
 _injectButtonState();
 }
+/* v2.25 UI STATE BINDING GUARD */
+if(typeof _injectButtonState!=='function'){
+window._injectButtonState=function(){
+try{
+if(!E||!E.copyScript)return;
+E.copyScript.disabled=true;
+E.copyScript.classList.remove('is-inject-ready')
+}catch(_e){}
+}
+}
+
 function escHTML(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function unescHTML(s){var ta=document.createElement('textarea');ta.innerHTML=String(s);return ta.value}
 function stripComments(s){
