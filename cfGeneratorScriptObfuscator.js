@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.52';
+var CF_JS_LAB_VERSION='v2.53';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2118,6 +2118,46 @@ setTimeout(function(){setProgress(0)},700);
 _injectButtonState()
 }
 });
+
+function _preObfuscationGuard(src){
+src=String(src||'');
+var clean=_stripCDATADeep(_stripScriptWrapper(src)).trim();
+var reasons=[],score=0;
+
+/* Hard signature: current CodeFlare wrapper metadata. */
+try{
+if(_a3(clean)){
+return{blocked:true,hard:true,score:100,reason:'CODEFLARE PROTECTED SOURCE ALREADY DETECTED'}
+}
+}catch(_e){}
+
+/* Hard signature: known CodeFlare generated runtime wrapper. */
+if(/\bCFJS5\b/.test(clean)&&/\bTextDecoder\b/.test(clean)&&/\batob\s*\(/.test(clean)){
+return{blocked:true,hard:true,score:100,reason:'CODEFLARE WRAPPER ALREADY DETECTED'}
+}
+
+/* Strong third-party / legacy obfuscation indicators.
+   Never block on a single _0x identifier alone. */
+if(/\bvar\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]{20,}?\]/i.test(clean)){score+=35;reasons.push('STRING TABLE')}
+if(/\b_0x[a-f0-9]+(?:x[a-f0-9]+)?\b/i.test(clean)){score+=15;reasons.push('MANGLED IDENTIFIERS')}
+if(/\b(?:eval|Function)\s*\(/.test(clean)&&/\b(?:atob|decodeURIComponent|unescape)\s*\(/.test(clean)){score+=30;reasons.push('RUNTIME DECODER')}
+if(/while\s*\(\s*!!\[\]\s*\)/.test(clean)||/parseInt\s*\(\s*_0x/i.test(clean)){score+=25;reasons.push('ROTATING ARRAY')}
+if(/\[['"][A-Za-z0-9+/=]{80,}['"]\]/.test(clean)||/[A-Za-z0-9+/]{300,}={0,2}/.test(clean)){score+=20;reasons.push('PACKED PAYLOAD')}
+
+/* High-confidence external obfuscation is also stopped to avoid accidental
+   double-obfuscation. The user can deobfuscate/normalize it first. */
+if(score>=60){
+return{
+blocked:true,
+hard:false,
+score:score,
+reason:'SOURCE APPEARS ALREADY OBFUSCATED - '+reasons.join(' + ')
+}
+}
+
+return{blocked:false,hard:false,score:score,reason:reasons.join(' + ')}
+}
+
 E.process.addEventListener('click',async function(){
 S.injectCompleted=false;
 _injectButtonState();
@@ -2141,6 +2181,19 @@ try{
 var out;
 
 if(S.mode==='obfuscate'){
+var obGuard=_preObfuscationGuard(src);
+if(obGuard.blocked){
+  setProgress(0);
+  if(E.resultStatus)E.resultStatus.textContent='ALREADY OBFUSCATED';
+  say('OBFUSCATION BLOCKED - '+obGuard.reason);
+  setOutput(
+    '',
+    'ENCRYPTION CODE OUTPUT',
+    obGuard.hard?'CODEFLARE PROTECTION DETECTED':'OBFUSCATION DETECTED'
+  );
+  return
+}
+
 S.largeSourceMode=false;
 S.processingSource=src;
 S.originalRawSource=src;
