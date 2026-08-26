@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.25';
+var CF_JS_LAB_VERSION='v2.26';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -306,7 +306,7 @@ active=false;
 title='Inject already completed - ready to copy'
 }else if(S.mode==='obfuscate'){
 active=hasOutput&&hasSource;
-title=active?'Inject obfuscated result to source':'Obfuscate source first'
+title=active?'Add obfuscated code inside a SCRIPT tag':'Obfuscate source first'
 }else if(S.mode==='deobfuscate'){
 active=hasOutput&&hasSource&&S.normalizePassed&&!S.normalizeBusy;
 title=active?'Inject normalized deobfuscation result to source':'Run FULL NORMALIZE first'
@@ -1347,7 +1347,23 @@ if((el=$('cfObRecoveryValue')))el.textContent=rec+'%';if((el=$('cfObRecoveryBar'
 }
 
 function mode(m){
-S.mode=m;_injectButtonState();
+S.mode=m;
+
+/* Mode-specific Inject button label */
+if(E.copyScript){
+if(m==='obfuscate'){
+E.copyScript.innerHTML='<i class="fa fa-code"></i> ADD TAG SCRIPT';
+E.copyScript.setAttribute('data-action-label','ADD TAG SCRIPT')
+}else if(m==='deobfuscate'){
+E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE';
+E.copyScript.setAttribute('data-action-label','INJECT DATA TO SOURCE')
+}else{
+E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE';
+E.copyScript.setAttribute('data-action-label','INJECT DATA TO SOURCE')
+}
+}
+
+_injectButtonState();
 if(E.inputLabel)E.inputLabel.innerHTML=m==='tools'?'<i class="fa fa-terminal"></i> CODE INPUT HTML | CSS | JS | TEXT':m==='deobfuscate'?'<i class="fa fa-terminal"></i> JAVASCRIPT INPUT - DEOBFUSCATE':'<i class="fa fa-terminal"></i> JAVASCRIPT INPUT';
 tool.querySelectorAll('.cfObModeBtn').forEach(function(b){b.classList.toggle('active',b.dataset.mode===m)});
 if(E.tools)E.tools.style.display=m==='tools'?'block':'none';
