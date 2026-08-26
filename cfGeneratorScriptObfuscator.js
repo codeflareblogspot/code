@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.09-stable';;
+var CF_JS_LAB_VERSION='v3.10-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -951,15 +951,27 @@ s=_stripCDATADeep(_stripScriptWrapper(s)).trim();
 
 var mm=s.match(/\/\*CFJS5:([A-Za-z0-9+/=]+)\*\//);
 var hm=s.match(/var\s+_q7n\s*=\s*["']([A-Za-z0-9+/=]+)["']\s*;?/);
-var am=s.match(/var\s+(?:_[A-Za-z0-9]+|cfPayload)\s*=\s*(\[[\s\S]*?\])\s*;/);
+/* Domain Lock also creates an array named _ha BEFORE the real payload.
+   Never take the first array blindly. Collect candidates and select the
+   actual encoded payload (largest valid string-array), excluding _ha. */
+var arrays=[];
+var ar=/var\s+(_[A-Za-z0-9]+|cfPayload)\s*=\s*(\[[\s\S]*?\])\s*;/g,am;
+while((am=ar.exec(s))){
+if(am[1]==='_ha')continue;
+try{
+var candidate=JSON.parse(am[2]);
+if(Array.isArray(candidate)&&candidate.length&&candidate.every(function(v){return typeof v==='string'})){
+arrays.push({name:am[1],chunks:candidate,size:candidate.join('').length})
+}
+}catch(_arrayErr){}
+}
 
-if(!am||(!mm&&!hm))return null;
+if(!arrays.length||(!mm&&!hm))return null;
 
 try{
 var meta=JSON.parse(b64dec(mm?mm[1]:hm[1]));
-var chunks=JSON.parse(am[1]);
-if(!Array.isArray(chunks))return null;
-return{meta:meta,chunks:chunks}
+arrays.sort(function(a,b){return b.size-a.size});
+return{meta:meta,chunks:arrays[0].chunks,payloadVar:arrays[0].name}
 }catch(e){
 return null
 }
