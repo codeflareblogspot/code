@@ -1,1 +1,670 @@
+/* =========================================================
+   CODEFLARE JS LAB — UI STYLESHEET
+   CSS Version : 1.0.0
+   Engine Ready: v2.32+
+   Scope        : .cfObApp / #cfJsLab
+   ========================================================= */
 
+/* ---------- Local Variables ---------- */
+#cfJsLab,
+.cfObApp{
+  --cf-bg:#f7fbff;
+  --cf-panel:#ffffff;
+  --cf-panel-2:#f1f7fc;
+  --cf-text:#18212b;
+  --cf-muted:#647383;
+  --cf-line:#d8e4ee;
+  --cf-primary:#0083da;
+  --cf-primary-2:#39a8ef;
+  --cf-success:#26a269;
+  --cf-warning:#e58a14;
+  --cf-danger:#d9485f;
+  --cf-soft-blue:#eaf6ff;
+  --cf-soft-green:#eaf8f1;
+  --cf-soft-orange:#fff4e6;
+  --cf-soft-red:#fff0f2;
+  --cf-shadow:0 14px 35px rgba(28,65,92,.10);
+  --cf-radius:10px;
+  --cf-gap:10px;
+  width:100%;
+  box-sizing:border-box;
+  color:var(--cf-text);
+  font-family:inherit;
+  font-size:15px;
+  line-height:1.55;
+}
+
+#cfJsLab *,
+.cfObApp *{
+  box-sizing:border-box;
+}
+
+/* ---------- Main Shell ---------- */
+.cfObTool{
+  position:relative;
+  width:100%;
+  overflow:hidden;
+  background:var(--cf-panel);
+  border:1px solid var(--cf-line);
+  border-radius:var(--cf-radius);
+  box-shadow:var(--cf-shadow);
+}
+
+.cfObBrand{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 16px;
+  background:linear-gradient(135deg,#f8fcff 0%,#eaf6ff 100%);
+  border-bottom:1px solid var(--cf-line);
+}
+
+.cfObBrand:after{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-1px;
+  width:26%;
+  height:2px;
+  background:linear-gradient(90deg,var(--cf-primary),transparent);
+  animation:cfObHeaderScan 2.8s linear infinite;
+}
+
+@keyframes cfObHeaderScan{
+  0%{transform:translateX(-110%)}
+  100%{transform:translateX(490%)}
+}
+
+.cfObTitle{
+  min-width:0;
+  margin:0;
+  font-size:18px;
+  font-weight:700;
+  line-height:1.3;
+  letter-spacing:.2px;
+}
+
+.cfObDomain,
+.cfObStatus,
+.cfObAnalyzeState,
+.cfObTechState{
+  color:var(--cf-muted);
+  font-size:15px;
+}
+
+/* ---------- Section / Cards ---------- */
+.cfObOptions,
+.cfObNormalizePanel,
+.cfObLayerSection,
+.cfObDeobSupport,
+.cfObMethods{
+  padding:13px;
+  border-top:1px solid var(--cf-line);
+  background:var(--cf-panel);
+}
+
+.cfObToolCard{
+  position:relative;
+  padding:11px 12px;
+  background:var(--cf-panel-2);
+  border:1px solid var(--cf-line);
+  border-radius:8px;
+}
+
+.cfObToolCard:hover{
+  border-color:rgba(0,131,218,.45);
+}
+
+.cfObInputLabel,
+.cfObOutputTitle{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin:0 0 7px;
+  font-size:15px;
+  font-weight:700;
+  color:var(--cf-text);
+}
+
+/* ---------- Editor ---------- */
+.cfObInput,
+.cfObOutput{
+  display:block;
+  width:100%;
+  min-height:310px;
+  max-width:100%;
+  margin:0;
+  padding:13px 14px;
+  resize:vertical;
+  overflow:auto;
+  outline:0;
+  border:1px solid var(--cf-line);
+  border-radius:8px;
+  background:#fbfdff;
+  color:#16202a;
+  font-family:Consolas,Monaco,"Courier New",monospace;
+  font-size:15px;
+  line-height:1.6;
+  tab-size:2;
+  white-space:pre;
+  overflow-wrap:normal;
+  word-break:normal;
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+
+.cfObInput:focus,
+.cfObOutput:focus{
+  border-color:var(--cf-primary);
+  box-shadow:0 0 0 3px rgba(0,131,218,.10);
+  background:#fff;
+}
+
+.cfObInput::placeholder,
+.cfObOutput::placeholder{
+  color:#8796a5;
+  opacity:1;
+}
+
+/* ---------- Action Buttons ---------- */
+.cfObActions,
+.cfObAction,
+.cfObButtons{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.cfObActions button,
+.cfObAction button,
+.cfObButtons button,
+.cfObModeBtn,
+.cfObThemeBtn,
+.cfObProcess,
+.cfObNormalizeFull,
+.cfObNormalizeReset,
+.cfObPaste,
+.cfObClear,
+.cfObCopy,
+.cfObCopyScript{
+  min-height:40px;
+  min-width:0;
+  max-width:100%;
+  padding:9px 13px;
+  border:1px solid var(--cf-line);
+  border-radius:7px;
+  background:var(--cf-panel);
+  color:var(--cf-text);
+  font:inherit;
+  font-size:15px;
+  font-weight:600;
+  line-height:1.25;
+  text-align:center;
+  text-decoration:none;
+  white-space:normal;
+  cursor:pointer;
+  transition:transform .18s ease,border-color .18s ease,background .18s ease,color .18s ease,box-shadow .18s ease;
+}
+
+.cfObActions button:hover,
+.cfObAction button:hover,
+.cfObButtons button:hover,
+.cfObModeBtn:hover,
+.cfObThemeBtn:hover{
+  transform:translateY(-1px);
+  border-color:rgba(0,131,218,.5);
+}
+
+.cfObProcess,
+.cfObInject,
+.cfObCopyScript{
+  background:var(--cf-primary);
+  border-color:var(--cf-primary);
+  color:#fff;
+}
+
+.cfObProcess:hover,
+.cfObInject:hover,
+.cfObCopyScript:hover{
+  background:#0075c3;
+  border-color:#0075c3;
+}
+
+.cfObNormalizeFull,
+.cfObNormalize{
+  background:var(--cf-soft-blue);
+  border-color:rgba(0,131,218,.30);
+  color:#066da9;
+}
+
+.cfObClear,
+.cfObNormalizeReset{
+  background:var(--cf-soft-red);
+  border-color:rgba(217,72,95,.25);
+  color:#b63449;
+}
+
+.cfObCopy.is-copied,
+.cfObCopy[data-copy-state="copied"]{
+  background:var(--cf-success)!important;
+  border-color:var(--cf-success)!important;
+  color:#fff!important;
+}
+
+.cfObActions button:disabled,
+.cfObAction button:disabled,
+.cfObButtons button:disabled,
+.cfObModeBtn:disabled,
+.cfObProcess:disabled,
+.cfObNormalizeFull:disabled,
+.cfObCopyScript:disabled{
+  opacity:.48;
+  cursor:not-allowed;
+  transform:none;
+  box-shadow:none;
+}
+
+/* ---------- Mode Buttons ---------- */
+.cfObModeBtn{
+  flex:1 1 150px;
+}
+
+.cfObModeBtn.is-active,
+.cfObModeBtn.active{
+  color:#fff;
+  background:linear-gradient(135deg,var(--cf-primary),var(--cf-primary-2));
+  border-color:transparent;
+  box-shadow:0 6px 16px rgba(0,131,218,.18);
+}
+
+/* ---------- Progress ---------- */
+.cfObProgressBar{
+  position:relative;
+  width:100%;
+  height:7px;
+  overflow:hidden;
+  background:#e4edf4;
+  border-radius:20px;
+}
+
+.cfObProgressBar:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  width:var(--cf-progress,0%);
+  background:linear-gradient(90deg,var(--cf-primary),var(--cf-primary-2));
+  border-radius:inherit;
+  transition:width .25s ease;
+}
+
+/* ---------- Statistics ---------- */
+.cfObOriginalSize,
+.cfObResultSize,
+.cfObSizeChange,
+.cfObSize,
+.cfObChars,
+.cfObLines,
+.cfObFunctions,
+.cfObVariables,
+.cfObStringCount,
+.cfObRecoveryValue,
+.cfObComplexity,
+.cfObPattern,
+.cfObSourceEngine,
+.cfObRecommended,
+.cfObGrowthImpact,
+.cfObRuntimeImpact,
+.cfObProtectionLevel,
+.cfObSelectedTech{
+  font-size:15px;
+}
+
+.cfObRecoveryBar{
+  height:6px;
+  overflow:hidden;
+  border-radius:10px;
+  background:linear-gradient(90deg,var(--cf-primary),var(--cf-primary-2));
+}
+
+/* ---------- Message / State ---------- */
+.cfObMessage,
+.cfObNormalizeState,
+.cfObLayerResult{
+  font-size:15px;
+}
+
+.cfObMessage{
+  padding:9px 11px;
+  background:var(--cf-panel-2);
+  border-left:3px solid var(--cf-primary);
+}
+
+.cfObFieldError,
+.cfObExternalWarning{
+  color:var(--cf-danger);
+  font-size:15px;
+}
+
+.cfObNormalizePanel.is-final{
+  background:var(--cf-soft-green);
+}
+
+.cfObResultStatus{
+  display:inline-flex;
+  align-items:center;
+  min-height:28px;
+  padding:4px 9px;
+  border:1px solid var(--cf-line);
+  border-radius:20px;
+  background:var(--cf-panel-2);
+  font-size:15px;
+  font-weight:600;
+}
+
+/* ---------- Layer Panel ---------- */
+.cfObLayerList{
+  max-height:230px;
+  overflow:auto;
+  display:grid;
+  gap:6px;
+}
+
+.cfObLayerItem{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:9px 10px;
+  border:1px solid var(--cf-line);
+  background:var(--cf-panel-2);
+  border-radius:7px;
+  font-size:15px;
+}
+
+.cfObLayerItem b,
+.cfObLayerItem em{
+  font-size:15px;
+}
+
+.cfObLayerItem em{
+  color:var(--cf-muted);
+  font-style:normal;
+}
+
+/* ---------- Deobfuscator Method Cards ---------- */
+.cfObMethodGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(145px,1fr));
+  gap:7px;
+  margin-top:8px;
+}
+
+.cfObMethodCard,
+.cfObDeobMethod{
+  position:relative;
+  width:100%;
+  min-width:0;
+  padding:10px;
+  overflow:hidden;
+  border:1px solid var(--cf-line);
+  border-radius:7px;
+  background:var(--cf-panel-2);
+  color:var(--cf-text);
+  font:inherit;
+  font-size:15px;
+  text-align:left;
+  cursor:pointer;
+  transition:border-color .2s ease,background .2s ease,transform .2s ease;
+}
+
+.cfObMethodCard:hover,
+.cfObMethodCard:focus,
+.cfObMethodCard.is-open,
+.cfObDeobMethod.is-detected{
+  border-color:rgba(0,131,218,.5);
+  background:var(--cf-soft-blue);
+}
+
+.cfObMethodCard:hover{
+  transform:translateY(-1px);
+}
+
+.cfObMethodHead{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:25px;
+}
+
+.cfObMethodHead i{
+  width:19px;
+  flex:0 0 19px;
+  text-align:center;
+  color:var(--cf-primary);
+}
+
+.cfObMethodHead b{
+  min-width:0;
+  font-size:15px;
+  line-height:1.35;
+}
+
+.cfObMethodDesc{
+  display:block;
+  max-height:0;
+  margin-top:0;
+  opacity:0;
+  overflow:hidden;
+  color:var(--cf-muted);
+  font-size:15px;
+  line-height:1.45;
+  transition:max-height .28s ease,opacity .22s ease,margin-top .22s ease;
+}
+
+.cfObMethodCard:hover .cfObMethodDesc,
+.cfObMethodCard:focus .cfObMethodDesc,
+.cfObMethodCard.is-open .cfObMethodDesc{
+  max-height:120px;
+  margin-top:7px;
+  opacity:1;
+}
+
+/* ---------- Password / Form Controls ---------- */
+.cfObPasswordOption,
+.cfObPasswordAccess{
+  display:grid;
+  gap:8px;
+}
+
+.cfObPassword,
+.cfObPasswordConfirm,
+.cfObAccessPassword,
+.cfObPreset,
+.cfObTheme,
+.cfObParserToggle{
+  width:100%;
+  min-height:40px;
+  padding:8px 10px;
+  border:1px solid var(--cf-line);
+  border-radius:7px;
+  background:var(--cf-panel);
+  color:var(--cf-text);
+  font:inherit;
+  font-size:15px;
+  outline:0;
+}
+
+.cfObPassword:focus,
+.cfObPasswordConfirm:focus,
+.cfObAccessPassword:focus,
+.cfObPreset:focus{
+  border-color:var(--cf-primary);
+  box-shadow:0 0 0 3px rgba(0,131,218,.09);
+}
+
+.cfObPassEye{
+  min-width:40px;
+  min-height:40px;
+}
+
+/* ---------- Scrollbars ---------- */
+.cfObInput,
+.cfObOutput,
+.cfObLayerList{
+  scrollbar-width:thin;
+  scrollbar-color:#a9bdcc transparent;
+}
+
+.cfObInput::-webkit-scrollbar,
+.cfObOutput::-webkit-scrollbar,
+.cfObLayerList::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+.cfObInput::-webkit-scrollbar-thumb,
+.cfObOutput::-webkit-scrollbar-thumb,
+.cfObLayerList::-webkit-scrollbar-thumb{
+  background:#a9bdcc;
+  border-radius:20px;
+}
+
+/* ---------- Dark Mode ---------- */
+html.dark #cfJsLab,
+html.dark .cfObApp,
+body.dark #cfJsLab,
+body.dark .cfObApp,
+[data-theme="dark"] #cfJsLab,
+[data-theme="dark"] .cfObApp{
+  --cf-bg:#101820;
+  --cf-panel:#141f29;
+  --cf-panel-2:#192733;
+  --cf-text:#eaf2f8;
+  --cf-muted:#a9b8c4;
+  --cf-line:#2b3c49;
+  --cf-soft-blue:#12344a;
+  --cf-soft-green:#143629;
+  --cf-soft-orange:#46321b;
+  --cf-soft-red:#40232a;
+  --cf-shadow:0 14px 35px rgba(0,0,0,.25);
+}
+
+html.dark .cfObBrand,
+body.dark .cfObBrand,
+[data-theme="dark"] .cfObBrand{
+  background:linear-gradient(135deg,#15232e 0%,#102b3e 100%);
+}
+
+html.dark .cfObInput,
+html.dark .cfObOutput,
+body.dark .cfObInput,
+body.dark .cfObOutput,
+[data-theme="dark"] .cfObInput,
+[data-theme="dark"] .cfObOutput{
+  background:#0f1921;
+  color:#eaf2f8;
+}
+
+/* ---------- Mobile ---------- */
+@media(max-width:700px){
+  #cfJsLab,
+  .cfObApp{
+    font-size:15px;
+  }
+
+  .cfObBrand{
+    align-items:flex-start;
+    padding:12px;
+  }
+
+  .cfObTitle{
+    font-size:17px;
+  }
+
+  .cfObOptions,
+  .cfObNormalizePanel,
+  .cfObLayerSection,
+  .cfObDeobSupport,
+  .cfObMethods{
+    padding:10px;
+  }
+
+  .cfObInput,
+  .cfObOutput{
+    min-height:280px;
+    padding:11px;
+    font-size:15px;
+  }
+
+  .cfObActions,
+  .cfObAction,
+  .cfObButtons{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    width:100%;
+    gap:7px;
+  }
+
+  .cfObActions button,
+  .cfObAction button,
+  .cfObButtons button,
+  .cfObModeBtn,
+  .cfObThemeBtn,
+  .cfObProcess,
+  .cfObNormalizeFull,
+  .cfObNormalizeReset,
+  .cfObPaste,
+  .cfObClear,
+  .cfObCopy,
+  .cfObCopyScript,
+  .cfObInject,
+  .cfObNormalize{
+    width:100%;
+    min-width:0!important;
+    max-width:100%!important;
+    margin:0;
+    padding:9px 8px;
+    overflow:hidden;
+    white-space:normal!important;
+    overflow-wrap:anywhere;
+  }
+
+  .cfObMethodGrid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .cfObLayerItem{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:3px;
+  }
+}
+
+@media(max-width:390px){
+  .cfObActions,
+  .cfObAction,
+  .cfObButtons{
+    grid-template-columns:1fr;
+  }
+
+  .cfObMethodGrid{
+    grid-template-columns:1fr;
+  }
+}
+
+/* ---------- Reduced Motion ---------- */
+@media(prefers-reduced-motion:reduce){
+  .cfObBrand:after{
+    animation:none;
+  }
+
+  .cfObMethodCard,
+  .cfObMethodDesc,
+  .cfObActions button,
+  .cfObAction button,
+  .cfObButtons button{
+    transition:none;
+  }
+}
