@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.50';
+var CF_JS_LAB_VERSION='v2.51';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2000,6 +2000,22 @@ payload=_stripCDATADeep(_stripScriptWrapper(payload)).trim()
 
 if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
 
+/* Recovered full-source guard. A complete Blogger/XML/HTML document is already
+   the final source and must never be searched for a target SCRIPT to replace. */
+if(S.mode==='deobfuscate'&&_looksLikeRecoveredFullSource(payload)){
+  S.injectCompleted=true;
+  S.normalizePassed=true;
+  S.normalizeFinal=true;
+  S.normalizedBase=payload;
+  S.lastSafeOutput=payload;
+  setOutput(payload,'CODEFLARE RECOVERED FULL SOURCE','READY TO COPY');
+  if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
+  setProgress(100);
+  _injectButtonState();
+  say('FULL SOURCE ALREADY RECOVERED - INJECT SKIPPED - READY TO COPY');
+  return
+}
+
 /* BLOGGER/HTML RAW-TEXT SAFETY:
    deobfuscation can reveal literal </script> inside strings used by
    postscribe/dynamic widgets. In an inline script HTML parses that as the
@@ -2153,7 +2169,12 @@ S.bloggerMode=_detectBloggerMode(nativeDecoded)||/<b:(?:section|widget|skin|if)\
 nativeDecoded=_protectHtmlRawTextEndTags(nativeDecoded);
 var nativeProbe=_syntaxProbe(nativeDecoded);
 if(!nativeProbe.ok){
-throw new Error('CODEFLARE NATIVE DECODE SYNTAX - '+nativeProbe.message)
+  if(/Unexpected token ['"]?</i.test(String(nativeProbe.message||''))&&/<[A-Za-z!/?][^>]*>/.test(nativeDecoded)){
+    nativeIsFullSource=true;
+    S.bloggerMode=_detectBloggerMode(nativeDecoded)||/<b:(?:section|widget|skin|if)\b/i.test(nativeDecoded)
+  }else{
+    throw new Error('CODEFLARE NATIVE DECODE SYNTAX - '+nativeProbe.message)
+  }
 }
 }
 
@@ -2297,6 +2318,7 @@ function _looksLikeRecoveredFullSource(raw){
 raw=String(raw||'').replace(/^\uFEFF/,'').trim();
 if(!raw)return false;
 return /^(?:<\?xml\b|<!DOCTYPE\b|<html\b|<head\b|<body\b)/i.test(raw)||
+       /<(?:html|head|body|script|style|link|meta|div|b:[A-Za-z-]+)\b/i.test(raw)||
        /<b:(?:skin|template-skin|section|widget|if|includable)\b/i.test(raw)||
        /xmlns:b\s*=|xmlns:data\s*=|expr:[A-Za-z-]+\s*=|data:blog\./.test(raw)
 }
