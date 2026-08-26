@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.36';
+var CF_JS_LAB_VERSION='v2.37';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2441,6 +2441,180 @@ return{code:current,changed:false,rolled:true}
 return{code:next,changed:true,rolled:false}
 }
 
+
+function _replaceIdentifierTokenSafe(src,from,to){
+src=String(src||'');
+if(!from||from===to)return src;
+var out='',i=0,q='',esc=false,line=false,block=false,regex=false,charClass=false,prevSig='';
+
+function canRegex(prev){return !prev||/[({[=,:;!&|?+\-*%^~<>]/.test(prev)}
+
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+
+if(line){
+out+=c;
+if(c==='\n')line=false;
+i++;continue
+}
+if(block){
+out+=c;
+if(c==='*'&&n==='/'){out+='/';i+=2;block=false}else i++;
+continue
+}
+if(q){
+out+=c;
+if(esc){esc=false;i++;continue}
+if(c==='\\'){esc=true;i++;continue}
+if(c===q)q='';
+i++;continue
+}
+if(regex){
+out+=c;
+if(esc){esc=false;i++;continue}
+if(c==='\\'){esc=true;i++;continue}
+if(c==='['){charClass=true;i++;continue}
+if(c===']'&&charClass){charClass=false;i++;continue}
+if(c==='/'&&!charClass){
+regex=false;i++;
+while(/[A-Za-z]/.test(src[i]||'')){out+=src[i];i++}
+prevSig='/';continue
+}
+i++;continue
+}
+
+if(c==='/'&&n==='/'){out+='//';i+=2;line=true;continue}
+if(c==='/'&&n==='*'){out+='/*';i+=2;block=true;continue}
+if(c==='"'||c==="'"||c==='`'){out+=c;q=c;i++;continue}
+if(c==='/'&&canRegex(prevSig)){out+=c;regex=true;charClass=false;i++;continue}
+
+if(/[A-Za-z_$]/.test(c)){
+var j=i+1;
+while(/[A-Za-z0-9_$]/.test(src[j]||''))j++;
+var word=src.slice(i,j);
+out+=word===from?to:word;
+prevSig=(word===from?to:word).slice(-1);
+i=j;continue
+}
+
+out+=c;
+if(!/\s/.test(c))prevSig=c;
+i++
+}
+return out
+}
+
+function _applySemanticIdentifierMap(src,map){
+var out=String(src||''),used={};
+Object.keys(map||{}).forEach(function(k){
+var v=map[k];
+if(!v||k===v||used[v])return;
+if((new RegExp('\\b'+v.replace(/[$]/g,'\\$&')+'\\b')).test(out))return;
+var next=_replaceIdentifierTokenSafe(out,k,v);
+if(next!==out&&_syntaxValid(next)){out=next;used[v]=1}
+});
+return out
+}
+
+function _domSemanticHumanize(src){
+src=String(src||'');
+var map={},m;
+
+/* DOM constructors. */
+var create=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*document\.createElement\(\s*["']([^"']+)["']\s*\)/ig;
+while((m=create.exec(src))){
+var tag=m[3].toLowerCase();
+var base=tag==='script'?'scriptElement':tag==='div'?'divElement':tag==='img'?'imageElement':tag==='a'?'linkElement':tag+'Element';
+var name=base,n=2;
+while(Object.values(map).indexOf(name)>=0||(new RegExp('\\b'+name+'\\b')).test(src))name=base+(n++);
+map[m[2]]=name
+}
+
+/* First script anchor. */
+var firstScript=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*document\.getElementsByTagName\(\s*["']script["']\s*\)\s*\[\s*0\s*\]/ig;
+while((m=firstScript.exec(src)))map[m[2]]='firstScript';
+
+/* window.open result. */
+var popup=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*window\.open\s*\(/ig;
+while((m=popup.exec(src))){
+if(!map[m[2]])map[m[2]]='popupWindow'
+}
+
+/* Event-like function parameters using .which or .button. */
+var fn=/function\s+[A-Za-z_$][\w$]*\s*\(\s*(_0x[a-f0-9]+)\s*\)\s*\{([\s\S]*?)\n?\}/ig;
+while((m=fn.exec(src))){
+if((new RegExp('\\b'+m[1].replace(/[$]/g,'\\$&')+'\\.(?:which|button)\\b')).test(m[2])){
+map[m[1]]='event'
+}
+}
+
+return _applySemanticIdentifierMap(src,map)
+}
+
+function _md5SemanticHumanize(src){
+src=String(src||'');
+if(!/\bvar\s+MD5\s*=\s*function\s*\(/.test(src))return src;
+
+/* This recognizer only activates for the classic legacy MD5 implementation.
+   Require the characteristic constants and round helpers before renaming. */
+if(!/0x67452301/i.test(src)||!/0xEFCDAB89/i.test(src)||!/0xD76AA478/i.test(src)||!/0xE8C7B756/i.test(src))return src;
+
+var fm=src.match(/\bvar\s+MD5\s*=\s*function\s*\(\s*(_0x[a-f0-9]+)\s*\)/i);
+if(!fm)return src;
+var prefix=fm[1].match(/^(_0x[a-f0-9]+x)/i);
+if(!prefix)return src;
+var p=prefix[1];
+
+var map={};
+map[fm[1]]='input';
+map[p+'3']='rotateLeft';
+map[p+'6']='addUnsigned';
+map[p+'e']='F';
+map[p+'12']='G';
+map[p+'13']='H';
+map[p+'14']='I';
+map[p+'15']='FF';
+map[p+'1c']='GG';
+map[p+'1d']='HH';
+map[p+'1e']='II';
+map[p+'1f']='convertToWordArray';
+map[p+'28']='wordToHex';
+map[p+'2d']='utf8Encode';
+
+/* Common internal variables in this exact MD5 family. */
+map[p+'20']='wordCount';
+map[p+'21']='messageLength';
+map[p+'22']='paddedLength';
+map[p+'23']='blockCount';
+map[p+'24']='wordArrayLength';
+map[p+'25']='wordArray';
+map[p+'26']='bytePosition';
+map[p+'27']='byteIndex';
+map[p+'29']='hexValue';
+map[p+'2a']='tempHex';
+map[p+'2b']='byteValue';
+map[p+'2c']='byteIndex';
+map[p+'2e']='utfText';
+map[p+'2f']='charIndex';
+map[p+'30']='blockIndex';
+map[p+'31']='AA';
+map[p+'32']='BB';
+map[p+'33']='CC';
+map[p+'34']='DD';
+map[p+'45']='digest';
+
+return _applySemanticIdentifierMap(src,map)
+}
+
+function _advancedSemanticHumanize(src){
+var out=String(src||'');
+var next=_domSemanticHumanize(out);
+if(_syntaxValid(next))out=next;
+next=_md5SemanticHumanize(out);
+if(_syntaxValid(next))out=next;
+return out
+}
+
 function _conservativeHumanize(js){
 js=String(js||'');
 var r=_semanticRepair(js),out=r.code;
@@ -3050,6 +3224,10 @@ current=_safeTransformStep(current,'STATIC TABLE RESOLVER',function(s){
 return _strongStaticResolve(s)
 });
 
+current=_safeTransformStep(current,'SEMANTIC IDENTIFIER HUMANIZE',function(s){
+return _advancedSemanticHumanize(s)
+});
+
 /* Critical ordering:
    repair symbolic regex self-exec BEFORE resolving rgx[n] into literals. */
 current=_safeTransformStep(current,'REGEX OPERAND PROTECTION',function(s){
@@ -3603,6 +3781,9 @@ await _ui()
 /* Final conservative readability, per block. */
 var sem=_conservativeHumanize(current);
 if(_syntaxValid(sem.code))current=sem.code;
+
+var semanticClean=_advancedSemanticHumanize(current);
+if(_syntaxValid(semanticClean))current=semanticClean;
 
 var staticClean=_strongStaticResolve(current);
 if(_syntaxValid(staticClean))current=staticClean;
