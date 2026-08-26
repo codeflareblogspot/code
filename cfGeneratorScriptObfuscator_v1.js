@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.18';
+var CF_JS_LAB_VERSION='v2.19';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -125,7 +125,7 @@ return /<script\b[^>]*>[\s\S]*?<\/script\s*>/i.test(String(raw||''))
 function _pureScriptWrap(js){
 js=_stripCDATADeep(String(js||'').trim());
 var sem=_conservativeHumanize(js);
-js=_scriptElementSafe(sem.code);
+js=_protectHtmlRawTextEndTags(_scriptElementSafe(sem.code));
 if(sem.fixes.length)S.lastSemanticFixes=sem.fixes;
 if(sem.warnings.length)S.lastSemanticWarnings=sem.warnings;
 return "<script type='text/javascript'>\n"+js+"\n</script>"
@@ -446,6 +446,8 @@ async function _a2(src){
 var opt=techValues();
 if(opt.domain&&!opt.host){_c1(E.domain,'DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME');throw new Error('DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME')}
 var source=opt.debugLog?String(src):_a9(src);source=opt.compact?minify(source):source;
+/* Preserve Blogger/HTML raw-text safety inside the encoded source too. */
+source=_protectHtmlRawTextEndTags(source);
 var payload=b64enc(source),step=opt.split?73:Math.max(payload.length,1),chunks=[];
 for(var i=0;i<payload.length;i+=step)chunks.push(payload.slice(i,i+step));
 if(opt.array===false)chunks=[chunks.join('')];
@@ -459,7 +461,7 @@ if(E.pass.value!==E.pass2.value){_c1(E.pass2,'PASSWORD MISMATCH');throw new Erro
 hash=await sha256(E.pass.value)
 }
 var meta=b64enc(JSON.stringify({v:5,p:protectedOn?1:0,h:hash,t:opt}));
-return _a1(opt,randomId(),chunks,meta)
+return _protectHtmlRawTextEndTags(_a1(opt,randomId(),chunks,meta))
 }
 function _a3(s){
 s=String(s);
@@ -1040,7 +1042,9 @@ S.deobfuscationCompleteness=complete;
 if(!complete.complete){
 say('NORMALIZE INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+(complete.rgx?' ['+_unresolvedRgxIndexes(current).join(',')+']':'')+' | TABLE '+complete.table+' | PACKER '+complete.packer)
 }
-return S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current)
+var finalNormalized=S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current);
+finalNormalized=_protectHtmlRawTextEndTags(finalNormalized);
+return finalNormalized
 }
 
 function _a7(s){
@@ -2449,51 +2453,18 @@ return out
 
 function _protectHtmlRawTextEndTags(js){
 js=String(js||'');
-/* HTML's SCRIPT element is a raw-text element. A literal </script sequence
-   inside a JavaScript string can terminate the outer script before JS runs.
-   Protect only occurrences that are inside JS quoted/template strings. */
-var out='',q='',esc=false,i=0;
-while(i<js.length){
-var c=js[i];
-
-if(q){
-if(esc){out+=c;esc=false;i++;continue}
-if(c==='\\'){out+=c;esc=true;i++;continue}
-if(c===q){out+=c;q='';i++;continue}
-
-if(c==='<'&&js.slice(i,i+9).toLowerCase()==='</script'){
-out+='<\\/script';
-i+=8;
-continue
-}
-out+=c;i++;continue
-}
-
-/* Skip comments so quotes inside comments do not start string state. */
-if(c==='/'&&js[i+1]==='/'){
-var nl=js.indexOf('\n',i+2);
-if(nl<0){out+=js.slice(i);break}
-out+=js.slice(i,nl+1);i=nl+1;continue
-}
-if(c==='/'&&js[i+1]==='*'){
-var ce=js.indexOf('*/',i+2);
-if(ce<0){out+=js.slice(i);break}
-out+=js.slice(i,ce+2);i=ce+2;continue
-}
-if(c==="'"||c==='"' || c==='`'){q=c;out+=c;i++;continue}
-out+=c;i++
-}
-return out
+/* HTML SCRIPT is a raw-text element. The HTML parser does not care whether
+   </script appears in a JS string, regex or comment. Therefore protect EVERY
+   literal closing-script sequence in the JavaScript payload.
+   </script>  -> <\/script>
+   This is idempotent because <\/script no longer matches /<\/script/i. */
+return js.replace(/<\/script/gi,'<\\/script')
 }
 
 function _rawTextSafetyCheck(js){
 js=String(js||'');
 var protectedJs=_protectHtmlRawTextEndTags(js);
-return{
-code:protectedJs,
-changed:protectedJs!==js,
-safe:!/<\/script/i.test(_extractStringBodiesForRawTextCheck(protectedJs))
-}
+return{code:protectedJs,changed:protectedJs!==js,safe:!/<\/script/i.test(protectedJs)}
 }
 
 function _extractStringBodiesForRawTextCheck(js){
@@ -2514,6 +2485,7 @@ return out
 function _fastInjectBuild(payload){
 var raw=_getInjectSource(),t=S.injectTarget;
 payload=String(payload||'').trim();
+payload=_protectHtmlRawTextEndTags(payload);
 if(!raw||!payload)return'';
 
 if(!t){
