@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.51';
+var CF_JS_LAB_VERSION='v2.52';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2046,10 +2046,17 @@ setProgress(35);
 await _ui();
 
 var raw=_getInjectSource();
-var fullSource=!!raw&&raw.indexOf('<script')!==-1;
+/* In OBFUSCATE mode this button is "Add Tag Script", NOT source injection.
+   Even when the original input was a full Blogger/HTML document containing
+   <script>, the generated obfuscated payload must simply be wrapped. */
+var addTagOnly=(S.mode==='obfuscate');
+var fullSource=!addTagOnly&&!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
-if(fullSource){
+if(addTagOnly){
+injected="<script type='text/javascript'>\n"+payload+"\n</script>";
+say('ADD TAG SCRIPT - OBFUSCATED OUTPUT WRAPPED')
+}else if(fullSource){
 /* Marker reconstruction is authoritative whenever collection exists,
    including ONE block. This is important after SELF ENGINE UNPACK because
    the normalized payload may no longer resemble the original obfuscated
@@ -2090,7 +2097,7 @@ await _ui();
    of very large Blogger source and was another freeze source. */
 E.output.value=injected;
 if(E.outCount)E.outCount.textContent=injected.length.toLocaleString()+' CHAR';
-if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT');
+if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(addTagOnly?'SCRIPT TAG OUTPUT':(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT'));
 if(E.resultSize)E.resultSize.textContent=kb(injected);
 if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 
