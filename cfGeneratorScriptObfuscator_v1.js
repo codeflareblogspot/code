@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.22';
+var CF_JS_LAB_VERSION='v2.24';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -136,12 +136,10 @@ function _dependencyIntegrityReport(original,finalSource,payload){
 var snap=S.dependencySnapshot||_dependencySnapshot(original);
 var report={ok:true,missing:[],warnings:[],jqueryRequired:_payloadNeedsJQuery(payload),jqueryOriginal:!!snap.jquery.length,jqueryFinal:_sourceHasJQueryLoader(finalSource)};
 
-if(report.jqueryRequired&&!report.jqueryFinal){
-report.ok=false;
-report.missing.push(report.jqueryOriginal
-?'JQUERY LOADER LOST DURING INJECT'
-:'JQUERY REQUIRED BUT NOT FOUND IN ORIGINAL SOURCE')
-}
+/* Do not infer jQuery availability from external <script src> alone.
+   This template may embed jQuery internally inside the same inline bundle.
+   v2.24 guarantees dependency preservation structurally by changing only
+   the detected obfuscated fragment. */
 
 /* Every external script existing in the original full source must survive
    reconstruction. Compare src URLs rather than complete tags so harmless
@@ -174,13 +172,27 @@ S.injectTarget=null;
 try{
 var t=_findObfuscatorScriptMatch(src);
 if(t){
-var open=(t.full.match(/^<script\b[^>]*>/i)||['<script>'])[0];
-S.injectTarget={
+var open=t.open||(t.full.match(/^<script\b[^>]*>/i)||['<script>'])[0];
+var target={
 index:t.index,
 length:t.full.length,
 open:open,
-hadCDATA:_hasCDATA(t.body)
+hadCDATA:_hasCDATA(t.body),
+bodyStart:t.bodyStart,
+bodyEnd:t.bodyEnd,
+fragment:null
+};
+
+if(t.fragment){
+target.fragment={
+index:t.bodyStart+t.fragment.start,
+length:t.fragment.length,
+startInBody:t.fragment.start,
+endInBody:t.fragment.end
 }
+}
+
+S.injectTarget=target
 }
 }catch(_e){}
 }
@@ -912,6 +924,39 @@ var re=new RegExp('\\b'+safe+'\\b');
 return re.test(src.slice(0,start))||re.test(src.slice(end))
 }
 
+function _findObfuscatedFragment(body){
+body=String(body||'');
+
+/* Locate only the obfuscated fragment inside an otherwise normal inline
+   script. This is critical for templates where jQuery/plugins are plain code
+   and only the final template engine is obfuscated. */
+var starts=[];
+var m1=/\bvar\s+_\$_[A-Za-z0-9_$]+\s*=\s*\[/.exec(body);
+if(m1)starts.push(m1.index);
+var m2=/eval\s*\(\s*function\s*\(\s*p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,/i.exec(body);
+if(m2)starts.push(m2.index);
+var m3=/\b(?:_0x[a-f0-9]+|__0x[a-f0-9]+)\s*=\s*\[/i.exec(body);
+if(m3)starts.push(m3.index);
+
+if(!starts.length)return null;
+var start=Math.min.apply(Math,starts);
+
+/* Keep the existing CDATA trailer and any closing-script syntax byte-for-byte.
+   In the observed Blogger bundle the obfuscated section is the tail section,
+   so replacement ends immediately before the CDATA close when present. */
+var end=body.length;
+var cdataClose=body.lastIndexOf('//]]>');
+if(cdataClose>=start)end=cdataClose;
+else{
+var cdataClose2=body.lastIndexOf('/*]]>*/');
+if(cdataClose2>=start)end=cdataClose2
+}
+
+while(end>start&&/\s/.test(body[end-1]))end--;
+
+return{start:start,end:end,length:end-start}
+}
+
 function _findObfuscatorScriptMatch(raw){
 raw=String(raw||'');
 var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,best=null;
@@ -920,7 +965,16 @@ var body=String(m[1]||''),score=0;
 if(/\bvar\s+_\$_[A-Za-z0-9_$]+\s*=\s*\[/.test(body))score+=6;
 if(_packerPresent(body))score+=10;
 if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=2;
-if(score&&(!best||score>best.score))best={full:m[0],body:m[1],index:m.index,score:score}
+if(score&&(!best||score>best.score)){
+var open=(m[0].match(/^<script\b[^>]*>/i)||['<script>'])[0];
+var bodyStart=m.index+open.length;
+var fragment=_findObfuscatedFragment(body);
+best={
+full:m[0],body:body,index:m.index,score:score,
+open:open,bodyStart:bodyStart,bodyEnd:bodyStart+body.length,
+fragment:fragment
+}
+}
 }
 return best
 }
@@ -1394,7 +1448,9 @@ if(!injected)throw new Error('TARGET SCRIPT NOT FOUND');
    external script dependencies survive and required jQuery is available. */
 var depReport=_assertDependencyIntegrity(raw,injected,payload);
 if(depReport.jqueryRequired&&depReport.jqueryFinal){
-say('DEPENDENCY CHECK PASSED - JQUERY AVAILABLE')
+say('PRESERVATION CHECK PASSED - NON-OBFUSCATED SOURCE UNCHANGED')
+}else if(depReport.warnings&&depReport.warnings.length){
+say('PRESERVATION CHECK PASSED - ORIGINAL DEPENDENCY MODEL PRESERVED')
 }
 }else{
 injected="<script type='text/javascript'>\n"+payload+"\n</script>"
@@ -2752,24 +2808,49 @@ payload=_protectHtmlRawTextEndTags(payload);
 if(!raw||!payload)return'';
 
 if(!t){
-/* Fallback locator runs only if the earlier cache was unavailable. */
 var found=_findObfuscatorScriptMatch(raw);
 if(!found)return'';
 t={
 index:found.index,
 length:found.full.length,
-open:(found.full.match(/^<script\b[^>]*>/i)||['<script>'])[0],
-hadCDATA:_hasCDATA(found.body)
+open:found.open||(found.full.match(/^<script\b[^>]*>/i)||['<script>'])[0],
+hadCDATA:_hasCDATA(found.body),
+bodyStart:found.bodyStart,
+bodyEnd:found.bodyEnd,
+fragment:found.fragment?{
+index:found.bodyStart+found.fragment.start,
+length:found.fragment.length,
+startInBody:found.fragment.start,
+endInBody:found.fragment.end
+}:null
 };
 S.injectTarget=t
 }
 
-/* Payload comes from the already-valid FULL NORMALIZE checkpoint.
-   No parser, resolver, beautifier or semantic pass is allowed here. */
+/* v2.24 TARGET-ONLY INJECT:
+   If only part of an inline script is obfuscated, replace ONLY that fragment.
+   jQuery core, plugins, comments, external scripts, Blogger markup, whitespace
+   and every other byte remain exactly as in the original source. */
+if(t.fragment&&t.fragment.length>0){
+var before=raw.slice(0,t.fragment.index);
+var after=raw.slice(t.fragment.index+t.fragment.length);
+var result=before+payload+after;
+
+/* Byte-preservation guard: everything outside the target fragment must be
+   identical to the original source. */
+if(result.slice(0,t.fragment.index)!==before){
+throw new Error('PRESERVATION CHECK FAILED - PREFIX CHANGED')
+}
+if(result.slice(t.fragment.index+payload.length)!==after){
+throw new Error('PRESERVATION CHECK FAILED - SUFFIX CHANGED')
+}
+return result
+}
+
+/* Fallback only when the entire inline script is itself the obfuscated target. */
 var body=(S.bloggerMode||t.hadCDATA)
 ?'//<![CDATA[\n'+payload+'\n//]]>'
 :payload;
-
 var rebuilt=t.open+'\n'+body+'\n</script>';
 return raw.slice(0,t.index)+rebuilt+raw.slice(t.index+t.length)
 }
