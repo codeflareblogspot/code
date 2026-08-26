@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.08-stable';;
+var CF_JS_LAB_VERSION='v3.09-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -940,14 +940,43 @@ var meta=b64enc(JSON.stringify({v:5,p:protectedOn?1:0,h:hash,t:opt}));
 return _protectHtmlRawTextEndTags(_a1(opt,randomId(),chunks,meta))
 }
 function _a3(s){
-s=String(s);
-var mm=s.match(/\/\*CFJS5:([A-Za-z0-9+/=]+)\*\//),hm=s.match(/var\s+_q7n\s*=\s*["']([A-Za-z0-9+/=]+)["']\s*;/),am=s.match(/var\s+(?:_[A-Za-z0-9]+|cfPayload)\s*=\s*(\[[\s\S]*?\]);/);
+/* Native CodeFlare detector must work identically with:
+   - raw obfuscated JS
+   - Add Tag Script output
+   - Blogger CDATA wrapper
+   - Domain Lock enabled
+   - Password protection enabled */
+s=String(s||'');
+s=_stripCDATADeep(_stripScriptWrapper(s)).trim();
+
+var mm=s.match(/\/\*CFJS5:([A-Za-z0-9+/=]+)\*\//);
+var hm=s.match(/var\s+_q7n\s*=\s*["']([A-Za-z0-9+/=]+)["']\s*;?/);
+var am=s.match(/var\s+(?:_[A-Za-z0-9]+|cfPayload)\s*=\s*(\[[\s\S]*?\])\s*;/);
+
 if(!am||(!mm&&!hm))return null;
-try{return{meta:JSON.parse(b64dec(mm?mm[1]:hm[1])),chunks:JSON.parse(am[1])}}catch(e){return null}
+
+try{
+var meta=JSON.parse(b64dec(mm?mm[1]:hm[1]));
+var chunks=JSON.parse(am[1]);
+if(!Array.isArray(chunks))return null;
+return{meta:meta,chunks:chunks}
+}catch(e){
+return null
+}
 }
 async function _a4(s){
 var x=_a3(s);if(!x)return null;
-if(x.meta.p){E.accessBox.style.display='block';var h=await sha256(E.access.value||'');if(!E.access.value||h!==x.meta.h)throw new Error('PASSWORD REQUIRED / INVALID')}
+
+/* Domain Lock only controls execution on the destination hostname.
+   It must never prevent CodeFlare's own native decoder from opening the file.
+   Password protection, when enabled, remains mandatory. */
+if(x.meta.p){
+E.accessBox.style.display='block';
+var accessPassword=String(E.access.value||'');
+if(!accessPassword)throw new Error('PASSWORD REQUIRED');
+var h=await sha256(accessPassword);
+if(h!==x.meta.h)throw new Error('PASSWORD INVALID')
+}
 var chunks=x.chunks.slice();
 if(x.meta.t&&x.meta.t.shuffle)chunks.reverse();
 if(x.meta.t&&x.meta.t.rotate&&chunks.length){var back=chunks.length-(7%chunks.length);chunks=chunks.slice(back).concat(chunks.slice(0,back))}
