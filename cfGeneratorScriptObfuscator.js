@@ -1,25 +1,42 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.34';
-var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css';
+var CF_JS_LAB_VERSION='v2.35';
+var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=1.0.1';
 
 function _loadCodeFlareJsLabCSS(){
 try{
-if(document.querySelector('link[data-cf-js-lab-css]'))return;
-var existing=document.querySelector('link[href="'+CF_JS_LAB_CSS+'"]');
-if(existing){
-existing.setAttribute('data-cf-js-lab-css','1');
-return
+var old=document.querySelector('link[data-cf-js-lab-css]');
+if(old){
+if(old.getAttribute('href')===CF_JS_LAB_CSS)return;
+old.parentNode.removeChild(old)
 }
 var link=document.createElement('link');
 link.rel='stylesheet';
 link.href=CF_JS_LAB_CSS;
 link.setAttribute('data-cf-js-lab-css','1');
-document.head.appendChild(link)
+link.onload=function(){
+var root=document.getElementById('cfJsLab');
+if(root)root.setAttribute('data-css-ready','1')
+};
+link.onerror=function(){
+var root=document.getElementById('cfJsLab');
+if(root)root.setAttribute('data-css-error','1');
+var msg=document.getElementById('cfObMessage');
+if(msg)msg.textContent='CSS LOAD ERROR - CHECK GITHUB CSS URL'
+};
+(document.head||document.documentElement).appendChild(link)
 }catch(_e){}
 }
 _loadCodeFlareJsLabCSS();
+(function(){
+if(document.getElementById('cfJsLabCriticalCSS'))return;
+var st=document.createElement('style');
+st.id='cfJsLabCriticalCSS';
+st.textContent='#cfJsLab{width:100%;max-width:100%;box-sizing:border-box}#cfJsLab *{box-sizing:border-box}.cfObApp{width:100%;max-width:100%;font-size:15px}.cfObInput,.cfObOutput{width:100%;max-width:100%;min-height:260px;font:15px/1.55 monospace}.cfObActions,.cfObButtons,.cfObTheme{display:flex;gap:7px;flex-wrap:wrap}.cfObActions button,.cfObButtons button,.cfObTheme button{font-size:15px;max-width:100%}@media(max-width:600px){.cfObActions button,.cfObButtons button{flex:1 1 140px;min-width:0}.cfObTheme span{display:none}}';
+(document.head||document.documentElement).appendChild(st)
+})();
+
 
 function _z(a){return String.fromCharCode.apply(null,a)}
 
@@ -38,7 +55,14 @@ root.innerHTML=`
       <div class="cfObTitle" id="cfObTitle" data-cf-js-lab-title>CODEFLARE JS LAB</div>
       <div class="cfObDomain">JavaScript / Blogger XML Laboratory</div>
     </div>
-    <div class="cfObStatus" id="cfObStatus"><i></i> READY</div>
+    <div class="cfObBrandRight">
+      <div class="cfObTheme" id="cfObTheme">
+        <button class="cfObThemeBtn" data-theme="light" type="button" title="Light mode"><i class="fa fa-sun-o"></i><span>LIGHT</span></button>
+        <button class="cfObThemeBtn" data-theme="dark" type="button" title="Dark mode"><i class="fa fa-moon-o"></i><span>DARK</span></button>
+        <button class="cfObThemeBtn" data-theme="auto" type="button" title="Auto mode"><i class="fa fa-adjust"></i><span>AUTO</span></button>
+      </div>
+      <div class="cfObStatus" id="cfObStatus"><i></i> READY</div>
+    </div>
   </div>
 
   <div class="cfObOptions" id="cfObOptions">
@@ -3849,8 +3873,24 @@ setOutput(r,a==='beautify'?'BEAUTIFIED CODE OUTPUT':a==='minify'?'MINIFIED CODE 
 })});
 tool.querySelectorAll('.cfObParserToggle button').forEach(function(b){b.addEventListener('click',function(){tool.querySelectorAll('.cfObParserToggle button').forEach(function(x){x.classList.remove('active')});b.classList.add('active');S.parserFormat=b.dataset.format||'beautify'})});
 var themeBtns=tool.querySelectorAll('.cfObThemeBtn');
-function theme(t){S.theme=t;tool.dataset.theme=t;themeBtns.forEach(function(b){b.classList.toggle('active',b.dataset.theme===t)});try{localStorage.setItem('cfObTheme',t)}catch(e){}}
+var cfThemeMedia=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+function _applyThemePreference(t){
+var resolved=t==='auto'?(cfThemeMedia&&cfThemeMedia.matches?'dark':'light'):t;
+tool.dataset.theme=resolved;
+tool.setAttribute('data-theme-preference',t);
+themeBtns.forEach(function(b){b.classList.toggle('active',b.dataset.theme===t)})
+}
+function theme(t){
+if(!/^(light|dark|auto)$/.test(t))t='auto';
+S.theme=t;
+_applyThemePreference(t);
+try{localStorage.setItem('cfObTheme',t)}catch(e){}
+}
 themeBtns.forEach(function(b){b.addEventListener('click',function(){theme(b.dataset.theme)})});
+if(cfThemeMedia){
+var cfThemeChange=function(){if(S.theme==='auto')_applyThemePreference('auto')};
+try{cfThemeMedia.addEventListener('change',cfThemeChange)}catch(_e){try{cfThemeMedia.addListener(cfThemeChange)}catch(_e2){}}
+}
 try{theme(localStorage.getItem('cfObTheme')||'auto')}catch(e){theme('auto')}
 
 applyPreset('balanced');_renderEngineVersion();
