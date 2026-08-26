@@ -34,8 +34,17 @@
   line-height:1.55;
 }
 
+#cfJsLab{
+  width:100%;
+  max-width:100%;
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
 #cfJsLab *,
-.cfObApp *{
+#cfJsLab *:before,
+#cfJsLab *:after{
   box-sizing:border-box;
 }
 
