@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.26';
+var CF_JS_LAB_VERSION='v2.27';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -74,7 +74,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null,largeSourceMode:false,processingSource:'',inputCharSize:0};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -160,11 +160,56 @@ throw new Error('DEPENDENCY CHECK - '+r.missing.slice(0,3).join(' | '))
 return r
 }
 
+
+var CF_LARGE_SOURCE_LIMIT=300*1024;
+
+function _isLargeSource(src){
+return String(src||'').length>=CF_LARGE_SOURCE_LIMIT
+}
+
+function _targetProcessingSource(full){
+full=String(full||'');
+if(!full)return'';
+
+if(S.injectTarget&&S.injectTarget.fragment&&S.injectTarget.fragment.length>0){
+var f=S.injectTarget.fragment;
+return full.slice(f.index,f.index+f.length)
+}
+
+if(S.injectTarget&&typeof S.injectTarget.bodyStart==='number'&&typeof S.injectTarget.bodyEnd==='number'){
+return full.slice(S.injectTarget.bodyStart,S.injectTarget.bodyEnd)
+}
+
+return full
+}
+
+function _prepareProcessingSource(full){
+full=String(full||'');
+S.inputCharSize=full.length;
+S.largeSourceMode=_isLargeSource(full);
+
+var work=S.largeSourceMode?_targetProcessingSource(full):full;
+S.processingSource=work;
+
+if(S.largeSourceMode){
+say('LARGE SOURCE MODE - TARGET ONLY PROCESSING');
+if(E.resultStatus)E.resultStatus.textContent='LARGE SOURCE MODE'
+}
+return work
+}
+
+function _fastKBFromChars(s){
+/* Avoid constructing Blob copies of multi-hundred-KB source merely for UI stats. */
+return (String(s||'').length/1024).toFixed(2)+' KB'
+}
+
 function _captureInjectSource(src){
 src=String(src||'');
 if(!src)return;
 S.injectSource=src;
 S.originalRawSource=src;
+S.largeSourceMode=_isLargeSource(src);
+S.inputCharSize=src.length;
 S.dependencySnapshot=_dependencySnapshot(src);
 
 /* Cache the replacement coordinates once. Inject itself must stay lightweight. */
@@ -337,9 +382,13 @@ function setOutput(v,title,status){
 v=String(v||'');E.output.value=v;
 if(E.outCount)E.outCount.textContent=v.length.toLocaleString()+' CHAR';
 if(title&&E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+title;
-if(E.original)E.original.textContent=kb(E.input.value);
-if(E.resultSize)E.resultSize.textContent=kb(v);
-var a=new Blob([E.input.value]).size||1,b=new Blob([v]).size;
+
+var large=!!S.largeSourceMode;
+if(E.original)E.original.textContent=large?_fastKBFromChars(E.input.value):kb(E.input.value);
+if(E.resultSize)E.resultSize.textContent=large?_fastKBFromChars(v):kb(v);
+
+var a=large?(String(E.input.value||'').length||1):(new Blob([E.input.value]).size||1);
+var b=large?v.length:new Blob([v]).size;
 if(E.sizeChange)E.sizeChange.textContent=((b-a)/a*100).toFixed(1)+'%';
 if(E.resultStatus)E.resultStatus.textContent=status||'READY';
 _rememberSafeOutput(v);
@@ -1237,10 +1286,18 @@ if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!S.deobfuscat
 }
 
 async function _a6(src){
-S.originalRawSource=String(src||'');
-S.bloggerMode=_detectBloggerMode(S.originalRawSource);
+src=String(src||'');
 
-var raw=_stripCDATA(_stripScriptWrapper(S.originalRawSource));
+/* In LARGE SOURCE MODE, src is only the cached obfuscated target.
+   Never overwrite the preserved full Blogger source used by Inject. */
+if(!S.largeSourceMode){
+S.originalRawSource=src;
+S.bloggerMode=_detectBloggerMode(S.originalRawSource)
+}else{
+S.bloggerMode=_detectBloggerMode(_getInjectSource())||S.bloggerMode
+}
+
+var raw=_stripCDATA(_stripScriptWrapper(src));
 S.originalSource=raw;
 S.tableCache={};
 
@@ -1512,27 +1569,84 @@ _injectButtonState()
 E.process.addEventListener('click',async function(){
 S.injectCompleted=false;
 _injectButtonState();
-var src=E.input.value;if(src.trim())_captureInjectSource(src);
-_lockFullNormalize();if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
-setProgress(20);E.process.disabled=true;
+
+var src=String(E.input.value||'');
+if(!src.trim()){
+say('INPUT EMPTY');
+E.input.focus();
+return
+}
+
+/* Capture/scanning happens exactly once. For large Blogger templates, all
+   subsequent deobfuscation work runs only on the cached target fragment. */
+_captureInjectSource(src);
+var work=_prepareProcessingSource(src);
+
+_lockFullNormalize();
+setProgress(8);
+E.process.disabled=true;
+await _ui();
+
 try{
 var out;
+
 if(S.mode==='obfuscate'){
-S.originalRawSource=src;S.originalSource=_stripCDATA(_stripScriptWrapper(src));
-out=await _a2(src);setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')}
-else{_h1(src);out=await _a6(src);S.layerIndex=0;S.layerHistory=[];setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');
+/* Obfuscation keeps previous behavior. Large-source target mode is aimed at
+   deobfuscation of full Blogger templates, not whole-template encryption. */
+S.largeSourceMode=false;
+S.processingSource=src;
+S.originalRawSource=src;
+S.originalSource=_stripCDATA(_stripScriptWrapper(src));
+setProgress(20);
+await _ui();
+out=await _a2(src);
+setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
+}else{
+if(S.largeSourceMode&&work===src){
+throw new Error('LARGE SOURCE MODE - OBFUSCATED TARGET NOT FOUND')
+}
+
+setProgress(14);
+say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
+await _ui();
+
+/* Never run expensive detectors over the entire large XML template. */
+_h1(work);
+
+setProgress(24);
+await _ui();
+
+out=await _a6(work);
+
+S.layerIndex=0;
+S.layerHistory=[];
+setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');
+setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');
+
 S.deobfuscateReady=true;
 S.normalizePassed=false;
 S.injectCompleted=false;
 if(E.normalizeFull)E.normalizeFull.disabled=false;
-updateLayerPanel(out,'ANALYZED');
-_injectButtonState();
-say('DEOBFUSCATE COMPLETE - RUN FULL NORMALIZE')}
-setProgress(100);say('SUCCESS')
-}catch(e){say(e.message||'PROCESS ERROR');if(E.resultStatus)E.resultStatus.textContent='ERROR'}
-finally{E.process.disabled=false;setTimeout(function(){setProgress(0)},500)}
-});
 
+setProgress(88);
+await _ui();
+updateLayerPanel(out,S.largeSourceMode?'TARGET ANALYZED':'ANALYZED');
+_injectButtonState();
+
+say(S.largeSourceMode
+?'DEOBFUSCATE COMPLETE - LARGE SOURCE TARGET ONLY - RUN FULL NORMALIZE'
+:'DEOBFUSCATE COMPLETE - RUN FULL NORMALIZE')
+}
+
+setProgress(100)
+}catch(e){
+say(e&&e.message?e.message:'PROCESS ERROR');
+if(E.resultStatus)E.resultStatus.textContent='ERROR'
+}finally{
+E.process.disabled=false;
+setTimeout(function(){setProgress(0)},500)
+}
+});
 function _stripScriptWrapper(src){
 src=String(src||'');
 var m=src.match(/^\s*<script\b[^>]*>([\s\S]*?)<\/script\s*>\s*$/i);
@@ -3101,7 +3215,7 @@ _injectButtonState()
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.lastSafeOutput='';S.deobfuscateReady=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.lastSafeOutput='';S.deobfuscateReady=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
