@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.39';
+var CF_JS_LAB_VERSION='v2.40';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2582,6 +2582,93 @@ map[m[1]]='event'
 return _applySemanticIdentifierMap(src,map)
 }
 
+
+function _renameKnownFunctionParams(src,fnName,newNames){
+src=String(src||'');
+newNames=newNames||[];
+var escName=fnName.replace(/[$]/g,'\\$&');
+var re=new RegExp('function\\s+'+escName+'\\s*\\(([^)]*)\\)\\s*\\{','g');
+var m=re.exec(src);
+if(!m)return src;
+
+var params=m[1].split(',').map(function(x){return x.trim()}).filter(Boolean);
+if(!params.length)return src;
+
+var open=src.indexOf('{',m.index+m[0].length-1);
+if(open<0)return src;
+
+var depth=1,i=open+1,q='',esc=false,line=false,block=false,regex=false,charClass=false,lastSig='';
+function canStartRegex(prev){return !prev||/[({[=,:;!&|?+\-*%^~<>]/.test(prev)}
+
+for(;i<src.length;i++){
+var c=src[i],n=src[i+1]||'';
+
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q)q='';
+continue
+}
+if(regex){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c==='['){charClass=true;continue}
+if(c===']'&&charClass){charClass=false;continue}
+if(c==='/'&&!charClass){regex=false;lastSig='/'}
+continue
+}
+
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c==='/'&&canStartRegex(lastSig)){regex=true;charClass=false;continue}
+
+if(c==='{'){depth++;lastSig=c;continue}
+if(c==='}'){
+depth--;
+if(depth===0)break;
+lastSig=c;
+continue
+}
+if(!/\s/.test(c))lastSig=c
+}
+
+if(depth!==0)return src;
+
+var before=src.slice(m.index,i+1);
+var changed=before;
+
+for(var p=0;p<params.length&&p<newNames.length;p++){
+var oldName=params[p],newName=newNames[p];
+if(!oldName||!newName||oldName===newName)continue;
+if(!/^_0x[a-f0-9]+$/i.test(oldName))continue;
+
+/* Function-local collision check. */
+var newRx=new RegExp('(?:^|[^A-Za-z0-9_$])'+newName.replace(/[$]/g,'\\$&')+'(?=$|[^A-Za-z0-9_$])');
+if(newRx.test(changed))continue;
+
+changed=_replaceIdentifierTokenSafe(changed,oldName,newName)
+}
+
+if(changed===before)return src;
+var rebuilt=src.slice(0,m.index)+changed+src.slice(i+1);
+return _syntaxValid(rebuilt)?rebuilt:src
+}
+
+function _md5ScopedHumanize(src){
+var out=String(src||'');
+
+/* The same legacy identifier may be reused in different MD5 function scopes.
+   Humanize those parameters locally instead of globally. */
+out=_renameKnownFunctionParams(out,'rotateLeft',['value','shift']);
+out=_renameKnownFunctionParams(out,'wordToHex',['value']);
+out=_renameKnownFunctionParams(out,'utf8Encode',['text']);
+
+return out
+}
+
 function _md5SemanticHumanize(src){
 src=String(src||'');
 
@@ -2711,8 +2798,10 @@ used[newName]=1
 }
 }
 
-/* A classic MD5 block should no longer expose its family if every safe rename
-   succeeded. Remaining names are deliberately preserved rather than guessed. */
+/* Humanize identifiers that are reused across different local scopes. */
+out=_md5ScopedHumanize(out);
+
+/* Remaining names are deliberately preserved rather than guessed. */
 return out
 }
 function _advancedSemanticHumanize(src){
