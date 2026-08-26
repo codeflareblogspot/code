@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.42';
+var CF_JS_LAB_VERSION='v2.45';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2879,6 +2879,27 @@ if(_syntaxValid(next))out=next;
 
 next=_eventScopedHumanize(out);
 if(_syntaxValid(next))out=next;
+
+/* Legacy right-click handlers are common in old Blogger scripts.
+   Scope-only rename: never touches the same identifier outside clickNS4. */
+next=_renameKnownFunctionParams(out,'clickNS4',['event']);
+if(_syntaxValid(next))out=next;
+
+/* Legacy MD5 helper: the parameter is the 32-bit word converted to hex.
+   Scope-only rename avoids touching reused _0x identifiers elsewhere. */
+/* Classic MD5 only: perform the last two scoped renames conservatively.
+   Never global-replace these legacy identifiers because the same names are
+   reused by different helper functions. */
+if(/\bvar\s+MD5\s*=\s*function\s*\(/.test(out)&&
+   /0x67452301/i.test(out)&&/0xEFCDAB89/i.test(out)&&
+   /0x98BADCFE/i.test(out)&&/0x10325476/i.test(out)&&
+   /0xD76AA478/i.test(out)){
+  next=_renameKnownFunctionParams(out,'rotateLeft',['value','shift']);
+  if(_syntaxValid(next))out=next;
+
+  next=_renameKnownFunctionParams(out,'wordToHex',['value']);
+  if(_syntaxValid(next))out=next;
+}
 
 return out
 }
