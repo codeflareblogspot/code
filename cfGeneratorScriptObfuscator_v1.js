@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.27';
+var CF_JS_LAB_VERSION='v2.28';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -74,7 +74,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null,largeSourceMode:false,processingSource:'',inputCharSize:0};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null,largeSourceMode:false,processingSource:'',inputCharSize:0,obfuscatedTargetCount:0};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -192,7 +192,8 @@ var work=S.largeSourceMode?_targetProcessingSource(full):full;
 S.processingSource=work;
 
 if(S.largeSourceMode){
-say('LARGE SOURCE MODE - TARGET ONLY PROCESSING');
+var cnt=S.obfuscatedTargetCount||0;
+say('LARGE SOURCE MODE - '+cnt+' OBFUSCATED TARGET'+(cnt===1?'':'S')+' DETECTED - TARGET ONLY PROCESSING');
 if(E.resultStatus)E.resultStatus.textContent='LARGE SOURCE MODE'
 }
 return work
@@ -1017,26 +1018,78 @@ while(end>start&&/\s/.test(body[end-1]))end--;
 return{start:start,end:end,length:end-start}
 }
 
-function _findObfuscatorScriptMatch(raw){
+
+function _obfuscationScore(body){
+body=String(body||'');
+var score=0;
+
+if(/\bvar\s+_\$_[A-Za-z0-9_$]+\s*=\s*\[/.test(body))score+=10;
+if(_packerPresent(body))score+=14;
+if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=4;
+
+/* Legacy _0x array obfuscation used by older Blogger templates. */
+if(/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body))score+=10;
+if(/\b_0x[a-f0-9]+\s*\[\s*(?:0x[a-f0-9]+|\d+)\s*\]/i.test(body))score+=4;
+
+var hex=(body.match(/\\x[0-9a-f]{2}/gi)||[]).length;
+var uni=(body.match(/\\u[0-9a-f]{4}/gi)||[]).length;
+var mangled=(body.match(/\b_0x[a-f0-9]+\b/gi)||[]).length;
+
+/* Density bonuses distinguish a real encoded block from an occasional
+   escaped string in otherwise normal JavaScript. */
+if(hex>=20)score+=Math.min(8,Math.floor(hex/100)+2);
+if(uni>=20)score+=Math.min(5,Math.floor(uni/100)+1);
+if(mangled>=10)score+=Math.min(6,Math.floor(mangled/20)+1);
+
+return score
+}
+
+function _findObfuscatorScriptMatches(raw){
 raw=String(raw||'');
-var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi,m,best=null;
+var re=/<script\b(?![^>]*\bsrc\s*=)[^>]*>([\s\S]*?)<\/script\s*>/gi;
+var m,list=[];
+
 while((m=re.exec(raw))){
-var body=String(m[1]||''),score=0;
-if(/\bvar\s+_\$_[A-Za-z0-9_$]+\s*=\s*\[/.test(body))score+=6;
-if(_packerPresent(body))score+=10;
-if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=2;
-if(score&&(!best||score>best.score)){
+var body=String(m[1]||'');
+var score=_obfuscationScore(body);
+if(!score)continue;
+
 var open=(m[0].match(/^<script\b[^>]*>/i)||['<script>'])[0];
 var bodyStart=m.index+open.length;
 var fragment=_findObfuscatedFragment(body);
-best={
+
+/* If the whole script is clearly _0x-obfuscated but the generic fragment
+   locator cannot isolate a tail fragment, safely use the script body only. */
+if(!fragment&&/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body)){
+var s=0,e=body.length;
+var c1=body.indexOf('//<![CDATA[');
+if(c1>=0)s=c1+'//<![CDATA['.length;
+var c2=body.lastIndexOf('//]]>');
+if(c2>s)e=c2;
+while(s<e&&/\s/.test(body[s]))s++;
+while(e>s&&/\s/.test(body[e-1]))e--;
+fragment={start:s,end:e,length:e-s}
+}
+
+list.push({
 full:m[0],body:body,index:m.index,score:score,
 open:open,bodyStart:bodyStart,bodyEnd:bodyStart+body.length,
 fragment:fragment
+})
 }
+
+/* Highest-confidence block first. On equal score prefer the larger encoded
+   body because it is usually the main template engine. */
+list.sort(function(a,b){
+return b.score-a.score||(b.body.length-a.body.length)
+});
+return list
 }
-}
-return best
+
+function _findObfuscatorScriptMatch(raw){
+var list=_findObfuscatorScriptMatches(raw);
+S.obfuscatedTargetCount=list.length;
+return list.length?list[0]:null
 }
 
 function _d4(src){
@@ -1603,7 +1656,7 @@ out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
 if(S.largeSourceMode&&work===src){
-throw new Error('LARGE SOURCE MODE - OBFUSCATED TARGET NOT FOUND')
+throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
 }
 
 setProgress(14);
@@ -3215,7 +3268,7 @@ _injectButtonState()
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.lastSafeOutput='';S.deobfuscateReady=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.lastSafeOutput='';S.deobfuscateReady=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
