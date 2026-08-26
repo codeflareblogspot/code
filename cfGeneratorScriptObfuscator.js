@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.06-stable';;
+var CF_JS_LAB_VERSION='v3.07-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2044,11 +2044,23 @@ var fullSource=!addTagOnly&&!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
 if(addTagOnly){
-/* ADD TAG SCRIPT has exactly one job:
-   character 0  -> <script type='text/javascript'>
-   final char+1 -> </script>
-   No source search, marker lookup, normalize, or injection logic. */
-injected="<script type='text/javascript'>//<![CDATA[\n"+payload+"\n//]]></script>";
+/* ADD TAG SCRIPT is identical for every obfuscator preset, including STRONG.
+   Use the exact current output and only add the outer Blogger wrapper. */
+var tagPayload=String(E.output&&E.output.value||payload||'');
+if(!tagPayload.trim())throw new Error('OBFUSCATED OUTPUT EMPTY');
+
+if(/^\s*<script\b/i.test(tagPayload)&&/<\/script\s*>\s*$/i.test(tagPayload)){
+injected=tagPayload
+}else{
+var tagBody=_stripScriptWrapper(tagPayload).trim();
+var hasCDATA=/\/\/\s*<!\[CDATA\[/.test(tagBody)&&/\/\/\s*\]\]>/.test(tagBody);
+if(hasCDATA){
+injected="<script type='text/javascript'>"+tagBody+"</script>"
+}else{
+tagBody=_stripCDATADeep(tagBody).trim();
+injected="<script type='text/javascript'>//<![CDATA[\n"+tagBody+"\n//]]></script>"
+}
+}
 }else if(fullSource){
 if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
 injected=_buildBatchInjectedSource();
@@ -2085,7 +2097,7 @@ if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 S.injectCompleted=true;
 /* Keep normalized marker collection checkpoint; do not replace it with a
    synthetic combined payload after multi-block injection. */
-if(!isMarkerInject)S.lastSafeOutput=payload;
+if(!isMarkerInject)S.lastSafeOutput=addTagOnly?injected:payload;
 _injectButtonState();
 
 setProgress(100);
