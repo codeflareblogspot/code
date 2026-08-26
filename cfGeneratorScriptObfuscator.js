@@ -1,198 +1,183 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.35';
-var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=1.0.1';
+var CF_JS_LAB_VERSION='v2.36';
+var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
 try{
-var old=document.querySelector('link[data-cf-js-lab-css]');
-if(old){
-if(old.getAttribute('href')===CF_JS_LAB_CSS)return;
-old.parentNode.removeChild(old)
+if(document.querySelector('link[data-cf-js-lab-css]'))return;
+var existing=document.querySelector('link[href="'+CF_JS_LAB_CSS+'"]');
+if(existing){
+existing.setAttribute('data-cf-js-lab-css','1');
+return
 }
 var link=document.createElement('link');
 link.rel='stylesheet';
 link.href=CF_JS_LAB_CSS;
 link.setAttribute('data-cf-js-lab-css','1');
-link.onload=function(){
-var root=document.getElementById('cfJsLab');
-if(root)root.setAttribute('data-css-ready','1')
-};
-link.onerror=function(){
-var root=document.getElementById('cfJsLab');
-if(root)root.setAttribute('data-css-error','1');
-var msg=document.getElementById('cfObMessage');
-if(msg)msg.textContent='CSS LOAD ERROR - CHECK GITHUB CSS URL'
-};
-(document.head||document.documentElement).appendChild(link)
+document.head.appendChild(link)
 }catch(_e){}
 }
 _loadCodeFlareJsLabCSS();
+
 (function(){
-if(document.getElementById('cfJsLabCriticalCSS'))return;
 var st=document.createElement('style');
-st.id='cfJsLabCriticalCSS';
-st.textContent='#cfJsLab{width:100%;max-width:100%;box-sizing:border-box}#cfJsLab *{box-sizing:border-box}.cfObApp{width:100%;max-width:100%;font-size:15px}.cfObInput,.cfObOutput{width:100%;max-width:100%;min-height:260px;font:15px/1.55 monospace}.cfObActions,.cfObButtons,.cfObTheme{display:flex;gap:7px;flex-wrap:wrap}.cfObActions button,.cfObButtons button,.cfObTheme button{font-size:15px;max-width:100%}@media(max-width:600px){.cfObActions button,.cfObButtons button{flex:1 1 140px;min-width:0}.cfObTheme span{display:none}}';
-(document.head||document.documentElement).appendChild(st)
+st.id='cfObCopyFeedbackStyle';
+st.textContent=
+'#cfObTool .is-copied{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important;box-shadow:0 0 0 3px rgba(22,163,74,.16)!important;transform:translateY(-1px)}'+
+'#cfObTool .is-copied i{color:#fff!important}';
+if(!document.getElementById(st.id))document.head.appendChild(st)
 })();
 
-
 function _z(a){return String.fromCharCode.apply(null,a)}
-
 function _cfJsLabRender(){
 var root=document.getElementById('cfJsLab');
-if(!root){
-/* Backward compatibility: old article markup may still provide cfObTool directly. */
-return document.getElementById('cfObTool')
+if(!root||document.getElementById('cfObTool'))return;
+root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
+<div class="cfObHeader">
+  <div class="cfObHeaderLeft"><span class="cfObIcon"><i class="fa fa-code"></i></span><div><strong>CODEFLARE JS LAB</strong><small>OBFUSCATE / DEOBFUSCATE / CODE TOOLS</small></div></div>
+  <div class="cfObHeaderRight"><span class="cfObStatus" id="cfObStatus"><i></i> READY</span><div class="cfObTheme" aria-label="Generator theme"><button type="button" class="cfObThemeBtn active" data-theme="auto" title="Auto"><i class="fa fa-adjust"></i></button><button type="button" class="cfObThemeBtn" data-theme="light" title="Light"><i class="fa fa-sun-o"></i></button><button type="button" class="cfObThemeBtn" data-theme="dark" title="Dark"><i class="fa fa-moon-o"></i></button></div></div>
+</div>
+<div class="cfObMode">
+  <button class="cfObModeBtn active" data-mode="obfuscate" type="button"><i class="fa fa-lock"></i> OBFUSCATE</button>
+  <button class="cfObModeBtn" data-mode="deobfuscate" type="button"><i class="fa fa-unlock-alt"></i> DEOBFUSCATE</button>
+  <button class="cfObModeBtn" data-mode="tools" type="button"><i class="fa fa-wrench"></i> CODE TOOLS</button>
+</div>
+<div class="cfObSection">
+  <div class="cfObLabel cfObInputHead"><span id="cfObInputLabel"><i class="fa fa-terminal"></i> JAVASCRIPT INPUT</span><div class="cfObInputActions"><button id="cfObPaste" type="button"><i class="fa fa-paste"></i> PASTE</button><button id="cfObClear" type="button"><i class="fa fa-trash"></i> CLEAR</button></div></div>
+  <textarea id="cfObInput" spellcheck="false" placeholder="// Paste JavaScript, Blogger XML, or full source code here..."></textarea>
+</div>
+
+<div class="cfObDeobSupport" id="cfObDeobSupport" style="display:none;">
+  <div class="cfObDeobSupportHead">
+    <div>
+      <span><i class="fa fa-unlock-alt"></i> SUPPORTED DEOBFUSCATION METHODS</span>
+      <small>Engine akan menganalisis pola source dan mencoba membuka layer yang didukung secara bertahap.</small>
+    </div>
+    <b><i></i> AUTO DETECT</b>
+  </div>
+  <div class="cfObDeobSupportGrid">
+    <div class="cfObDeobMethod" data-method="codeflare"><i class="fa fa-cube"></i><span><b>CodeFlare Protected</b><small>Membuka output yang dibuat oleh engine CodeFlare.</small><em>FULL SUPPORT</em></span></div>
+    <div class="cfObDeobMethod" data-method="packer"><i class="fa fa-random"></i><span><b>P.A.C.K.E.R / Base62</b><small>Mendeteksi pola eval(function(p,a,c,k,e,...)) dan mencoba unpack payload.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="string-array"><i class="fa fa-list-ol"></i><span><b>String Array</b><small>Mencari indexed string table dan mengganti referensi dengan nilai aslinya.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="hex"><i class="fa fa-code"></i><span><b>Hex Escape</b><small>Mengubah pola seperti \\x48\\x65\\x6c\\x6c\\x6f menjadi karakter yang dapat dibaca.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="unicode"><i class="fa fa-font"></i><span><b>Unicode Escape</b><small>Mendekode escape Unicode seperti \\u0063\\u006f\\u0064\\u0065.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="charcode"><i class="fa fa-calculator"></i><span><b>String.fromCharCode</b><small>Mengubah rangkaian character code statis menjadi string yang mudah dibaca.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="bracket"><i class="fa fa-table"></i><span><b>Bracket Property</b><small>Menormalisasi akses seperti object["property"] menjadi object.property jika aman.</small><em>NORMALIZE</em></span></div>
+    <div class="cfObDeobMethod" data-method="mangled"><i class="fa fa-tag"></i><span><b>Mangled Identifier</b><small>Mendeteksi identifier seperti _0x12ab dan memberi nama yang lebih mudah dianalisis.</small><em>HUMANIZE</em></span></div>
+    <div class="cfObDeobMethod" data-method="multi-layer"><i class="fa fa-files-o"></i><span><b>Multi-Layer Source</b><small>Normalize dapat dijalankan bertahap selama masih ditemukan layer yang didukung.</small><em>MULTI-PASS</em></span></div>
+  </div>
+  <div class="cfObDeobSupportNote"><i class="fa fa-info-circle"></i><span><b>AUTO ANALYSIS</b> Tidak semua obfuscator menggunakan pola yang sama. Source Analysis dan Layer Analysis akan menunjukkan pola yang berhasil dikenali oleh engine.</span></div>
+</div>
+<div class="cfObTechBox" id="cfObOptions">
+  <div class="cfObTechHead">
+    <div class="cfObTechTitle">
+      <span><i class="fa fa-shield"></i> OBFUSCATION TECHNIQUES</span>
+      <small>Pilih profil atau teknik CodeFlare. Opsi tetap terlihat tetapi hanya aktif pada mode Obfuscate.</small>
+    </div>
+    <div class="cfObTechState active" id="cfObTechState"><i></i> ACTIVE</div>
+  </div>
+  <div class="cfObPreset" id="cfObPreset">
+    <button type="button" data-preset="light">LIGHT</button>
+    <button type="button" class="active" data-preset="balanced">BALANCED</button>
+    <button type="button" data-preset="strong">STRONG</button>
+    <button type="button" data-preset="custom">CUSTOM</button>
+  </div>
+  <div class="cfObTechGrid">
+    <label class="cfObTechItem"><input type="checkbox" data-tech="rename" checked><i></i><span><b>Identifier Rename</b><small>Acak identifier wrapper dan variable tertentu.</small><em>STABLE • IMPACT LOW</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="array" checked><i></i><span><b>String Array</b><small>Simpan payload dan string ke indexed table.</small><em>STABLE • MEDIUM</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="encode" checked><i></i><span><b>Encode String</b><small>Encode payload agar source asli tidak tampil langsung.</small><em>STABLE • MEDIUM</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="shuffle" checked><i></i><span><b>String Array Shuffle</b><small>Acak urutan potongan string/payload.</small><em>STABLE • HARDER</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="rotate"><i></i><span><b>Rotate / Index Shift</b><small>Geser indeks array dan pulihkan saat runtime.</small><em>STABLE • MEDIUM</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="split" checked><i></i><span><b>Split Strings</b><small>Pecah payload menjadi banyak potongan lebih kecil.</small><em>STABLE • SIZE +LOW</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="numbers"><i></i><span><b>Numbers to Expressions</b><small>Gunakan ekspresi aritmatika ekuivalen pada wrapper.</small><em>STABLE • IMPACT LOW</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="objectKeys"><i></i><span><b>Object Key Transform</b><small>Gunakan computed property sederhana pada object internal.</small><em>ADVANCED • TEST</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="controlFlow"><i></i><span><b>Control Flow Lite</b><small>Jalankan tahap decoder melalui dispatcher state sederhana.</small><em>ADVANCED • RUNTIME +</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="dead"><i></i><span><b>Dead Code Injection</b><small>Tambahkan blok pengalih yang tidak memengaruhi output.</small><em>ADVANCED • SIZE +</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="debug"><i></i><span><b>Debug Protection Lite</b><small>Tambahkan pemeriksaan debugger ringan tanpa loop agresif.</small><em>ADVANCED • TEST</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="selfDefend"><i></i><span><b>Self Defending Lite</b><small>Validasi signature wrapper sebelum decoder dijalankan.</small><em>ADVANCED • TEST</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="compact" checked><i></i><span><b>Compact Output</b><small>Padatkan source sebelum diproses.</small><em>STABLE • SMALLER</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="debugLog"><i></i><span><b>Debug Log</b><small>Pertahankan marker CodeFlare dan console log untuk debugging output.</small><em>OPTIONAL • DEBUG</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="domain"><i></i><span><b>Domain Lock</b><small>Batasi output agar aktif pada hostname tertentu.</small><em>STABLE • DISTRIBUTION</em></span></label>
+  </div>
+  <div class="cfObDomainRow">
+    <label class="cfObDomainInfo"><span><b>Allowed Hostname</b><small>Aktif bila teknik Domain Lock dipilih.</small></span></label>
+    <input id="cfObDomain" type="text" placeholder="example.com" disabled>
+  </div>
+  <div class="cfObProtectionEstimate">
+    <div><small>PROTECTION</small><b id="cfObProtectionLevel">BALANCED</b></div>
+    <div><small>RUNTIME</small><b id="cfObRuntimeImpact">LOW</b></div>
+    <div><small>OUTPUT</small><b id="cfObGrowthImpact">+LOW</b></div>
+    <div><small>SELECTED</small><b id="cfObSelectedTech">6 TECH</b></div>
+  </div>
+  <div class="cfObTechDisabledNote" id="cfObTechDisabledNote"><i class="fa fa-info-circle"></i> Technique settings hanya digunakan pada mode OBFUSCATE.</div><div class="cfObStrongWarning"><i class="fa fa-exclamation-triangle"></i><span><b>ADVANCED TECHNIQUES</b> Control Flow, Debug Protection, Self Defending, Object Key Transform, dan Dead Code dapat menambah ukuran atau overhead. Uji output sebelum digunakan di produksi.</span></div>
+</div>
+<div class="cfObInsight" id="cfObInsight">
+  <div class="cfObInsightHead"><span><i class="fa fa-bar-chart"></i> SOURCE ANALYSIS</span><span id="cfObAnalyzeState">WAITING INPUT</span></div>
+  <div class="cfObStats"><div><small>SIZE</small><b id="cfObSize">0 KB</b></div><div><small>CHARACTERS</small><b id="cfObChars">0</b></div><div><small>LINES</small><b id="cfObLines">0</b></div><div><small>FUNCTIONS</small><b id="cfObFunctions">0</b></div><div><small>VARIABLES</small><b id="cfObVariables">0</b></div><div><small>STRINGS</small><b id="cfObStringCount">0</b></div></div>
+  <div class="cfObDetect"><div><span>Detected Pattern</span><b id="cfObPattern">NORMAL / UNKNOWN</b></div><div><span>Source Engine</span><b id="cfObSourceEngine">GENERIC / UNKNOWN</b></div><div><span>Complexity</span><b id="cfObComplexity" data-level="low">LOW</b></div><div><span>Recommended</span><b id="cfObRecommended">OBFUSCATE</b></div></div>
+  <div class="cfObRecovery" id="cfObRecovery"><div><span>Estimated Recovery</span><b id="cfObRecoveryValue">95%</b></div><div class="cfObRecoveryTrack"><i id="cfObRecoveryBar" style="width:95%"></i></div><small>Estimasi berdasarkan pola yang terdeteksi, bukan jaminan pemulihan source asli.</small></div>
+</div>
+<div class="cfObCodeTools" id="cfObCodeTools" style="display:none;">
+  <div class="cfObCodeToolsHead"><div><b><i class="fa fa-wrench"></i> CODE TOOLS</b><small>Format dan konversi source tanpa menjalankan JavaScript.</small></div><span>TEXT SAFE</span></div>
+  <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="beautify"><i class="fa fa-align-left"></i><span><b>Beautify Code</b><small>Rapikan indentasi dan struktur agar mudah dibaca.</small></span></button><button type="button" class="cfObToolCard" data-action="minify"><i class="fa fa-compress"></i><span><b>Minify Code</b><small>Padatkan whitespace dan komentar secara konservatif.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
+  <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify adalah default. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle"><button type="button" class="active" data-format="beautify">BEAUTIFY</button><button type="button" data-format="minify">MINIFY</button></div></div>
+</div>
+<div class="cfObPassword" id="cfObPasswordOption">
+  <label class="cfObPasswordToggle"><span><i class="fa fa-key"></i> Deobfuscation Password Protection</span><input id="cfObPasswordEnable" type="checkbox"><i></i></label>
+  <div class="cfObPasswordFields"><div class="cfObPassField"><input id="cfObPassword" type="password" autocomplete="new-password" placeholder="Password"><button class="cfObPassEye" type="button" aria-label="Show password"><i class="fa fa-eye"></i></button></div><div class="cfObPassField"><input id="cfObPasswordConfirm" type="password" autocomplete="new-password" placeholder="Confirm password"><button class="cfObPassEye" type="button" aria-label="Show password"><i class="fa fa-eye"></i></button></div></div>
+  <small>Password digunakan untuk validasi Deobfuscate pada CodeFlare. Jangan gunakan password akun penting.</small>
+</div>
+<div class="cfObPassword cfObPasswordAccess" id="cfObPasswordAccess" style="display:none;"><div class="cfObProtectedTitle"><i class="fa fa-shield"></i> CODEFLARE PROTECTED OUTPUT DETECTED</div><div class="cfObPassField"><input id="cfObAccessPassword" type="password" autocomplete="current-password" placeholder="Enter deobfuscation password"><button class="cfObPassEye" type="button" aria-label="Show password"><i class="fa fa-eye"></i></button></div><small>Masukkan password yang digunakan saat output CodeFlare dibuat.</small></div>
+<div class="cfObActions"><button id="cfObProcess" class="cfObPrimary" type="button"><i class="fa fa-cogs"></i> OBFUSCATE CODE</button></div>
+<div class="cfObProgress"><i id="cfObProgressBar"></i></div>
+<div class="cfObSection"><div class="cfObLabel"><span id="cfObOutputTitle"><i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT</span><span id="cfObOutputCount">0 CHAR</span></div><textarea id="cfObOutput" spellcheck="false" readonly placeholder="// Result will appear here..."></textarea></div>
+<div class="cfObResultInfo" id="cfObResultInfo"><div><span>Original</span><b id="cfObOriginalSize">0 KB</b></div><div><span>Output</span><b id="cfObResultSize">0 KB</b></div><div><span>Size Change</span><b id="cfObSizeChange">0%</b></div><div><span>Status</span><b id="cfObResultStatus">READY</b></div></div>
+<div class="cfObLayerSection" id="cfObLayerSection" style="display:none;">
+<div class="cfObLayerAnalysis" id="cfObLayerAnalysis">
+  <div class="cfObLayerHead"><span><i class="fa fa-sitemap"></i> DEOBFUSCATION LAYER ANALYSIS</span><b id="cfObLayerStatus">WAITING</b></div>
+  <div class="cfObLayerGrid">
+    <div><small>CURRENT LAYER</small><b id="cfObLayerCurrent">0</b></div>
+    <div><small>DETECTED</small><b id="cfObLayerDetected">NONE</b></div>
+    <div><small>REMAINING</small><b id="cfObLayerRemaining">0</b></div>
+    <div><small>STATUS</small><b id="cfObLayerResult">READY</b></div>
+  </div>
+  <div class="cfObLayerList" id="cfObLayerList"><span>No layer processed yet.</span></div>
+</div>
+</div>
+<div class="cfObNormalizePanel" id="cfObNormalizePanel" style="display:none;">
+<div class="cfObNormalizeInfo"><span class="cfObNormalizeIcon"><i class="fa fa-magic"></i></span><div><b>HUMANIZE &amp; NORMALIZE OUTPUT</b><small id="cfObNormalizeState">Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.</small><div class="cfObNormalizeTopRow">
+<div class="cfObNormalizeFormat"><label><input id="cfObNormalizeBeautify" type="checkbox" checked><i></i><span>BEAUTIFY</span></label><label><input id="cfObNormalizeFlush" type="checkbox"><i></i><span>RATA KIRI TANPA TAB</span></label></div>
+</div>
+<div class="cfObNormalizeHelp">
+Beautify menggunakan indentasi 2 spasi agar hasil tetap rapi saat dipindah ke Notepad atau word processor. Rata Kiri Tanpa Tab menghapus indentasi.
+</div>
+<div class="cfObNormalizeActions">
+<button id="cfObNormalizeFull" type="button" disabled><i class="fa fa-bolt"></i> FULL NORMALIZE</button>
+<button id="cfObNormalizeReset" type="button"><i class="fa fa-refresh"></i> RESET</button>
+</div>
+</div>
+</div>
+</div>
+<div class="cfObBottom"><span id="cfObMessage">SYSTEM READY</span><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
+</div><!-- /#cfObTool -->
+<div class="cfObExternalWarning" id="cfObExternalWarning" style="display:none;"><div class="cfObExternalWarningIcon"><i class="fa fa-shield"></i></div><div class="cfObExternalWarningBody"><b>CODEFLARE JAVASCRIPT OBFUSCATOR PROTECTED</b><p>Generator hanya dapat digunakan melalui halaman resmi CodeFlare.</p><a href="https://www.codeflare.net/2026/08/generator-javascript-obfuscate-encryption.html" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> Buka CodeFlare JavaScript Obfuscator</a></div></div>`;
 }
-if(document.getElementById('cfObTool'))return document.getElementById('cfObTool');
-
-root.innerHTML=`
-<div class="cfObApp cfObTool" id="cfObTool">
-  <div class="cfObBrand" id="cfObBrand">
-    <div>
-      <div class="cfObTitle" id="cfObTitle" data-cf-js-lab-title>CODEFLARE JS LAB</div>
-      <div class="cfObDomain">JavaScript / Blogger XML Laboratory</div>
-    </div>
-    <div class="cfObBrandRight">
-      <div class="cfObTheme" id="cfObTheme">
-        <button class="cfObThemeBtn" data-theme="light" type="button" title="Light mode"><i class="fa fa-sun-o"></i><span>LIGHT</span></button>
-        <button class="cfObThemeBtn" data-theme="dark" type="button" title="Dark mode"><i class="fa fa-moon-o"></i><span>DARK</span></button>
-        <button class="cfObThemeBtn" data-theme="auto" type="button" title="Auto mode"><i class="fa fa-adjust"></i><span>AUTO</span></button>
-      </div>
-      <div class="cfObStatus" id="cfObStatus"><i></i> READY</div>
-    </div>
-  </div>
-
-  <div class="cfObOptions" id="cfObOptions">
-    <div class="cfObButtons">
-      <button class="cfObModeBtn active" data-mode="obfuscate" type="button"><i class="fa fa-lock"></i> OBFUSCATOR</button>
-      <button class="cfObModeBtn" data-mode="deobfuscate" type="button"><i class="fa fa-unlock-alt"></i> DEOBFUSCATOR</button>
-      <button class="cfObModeBtn" data-mode="tools" type="button"><i class="fa fa-wrench"></i> CODE TOOLS</button>
-    </div>
-
-    <div class="cfObButtons" id="cfObPreset">
-      <button data-preset="light" type="button">LIGHT</button>
-      <button class="active" data-preset="balanced" type="button">BALANCED</button>
-      <button data-preset="strong" type="button">STRONG</button>
-      <button data-preset="custom" type="button">CUSTOM</button>
-    </div>
-
-    <div class="cfObToolCard">
-      <label><input data-tech="rename" type="checkbox"/> Rename</label>
-      <label><input data-tech="array" type="checkbox"/> String Array</label>
-      <label><input data-tech="encode" type="checkbox"/> Encode</label>
-      <label><input data-tech="shuffle" type="checkbox"/> Shuffle</label>
-      <label><input data-tech="rotate" type="checkbox"/> Rotate</label>
-      <label><input data-tech="split" type="checkbox"/> Split</label>
-      <label><input data-tech="numbers" type="checkbox"/> Numbers</label>
-      <label><input data-tech="objectKeys" type="checkbox"/> Object Keys</label>
-      <label><input data-tech="controlFlow" type="checkbox"/> Control Flow</label>
-      <label><input data-tech="dead" type="checkbox"/> Dead Code</label>
-      <label><input data-tech="debug" type="checkbox"/> Debug Guard</label>
-      <label><input data-tech="selfDefend" type="checkbox"/> Self Defend</label>
-      <label><input data-tech="compact" type="checkbox"/> Compact</label>
-      <label><input data-tech="debugLog" type="checkbox"/> Debug Log</label>
-      <label><input data-tech="domain" type="checkbox"/> Domain Lock</label>
-      <input class="cfObDomain" id="cfObDomain" type="text" placeholder="example.com"/>
-    </div>
-
-    <div class="cfObToolCard">
-      <span>Protection <b id="cfObProtectionLevel">-</b></span>
-      <span>Runtime <b id="cfObRuntimeImpact">-</b></span>
-      <span>Growth <b id="cfObGrowthImpact">-</b></span>
-      <span>Selected <b id="cfObSelectedTech">-</b></span>
-      <span class="cfObTechState" id="cfObTechState"><i></i> ACTIVE</span>
-    </div>
-  </div>
-
-  <div class="cfObToolCard">
-    <label class="cfObInputLabel" id="cfObInputLabel" for="cfObInput"><i class="fa fa-terminal"></i> JAVASCRIPT INPUT</label>
-    <textarea class="cfObInput" id="cfObInput" spellcheck="false" placeholder="// Paste JavaScript, Blogger XML, or full source code here..."></textarea>
-    <div class="cfObActions">
-      <button id="cfObPaste" type="button"><i class="fa fa-paste"></i> PASTE</button>
-      <button id="cfObClear" type="button"><i class="fa fa-trash"></i> CLEAR</button>
-      <button class="cfObProcess" id="cfObProcess" type="button"><i class="fa fa-cogs"></i> OBFUSCATE CODE</button>
-    </div>
-  </div>
-
-  <div class="cfObProgressBar"><span id="cfObProgressBar"></span></div>
-  <div class="cfObMessage" id="cfObMessage">READY</div>
-  <div class="cfObExternalWarning" id="cfObExternalWarning"></div>
-
-  <div class="cfObMethods" data-cf-methods>
-    <div class="cfObDeobSupport" id="cfObDeobSupport">
-      <button class="cfObDeobMethod" data-method="codeflare" type="button"><i class="fa fa-code"></i> CodeFlare</button>
-      <button class="cfObDeobMethod" data-method="packer" type="button"><i class="fa fa-cubes"></i> Packer</button>
-      <button class="cfObDeobMethod" data-method="string-array" type="button"><i class="fa fa-list"></i> String Array</button>
-      <button class="cfObDeobMethod" data-method="hex" type="button"><i class="fa fa-hashtag"></i> Hex</button>
-      <button class="cfObDeobMethod" data-method="unicode" type="button"><i class="fa fa-font"></i> Unicode</button>
-      <button class="cfObDeobMethod" data-method="charcode" type="button"><i class="fa fa-keyboard-o"></i> CharCode</button>
-      <button class="cfObDeobMethod" data-method="bracket" type="button"><i class="fa fa-code"></i> Bracket</button>
-      <button class="cfObDeobMethod" data-method="mangled" type="button"><i class="fa fa-random"></i> Mangled</button>
-      <button class="cfObDeobMethod" data-method="multi-layer" type="button"><i class="fa fa-clone"></i> Multi Layer</button>
-    </div>
-  </div>
-
-  <div class="cfObNormalizePanel" id="cfObNormalizePanel">
-    <div class="cfObNormalizeState" id="cfObNormalizeState">Run Deobfuscate first.</div>
-    <div class="cfObActions">
-      <button class="cfObNormalize" id="cfObNormalizeFull" type="button" disabled><i class="fa fa-magic"></i> NORMALIZE</button>
-      <button id="cfObNormalizeReset" type="button"><i class="fa fa-refresh"></i> RESET</button>
-    </div>
-    <label><input id="cfObNormalizeBeautify" name="cfObNormFmt" type="radio" checked/> Beautify</label>
-    <label><input id="cfObNormalizeFlush" name="cfObNormFmt" type="radio"/> Compact</label>
-  </div>
-
-  <div class="cfObLayerSection" id="cfObLayerSection">
-    <div><b id="cfObLayerStatus">WAITING</b></div>
-    <div>Current <b id="cfObLayerCurrent">0</b> · Detected <b id="cfObLayerDetected">NONE</b> · Remaining <b id="cfObLayerRemaining">0</b></div>
-    <div class="cfObLayerResult" id="cfObLayerResult">READY</div>
-    <div class="cfObLayerList" id="cfObLayerList"><span>No layer processed yet.</span></div>
-  </div>
-
-  <div class="cfObToolCard">
-    <div class="cfObOutputTitle" id="cfObOutputTitle"><i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT</div>
-    <textarea class="cfObOutput" id="cfObOutput" spellcheck="false" readonly></textarea>
-    <div class="cfObActions">
-      <button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY</button>
-      <button class="cfObInject" id="cfObCopyScript" type="button" disabled><i class="fa fa-code-fork"></i> ADD TAG SCRIPT</button>
-    </div>
-    <div><span id="cfObOutputCount">0 CHAR</span> · <span class="cfObResultStatus" id="cfObResultStatus">READY</span></div>
-  </div>
-
-  <div class="cfObToolCard">
-    <span>Original <b id="cfObOriginalSize">0 KB</b></span>
-    <span>Result <b id="cfObResultSize">0 KB</b></span>
-    <span>Change <b id="cfObSizeChange">0%</b></span>
-  </div>
-
-  <div class="cfObPasswordOption" id="cfObPasswordOption">
-    <label><input id="cfObPasswordEnable" type="checkbox"/> Password Protection</label>
-    <div>
-      <input class="cfObPassword" id="cfObPassword" type="password" placeholder="Password"/>
-      <button class="cfObPassEye" type="button"><i class="fa fa-eye"></i></button>
-    </div>
-    <div>
-      <input class="cfObPasswordConfirm" id="cfObPasswordConfirm" type="password" placeholder="Confirm password"/>
-      <button class="cfObPassEye" type="button"><i class="fa fa-eye"></i></button>
-    </div>
-  </div>
-
-  <div class="cfObPasswordAccess" id="cfObPasswordAccess" style="display:none">
-    <input class="cfObAccessPassword" id="cfObAccessPassword" type="password" placeholder="Access password"/>
-  </div>
-
-  <div class="cfObCodeTools" id="cfObCodeTools" style="display:none"></div>
-</div>`;
-return document.getElementById('cfObTool')
-}
-
 _cfJsLabRender();
-
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
+
+(function(){
+var title=document.querySelector('#cfObTool .cfObHeaderLeft strong');
+if(title&&!title.querySelector('.cfObVersion')){
+var v=document.createElement('span');
+v.className='cfObVersion';
+v.textContent=' '+CF_JS_LAB_VERSION;
+title.appendChild(v)
+}
+})();
+
 
 var PATH=_z([47,50,48,50,54,47,48,56,47,103,101,110,101,114,97,116,111,114,45,106,97,118,97,115,99,114,105,112,116,45,111,98,102,117,115,99,97,116,101,45,101,110,99,114,121,112,116,105,111,110,46,104,116,109,108]);
 var host=(location.hostname||'').toLowerCase(),path=location.pathname||'';
@@ -3873,24 +3858,8 @@ setOutput(r,a==='beautify'?'BEAUTIFIED CODE OUTPUT':a==='minify'?'MINIFIED CODE 
 })});
 tool.querySelectorAll('.cfObParserToggle button').forEach(function(b){b.addEventListener('click',function(){tool.querySelectorAll('.cfObParserToggle button').forEach(function(x){x.classList.remove('active')});b.classList.add('active');S.parserFormat=b.dataset.format||'beautify'})});
 var themeBtns=tool.querySelectorAll('.cfObThemeBtn');
-var cfThemeMedia=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
-function _applyThemePreference(t){
-var resolved=t==='auto'?(cfThemeMedia&&cfThemeMedia.matches?'dark':'light'):t;
-tool.dataset.theme=resolved;
-tool.setAttribute('data-theme-preference',t);
-themeBtns.forEach(function(b){b.classList.toggle('active',b.dataset.theme===t)})
-}
-function theme(t){
-if(!/^(light|dark|auto)$/.test(t))t='auto';
-S.theme=t;
-_applyThemePreference(t);
-try{localStorage.setItem('cfObTheme',t)}catch(e){}
-}
+function theme(t){S.theme=t;tool.dataset.theme=t;themeBtns.forEach(function(b){b.classList.toggle('active',b.dataset.theme===t)});try{localStorage.setItem('cfObTheme',t)}catch(e){}}
 themeBtns.forEach(function(b){b.addEventListener('click',function(){theme(b.dataset.theme)})});
-if(cfThemeMedia){
-var cfThemeChange=function(){if(S.theme==='auto')_applyThemePreference('auto')};
-try{cfThemeMedia.addEventListener('change',cfThemeChange)}catch(_e){try{cfThemeMedia.addListener(cfThemeChange)}catch(_e2){}}
-}
 try{theme(localStorage.getItem('cfObTheme')||'auto')}catch(e){theme('auto')}
 
 applyPreset('balanced');_renderEngineVersion();
