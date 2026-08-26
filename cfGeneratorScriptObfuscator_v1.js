@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.30';
+var CF_JS_LAB_VERSION='v2.31';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -1832,19 +1832,20 @@ out=await _processLargeTargetBatch();
 S.layerIndex=0;
 S.layerHistory=[];
 S.deobfuscateReady=true;
-S.normalizePassed=true;
-S.normalizeFinal=true;
+S.normalizePassed=false;
+S.normalizeFinal=false;
 S.injectCompleted=false;
+S.normalizedBase='';
 
 setOutput(out,'DEOBFUSCATION MARKER COLLECTION OUTPUT','SUCCESS');
-setNormalizeFinal(true,'Marker collection selesai. Semua blok target sudah dikumpulkan, diproses, dan siap di-Inject ke marker masing-masing.');
-if(E.normalizeFull)E.normalizeFull.disabled=true;
+setNormalizeFinal(false,'Marker collection selesai. Tekan FULL NORMALIZE untuk merapikan dan memvalidasi setiap blok sebelum Inject.');
+if(E.normalizeFull)E.normalizeFull.disabled=false;
 
 setProgress(92);
 await _ui();
-updateLayerPanel(out,'BATCH COMPLETE');
+updateLayerPanel(out,'COLLECTION COMPLETE');
 _injectButtonState();
-say('MARKER COLLECTION COMPLETE - READY TO INJECT')
+say('MARKER COLLECTION COMPLETE - RUN FULL NORMALIZE')
 }else{
 setProgress(14);
 say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
@@ -3331,10 +3332,118 @@ return finalSource
 return embed
 }
 
+
+async function _normalizeMarkerCollection(){
+var parsed=_parseMarkerOutput(E.output&&E.output.value||'');
+if(!S.markerBlocks||!S.markerBlocks.length)throw new Error('MARKER COLLECTION EMPTY');
+
+var normalizedBlocks=[];
+var hardErrors=[];
+
+for(var i=0;i<S.markerBlocks.length;i++){
+var b=S.markerBlocks[i];
+var current=parsed[b.id]||b.processed||b.original||'';
+
+say('NORMALIZING '+b.id+' ('+(i+1)+'/'+S.markerBlocks.length+')');
+setProgress(8+Math.round((i/S.markerBlocks.length)*80));
+await _ui();
+
+var seen={},guard=0,maxPass=8;
+while(guard<maxPass){
+var fp=_nfingerprint(current);
+if(seen[fp])break;
+seen[fp]=1;
+
+var next=_a5(current);
+if(_nfingerprint(next)===fp){
+current=next;
+break
+}
+current=next;
+guard++;
+
+if(!_a8(current))break;
+await _ui()
+}
+
+/* Final conservative readability, per block. */
+var sem=_conservativeHumanize(current);
+if(_syntaxValid(sem.code))current=sem.code;
+
+current=_protectHtmlRawTextEndTags(current);
+
+var probe=_syntaxProbe(current);
+if(!probe.ok){
+hardErrors.push(b.id+': '+probe.message);
+current=b.processed||b.original
+}
+
+b.processed=current;
+normalizedBlocks.push(
+'/* ===== '+b.id+' ===== */\n'+current+'\n/* ===== /'+b.id+' ===== */'
+)
+}
+
+S.markerBlocks=S.markerBlocks.slice();
+var out=normalizedBlocks.join('\n\n');
+S.normalizedBase=out;
+S.lastSafeOutput=out;
+
+var safe=hardErrors.length===0;
+S.integrity={
+syntax:hardErrors.slice(),
+flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],
+hard:hardErrors.slice(),warnings:[],safe:safe,ok:safe
+};
+S.normalizePassed=safe;
+S.normalizeFinal=true;
+S.injectCompleted=false;
+
+E.output.value=out;
+if(E.outCount)E.outCount.textContent=out.length.toLocaleString()+' CHAR';
+if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> DEOBFUSCATION MARKER COLLECTION OUTPUT';
+if(E.resultSize)E.resultSize.textContent=S.largeSourceMode?_fastKBFromChars(out):kb(out);
+if(E.resultStatus)E.resultStatus.textContent=safe?'READY TO INJECT':'NORMALIZE CHECK ERROR';
+
+setProgress(96);
+updateLayerPanel(out,'MARKER FINAL CHECK');
+setNormalizeFinal(true,safe
+?'FULL NORMALIZE COMPLETE - MARKER BLOCKS READY TO INJECT.'
+:'FULL NORMALIZE STOPPED - '+hardErrors[0]);
+
+_injectButtonState();
+
+if(safe){
+say('FULL NORMALIZE COMPLETE - ALL MARKER BLOCKS VERIFIED')
+}else{
+say('FULL NORMALIZE NOT SAFE - '+hardErrors.join(' | '))
+}
+return safe
+}
+
 if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
 S.injectCompleted=false;
 _injectButtonState();
 if(S.mode!=='deobfuscate'||!S.deobfuscateReady||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
+
+/* v2.31: marker collections normalize each extracted script independently.
+   Never run one parser/normalizer across several unrelated script blocks. */
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
+_busy(true,'FULL NORMALIZE - MARKER COLLECTION');
+if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
+if(E.normalizeState)E.normalizeState.textContent='Normalizing collected script blocks individually...';
+try{
+await _normalizeMarkerCollection()
+}catch(err){
+if(E.resultStatus)E.resultStatus.textContent='ERROR';
+say('MARKER NORMALIZE ERROR - '+String(err&&err.message||err))
+}finally{
+_busy(false);
+setTimeout(function(){setProgress(0)},700);
+_injectButtonState()
+}
+return
+}
 
 var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=8;
 var seen={},lastFp='',fp='';
