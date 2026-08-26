@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.40';
+var CF_JS_LAB_VERSION='v2.41';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2551,38 +2551,68 @@ function _domSemanticHumanize(src){
 src=String(src||'');
 var map={},m;
 
+/* Legacy identifiers can be _0x5da8x2 / _0xd20ax8 / _0x5602x45. */
+
 /* DOM constructors. */
-var create=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*document\.createElement\(\s*["']([^"']+)["']\s*\)/ig;
+var create=/\b(var|let|const)\s+(_0x[A-Za-z0-9_$]+)\s*=\s*document\.createElement\(\s*["']([^"']+)["']\s*\)/ig;
 while((m=create.exec(src))){
+var oldName=m[2];
 var tag=m[3].toLowerCase();
-var base=tag==='script'?'scriptElement':tag==='div'?'divElement':tag==='img'?'imageElement':tag==='a'?'linkElement':tag+'Element';
+var base=tag==='script'?'scriptElement':
+         tag==='div'?'divElement':
+         tag==='img'?'imageElement':
+         tag==='a'?'linkElement':
+         tag==='style'?'styleElement':
+         tag==='iframe'?'iframeElement':
+         tag+'Element';
+
 var name=base,n=2;
-while(Object.values(map).indexOf(name)>=0||(new RegExp('\\b'+name+'\\b')).test(src))name=base+(n++);
-map[m[2]]=name
+while(Object.values(map).indexOf(name)>=0||
+      (new RegExp('(?:^|[^A-Za-z0-9_$])'+name.replace(/[$]/g,'\\$&')+'(?=$|[^A-Za-z0-9_$])')).test(src)){
+name=base+(n++)
+}
+map[oldName]=name
 }
 
 /* First script anchor. */
-var firstScript=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*document\.getElementsByTagName\(\s*["']script["']\s*\)\s*\[\s*0\s*\]/ig;
-while((m=firstScript.exec(src)))map[m[2]]='firstScript';
+var firstScript=/\b(var|let|const)\s+(_0x[A-Za-z0-9_$]+)\s*=\s*document\.getElementsByTagName\(\s*["']script["']\s*\)\s*\[\s*0\s*\]/ig;
+while((m=firstScript.exec(src))){
+var old=m[2],candidate='firstScript';
+if((new RegExp('(?:^|[^A-Za-z0-9_$])'+candidate+'(?=$|[^A-Za-z0-9_$])')).test(src)){
+candidate='scriptAnchor'
+}
+map[old]=candidate
+}
+
+/* querySelector anchors. */
+var qs=/\b(var|let|const)\s+(_0x[A-Za-z0-9_$]+)\s*=\s*document\.querySelector\(\s*["']([^"']+)["']\s*\)/ig;
+while((m=qs.exec(src))){
+var sel=m[3],baseName='element';
+if(/^#/.test(sel)){
+baseName=sel.slice(1).replace(/[^A-Za-z0-9_$]+(.)?/g,function(_,c){return c?c.toUpperCase():''})+'Element'
+}else if(/^\./.test(sel)){
+baseName=sel.slice(1).split(/\s+/)[0].replace(/[^A-Za-z0-9_$]+(.)?/g,function(_,c){return c?c.toUpperCase():''})+'Element'
+}
+if(!map[m[2]])map[m[2]]=baseName||'element'
+}
 
 /* window.open result. */
-var popup=/\b(var|let|const)\s+(_0x[a-f0-9]+)\s*=\s*window\.open\s*\(/ig;
+var popup=/\b(var|let|const)\s+(_0x[A-Za-z0-9_$]+)\s*=\s*window\.open\s*\(/ig;
 while((m=popup.exec(src))){
 if(!map[m[2]])map[m[2]]='popupWindow'
 }
 
-/* Event-like function parameters using .which or .button. */
-var fn=/function\s+[A-Za-z_$][\w$]*\s*\(\s*(_0x[a-f0-9]+)\s*\)\s*\{([\s\S]*?)\n?\}/ig;
+/* Event-like function parameters using .which/.button/.target. */
+var fn=/function\s+[A-Za-z_$][\w$]*\s*\(\s*(_0x[A-Za-z0-9_$]+)\s*\)\s*\{([\s\S]*?)\n?\}/ig;
 while((m=fn.exec(src))){
-if((new RegExp('\\b'+m[1].replace(/[$]/g,'\\$&')+'\\.(?:which|button)\\b')).test(m[2])){
-map[m[1]]='event'
+var param=m[1],body=m[2];
+if((new RegExp('\\b'+param.replace(/[$]/g,'\\$&')+'\\.(?:which|button|target|currentTarget)\\b')).test(body)){
+map[param]='event'
 }
 }
 
 return _applySemanticIdentifierMap(src,map)
 }
-
-
 function _renameKnownFunctionParams(src,fnName,newNames){
 src=String(src||'');
 newNames=newNames||[];
@@ -2810,6 +2840,11 @@ var next=_domSemanticHumanize(out);
 if(_syntaxValid(next))out=next;
 next=_md5SemanticHumanize(out);
 if(_syntaxValid(next))out=next;
+
+/* Run DOM semantic pass again after other decoding/humanizing. */
+next=_domSemanticHumanize(out);
+if(_syntaxValid(next))out=next;
+
 return out
 }
 
