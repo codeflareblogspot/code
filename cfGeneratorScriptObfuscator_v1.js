@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.17';
+var CF_JS_LAB_VERSION='v2.18';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -1293,6 +1293,17 @@ payload=_stripCDATADeep(_stripScriptWrapper(payload)).trim()
 
 if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
 
+/* BLOGGER/HTML RAW-TEXT SAFETY:
+   deobfuscation can reveal literal </script> inside strings used by
+   postscribe/dynamic widgets. In an inline script HTML parses that as the
+   real closing tag, causing the remaining JavaScript to render as page text. */
+var rawSafe=_protectHtmlRawTextEndTags(payload);
+if(rawSafe!==payload){
+payload=rawSafe;
+say('HTML RAW-TEXT GUARD - LITERAL SCRIPT END TAGS PROTECTED')
+}
+if(!_syntaxValid(payload))throw new Error('RAW-TEXT PROTECTION SYNTAX FAILED');
+
 setProgress(35);
 await _ui();
 
@@ -2083,6 +2094,12 @@ current=_safeTransformStep(current,'PROPERTY KEY READABILITY',function(s){
 return _decodeReadablePropertyKeys(s)
 });
 
+/* A deobfuscated literal "</script>" is valid JavaScript but unsafe when the
+   result is placed inside an HTML/Blogger inline <script>. */
+current=_safeTransformStep(current,'HTML RAW-TEXT GUARD',function(s){
+return _protectHtmlRawTextEndTags(s)
+});
+
 return current
 }
 
@@ -2426,6 +2443,70 @@ out=out.replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029');
 if(_syntaxValid(original)&&!_syntaxValid(out)){
 say('SCRIPT EMBED ESCAPE ROLLBACK - ORIGINAL VALID PAYLOAD PRESERVED');
 return original
+}
+return out
+}
+
+function _protectHtmlRawTextEndTags(js){
+js=String(js||'');
+/* HTML's SCRIPT element is a raw-text element. A literal </script sequence
+   inside a JavaScript string can terminate the outer script before JS runs.
+   Protect only occurrences that are inside JS quoted/template strings. */
+var out='',q='',esc=false,i=0;
+while(i<js.length){
+var c=js[i];
+
+if(q){
+if(esc){out+=c;esc=false;i++;continue}
+if(c==='\\'){out+=c;esc=true;i++;continue}
+if(c===q){out+=c;q='';i++;continue}
+
+if(c==='<'&&js.slice(i,i+9).toLowerCase()==='</script'){
+out+='<\\/script';
+i+=8;
+continue
+}
+out+=c;i++;continue
+}
+
+/* Skip comments so quotes inside comments do not start string state. */
+if(c==='/'&&js[i+1]==='/'){
+var nl=js.indexOf('\n',i+2);
+if(nl<0){out+=js.slice(i);break}
+out+=js.slice(i,nl+1);i=nl+1;continue
+}
+if(c==='/'&&js[i+1]==='*'){
+var ce=js.indexOf('*/',i+2);
+if(ce<0){out+=js.slice(i);break}
+out+=js.slice(i,ce+2);i=ce+2;continue
+}
+if(c==="'"||c==='"' || c==='`'){q=c;out+=c;i++;continue}
+out+=c;i++
+}
+return out
+}
+
+function _rawTextSafetyCheck(js){
+js=String(js||'');
+var protectedJs=_protectHtmlRawTextEndTags(js);
+return{
+code:protectedJs,
+changed:protectedJs!==js,
+safe:!/<\/script/i.test(_extractStringBodiesForRawTextCheck(protectedJs))
+}
+}
+
+function _extractStringBodiesForRawTextCheck(js){
+/* Return only quoted/template string contents for lightweight verification. */
+var out='',q='',esc=false;
+for(var i=0;i<js.length;i++){
+var c=js[i];
+if(q){
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q){q='';continue}
+out+=c
+}else if(c==="'"||c==='"'||c==='`')q=c
 }
 return out
 }
