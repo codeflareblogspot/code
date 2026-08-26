@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.37';
+var CF_JS_LAB_VERSION='v2.39';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -262,13 +262,12 @@ if(msg)say(msg)
 
 function _externalScriptTags(src){
 src=String(src||'');
-var out=[],re=/<script\b[^>]*\bsrc\s*=\s*(["'])([\s\S]*?)\1[^>]*>\s*<\/script\s*>/gi,m;
+var out=[],re=/<script\b[^>]*\bsrc\s*=\s*(["'])([^"']*)\1[^>]*(?:\/>|>)/gi,m;
 while((m=re.exec(src))){
 out.push({full:m[0],src:m[2],index:m.index})
 }
 return out
 }
-
 function _isJQuerySrc(url){
 url=String(url||'').toLowerCase();
 return /(?:^|[\/._-])jquery(?:[-.\d]|\.min|$)/i.test(url)||/jquery\.com\/jquery/i.test(url)
@@ -384,7 +383,7 @@ var methods=[
 ['fa-link','Alias Resolve','Resolve safe aliases and indirect references.'],
 ['fa-object-group','Property Clean','Convert safe bracket properties to readable dot notation.'],
 ['fa-compress','Dead Wrapper','Remove verified unused decoding wrappers.'],
-['fa-magic','Readable Pass','Apply conservative readability transformations.'],
+['fa-magic','Semantic Humanize','Rename deterministic DOM, event, MD5 and known legacy identifiers.'],
 ['fa-check-circle','Syntax Guard','Validate every transformation before accepting it.'],
 ['fa-shield','Marker Guard','Process extracted blocks without touching normal source.'],
 ['fa-refresh','Multi Pass','Repeat safe transforms until output stabilizes.']
@@ -1843,6 +1842,14 @@ if(_syntaxValid(readable))transformed=readable;
 var staticClean=_strongStaticResolve(transformed);
 if(_syntaxValid(staticClean))transformed=staticClean;
 
+/* Humanize known deterministic patterns immediately after decode. */
+var humanClean=_advancedSemanticHumanize(transformed);
+if(_syntaxValid(humanClean))transformed=humanClean;
+
+/* Static tables may become removable after semantic cleanup. */
+staticClean=_strongStaticResolve(transformed);
+if(_syntaxValid(staticClean))transformed=staticClean;
+
 transformed=_protectHtmlRawTextEndTags(transformed);
 if(!_syntaxValid(transformed))throw new Error(b.id+' SYNTAX CHECK FAILED');
 
@@ -1871,27 +1878,32 @@ function _buildBatchInjectedSource(){
 if(!S.markerCollectionReady||!S.markerSource)return'';
 
 var map={};
-var outputMap=_parseMarkerOutput(E.output&&E.output.value||'');
 
-/* Prefer current Output so the user can inspect/edit each marked block before Inject.
-   Fall back to the internally validated processed copy when Output was untouched. */
 for(var i=0;i<S.markerBlocks.length;i++){
 var b=S.markerBlocks[i];
-if(outputMap[b.id]){
-map[b.id]=_protectHtmlRawTextEndTags(outputMap[b.id])
-}else if(typeof b.processed==='string'){
-map[b.id]=_protectHtmlRawTextEndTags(b.processed)
-}else{
-map[b.id]=b.original
-}
+var body=typeof b.processed==='string'?b.processed:b.original;
+body=_protectHtmlRawTextEndTags(String(body||'').trim());
 
-if(!_syntaxValid(map[b.id])){
-throw new Error('MARKER BLOCK INVALID - '+b.id)
-}
+if(!body)throw new Error('MARKER BLOCK EMPTY - '+b.id);
+if(!_syntaxValid(body))throw new Error('MARKER BLOCK INVALID - '+b.id);
+
+map[b.id]=body
 }
 
 var out=_restoreMarkerSource(S.markerSource,map);
+
+/* Hard guard: no temporary marker is allowed to survive injection. */
+if(/\/\*__CF_OBF_BLOCK_\d{3}__\*\//.test(out)){
+throw new Error('MARKER RESTORE INCOMPLETE')
+}
 return out
+}
+
+function _markerDependencyPayload(){
+if(!S.markerBlocks||!S.markerBlocks.length)return'';
+return S.markerBlocks.map(function(b){
+return typeof b.processed==='string'?b.processed:b.original
+}).join('\n;\n')
 }
 
 
@@ -1931,12 +1943,27 @@ if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
    deobfuscation can reveal literal </script> inside strings used by
    postscribe/dynamic widgets. In an inline script HTML parses that as the
    real closing tag, causing the remaining JavaScript to render as page text. */
+var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1);
+
+if(!isMarkerInject){
 var rawSafe=_protectHtmlRawTextEndTags(payload);
 if(rawSafe!==payload){
 payload=rawSafe;
 say('HTML RAW-TEXT GUARD - LITERAL SCRIPT END TAGS PROTECTED')
 }
-if(!_syntaxValid(payload))throw new Error('RAW-TEXT PROTECTION SYNTAX FAILED');
+if(!_syntaxValid(payload))throw new Error('RAW-TEXT PROTECTION SYNTAX FAILED')
+}else{
+/* Marker output represents several independent SCRIPT bodies.
+   Never parse the concatenated collection as one JavaScript program. */
+for(var mbi=0;mbi<S.markerBlocks.length;mbi++){
+var mb=S.markerBlocks[mbi];
+var mbCode=typeof mb.processed==='string'?mb.processed:mb.original;
+if(!_syntaxValid(_protectHtmlRawTextEndTags(mbCode))){
+throw new Error('MARKER BLOCK INVALID - '+mb.id)
+}
+}
+say('MARKER INJECT CHECK - ALL BLOCKS VALID')
+}
 
 setProgress(35);
 await _ui();
@@ -1955,7 +1982,8 @@ if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
 }
 
 /* Full-source reconstruction must preserve external dependencies. */
-var depReport=_assertDependencyIntegrity(raw,injected,payload);
+var dependencyPayload=isMarkerInject?_markerDependencyPayload():payload;
+var depReport=_assertDependencyIntegrity(raw,injected,dependencyPayload);
 if(depReport.jqueryRequired&&depReport.jqueryFinal){
 say('PRESERVATION CHECK PASSED - NON-OBFUSCATED SOURCE UNCHANGED')
 }else if(depReport.warnings&&depReport.warnings.length){
@@ -1978,14 +2006,17 @@ if(E.resultSize)E.resultSize.textContent=kb(injected);
 if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 
 S.injectCompleted=true;
-S.lastSafeOutput=payload;
+/* Keep normalized marker collection checkpoint; do not replace it with a
+   synthetic combined payload after multi-block injection. */
+if(!isMarkerInject)S.lastSafeOutput=payload;
 _injectButtonState();
 
 setProgress(100);
 say('INJECT COMPLETE - READY TO COPY')
 }catch(err){
 if(E.resultStatus)E.resultStatus.textContent='INJECT ERROR';
-say('INJECT FAILED - '+String(err&&err.message||err))
+say('INJECT FAILED - '+String(err&&err.message||err));
+try{console.error('[CODEFLARE JS LAB '+CF_JS_LAB_VERSION+'] Inject error:',err)}catch(_e){}
 }finally{
 setTimeout(function(){setProgress(0)},700);
 _injectButtonState()
@@ -2553,59 +2584,137 @@ return _applySemanticIdentifierMap(src,map)
 
 function _md5SemanticHumanize(src){
 src=String(src||'');
+
+/* Classic legacy MD5 recognizer. Do not touch unrelated _0x families. */
 if(!/\bvar\s+MD5\s*=\s*function\s*\(/.test(src))return src;
+if(!/0x67452301/i.test(src)||!/0xEFCDAB89/i.test(src)||
+   !/0x98BADCFE/i.test(src)||!/0x10325476/i.test(src)||
+   !/0xD76AA478/i.test(src)||!/0xE8C7B756/i.test(src))return src;
 
-/* This recognizer only activates for the classic legacy MD5 implementation.
-   Require the characteristic constants and round helpers before renaming. */
-if(!/0x67452301/i.test(src)||!/0xEFCDAB89/i.test(src)||!/0xD76AA478/i.test(src)||!/0xE8C7B756/i.test(src))return src;
-
-var fm=src.match(/\bvar\s+MD5\s*=\s*function\s*\(\s*(_0x[a-f0-9]+)\s*\)/i);
+var fm=src.match(/\bvar\s+MD5\s*=\s*function\s*\(\s*(_0x([a-f0-9]+)x2)\s*\)/i);
 if(!fm)return src;
-var prefix=fm[1].match(/^(_0x[a-f0-9]+x)/i);
-if(!prefix)return src;
-var p=prefix[1];
 
+var family='_0x'+fm[2]+'x';
 var map={};
-map[fm[1]]='input';
-map[p+'3']='rotateLeft';
-map[p+'6']='addUnsigned';
-map[p+'e']='F';
-map[p+'12']='G';
-map[p+'13']='H';
-map[p+'14']='I';
-map[p+'15']='FF';
-map[p+'1c']='GG';
-map[p+'1d']='HH';
-map[p+'1e']='II';
-map[p+'1f']='convertToWordArray';
-map[p+'28']='wordToHex';
-map[p+'2d']='utf8Encode';
 
-/* Common internal variables in this exact MD5 family. */
-map[p+'20']='wordCount';
-map[p+'21']='messageLength';
-map[p+'22']='paddedLength';
-map[p+'23']='blockCount';
-map[p+'24']='wordArrayLength';
-map[p+'25']='wordArray';
-map[p+'26']='bytePosition';
-map[p+'27']='byteIndex';
-map[p+'29']='hexValue';
-map[p+'2a']='tempHex';
-map[p+'2b']='byteValue';
-map[p+'2c']='byteIndex';
-map[p+'2e']='utfText';
-map[p+'2f']='charIndex';
-map[p+'30']='blockIndex';
-map[p+'31']='AA';
-map[p+'32']='BB';
-map[p+'33']='CC';
-map[p+'34']='DD';
-map[p+'45']='digest';
-
-return _applySemanticIdentifierMap(src,map)
+function set(suffix,name){
+map[family+suffix]=name
 }
 
+/* Public input. */
+set('2','message');
+
+/* Core helpers. */
+set('3','rotateLeft');
+set('6','addUnsigned');
+set('e','md5F');
+set('12','md5G');
+set('13','md5H');
+set('14','md5I');
+set('15','roundFF');
+set('1c','roundGG');
+set('1d','roundHH');
+set('1e','roundII');
+set('1f','convertToWordArray');
+set('28','wordToHex');
+set('2d','utf8Encode');
+
+/* addUnsigned locals / parameters. */
+set('7','valueX');
+set('8','valueY');
+set('9','xBit30');
+set('a','yBit30');
+set('b','xBit31');
+set('c','yBit31');
+set('d','result');
+
+/* Boolean round parameters shared by F/G/H/I. */
+set('f','x');
+set('10','y');
+set('11','z');
+
+/* Round helper parameters. */
+set('16','a');
+set('17','b');
+set('18','c');
+set('19','d');
+set('1a','shift');
+set('1b','constant');
+
+/* Message -> word array. */
+set('20','wordIndex');
+set('21','messageLength');
+set('22','messageLengthPlus8');
+set('23','blockCount');
+set('24','wordArrayLength');
+set('25','wordArray');
+set('26','byteOffset');
+set('27','messageIndex');
+
+/* wordToHex. */
+set('29','hexResult');
+set('2a','hexTemp');
+set('2b','byteValue');
+set('2c','byteIndex');
+
+/* UTF8. */
+set('2e','utf8Text');
+set('2f','charIndex');
+
+/* Main digest loop. */
+set('30','blockIndex');
+set('31','savedA');
+set('32','savedB');
+set('33','savedC');
+set('34','savedD');
+
+/* Shift constants. */
+set('35','S11');
+set('36','S12');
+set('37','S13');
+set('38','S14');
+set('39','S21');
+set('3a','S22');
+set('3b','S23');
+set('3c','S24');
+set('3d','S31');
+set('3e','S32');
+set('3f','S33');
+set('40','S34');
+set('41','S41');
+set('42','S42');
+set('43','S43');
+set('44','S44');
+
+set('45','digest');
+
+/* Apply longest identifiers first and validate after every rename. */
+var keys=Object.keys(map).sort(function(a,b){return b.length-a.length});
+var out=src,used={};
+
+for(var i=0;i<keys.length;i++){
+var oldName=keys[i],newName=map[oldName];
+if(!newName||used[newName])continue;
+
+/* Only rename identifiers that actually occur as tokens. */
+var exists=new RegExp('(?:^|[^A-Za-z0-9_$])'+oldName.replace(/[$]/g,'\\$&')+'(?=$|[^A-Za-z0-9_$])').test(out);
+if(!exists)continue;
+
+/* Avoid collision with an unrelated existing identifier. */
+var collision=new RegExp('(?:^|[^A-Za-z0-9_$])'+newName.replace(/[$]/g,'\\$&')+'(?=$|[^A-Za-z0-9_$])').test(out);
+if(collision)continue;
+
+var next=_replaceIdentifierTokenSafe(out,oldName,newName);
+if(next!==out&&_syntaxValid(next)){
+out=next;
+used[newName]=1
+}
+}
+
+/* A classic MD5 block should no longer expose its family if every safe rename
+   succeeded. Remaining names are deliberately preserved rather than guessed. */
+return out
+}
 function _advancedSemanticHumanize(src){
 var out=String(src||'');
 var next=_domSemanticHumanize(out);
@@ -3787,6 +3896,11 @@ if(_syntaxValid(semanticClean))current=semanticClean;
 
 var staticClean=_strongStaticResolve(current);
 if(_syntaxValid(staticClean))current=staticClean;
+
+/* Run semantic naming again because resolving a string table can expose
+   patterns that were not visible on the first semantic pass. */
+semanticClean=_advancedSemanticHumanize(current);
+if(_syntaxValid(semanticClean))current=semanticClean;
 
 current=_protectHtmlRawTextEndTags(current);
 
