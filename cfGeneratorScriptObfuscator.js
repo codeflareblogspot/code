@@ -1,17 +1,172 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.32';
-(function(){
-var st=document.createElement('style');
-st.id='cfObCopyFeedbackStyle';
-st.textContent=
-'#cfObTool .is-copied{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important;box-shadow:0 0 0 3px rgba(22,163,74,.16)!important;transform:translateY(-1px)}'+
-'#cfObTool .is-copied i{color:#fff!important}';
-if(!document.getElementById(st.id))document.head.appendChild(st)
-})();
+var CF_JS_LAB_VERSION='v2.34';
+var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css';
+
+function _loadCodeFlareJsLabCSS(){
+try{
+if(document.querySelector('link[data-cf-js-lab-css]'))return;
+var existing=document.querySelector('link[href="'+CF_JS_LAB_CSS+'"]');
+if(existing){
+existing.setAttribute('data-cf-js-lab-css','1');
+return
+}
+var link=document.createElement('link');
+link.rel='stylesheet';
+link.href=CF_JS_LAB_CSS;
+link.setAttribute('data-cf-js-lab-css','1');
+document.head.appendChild(link)
+}catch(_e){}
+}
+_loadCodeFlareJsLabCSS();
 
 function _z(a){return String.fromCharCode.apply(null,a)}
+
+function _cfJsLabRender(){
+var root=document.getElementById('cfJsLab');
+if(!root){
+/* Backward compatibility: old article markup may still provide cfObTool directly. */
+return document.getElementById('cfObTool')
+}
+if(document.getElementById('cfObTool'))return document.getElementById('cfObTool');
+
+root.innerHTML=`
+<div class="cfObApp cfObTool" id="cfObTool">
+  <div class="cfObBrand" id="cfObBrand">
+    <div>
+      <div class="cfObTitle" id="cfObTitle" data-cf-js-lab-title>CODEFLARE JS LAB</div>
+      <div class="cfObDomain">JavaScript / Blogger XML Laboratory</div>
+    </div>
+    <div class="cfObStatus" id="cfObStatus"><i></i> READY</div>
+  </div>
+
+  <div class="cfObOptions" id="cfObOptions">
+    <div class="cfObButtons">
+      <button class="cfObModeBtn active" data-mode="obfuscate" type="button"><i class="fa fa-lock"></i> OBFUSCATOR</button>
+      <button class="cfObModeBtn" data-mode="deobfuscate" type="button"><i class="fa fa-unlock-alt"></i> DEOBFUSCATOR</button>
+      <button class="cfObModeBtn" data-mode="tools" type="button"><i class="fa fa-wrench"></i> CODE TOOLS</button>
+    </div>
+
+    <div class="cfObButtons" id="cfObPreset">
+      <button data-preset="light" type="button">LIGHT</button>
+      <button class="active" data-preset="balanced" type="button">BALANCED</button>
+      <button data-preset="strong" type="button">STRONG</button>
+      <button data-preset="custom" type="button">CUSTOM</button>
+    </div>
+
+    <div class="cfObToolCard">
+      <label><input data-tech="rename" type="checkbox"/> Rename</label>
+      <label><input data-tech="array" type="checkbox"/> String Array</label>
+      <label><input data-tech="encode" type="checkbox"/> Encode</label>
+      <label><input data-tech="shuffle" type="checkbox"/> Shuffle</label>
+      <label><input data-tech="rotate" type="checkbox"/> Rotate</label>
+      <label><input data-tech="split" type="checkbox"/> Split</label>
+      <label><input data-tech="numbers" type="checkbox"/> Numbers</label>
+      <label><input data-tech="objectKeys" type="checkbox"/> Object Keys</label>
+      <label><input data-tech="controlFlow" type="checkbox"/> Control Flow</label>
+      <label><input data-tech="dead" type="checkbox"/> Dead Code</label>
+      <label><input data-tech="debug" type="checkbox"/> Debug Guard</label>
+      <label><input data-tech="selfDefend" type="checkbox"/> Self Defend</label>
+      <label><input data-tech="compact" type="checkbox"/> Compact</label>
+      <label><input data-tech="debugLog" type="checkbox"/> Debug Log</label>
+      <label><input data-tech="domain" type="checkbox"/> Domain Lock</label>
+      <input class="cfObDomain" id="cfObDomain" type="text" placeholder="example.com"/>
+    </div>
+
+    <div class="cfObToolCard">
+      <span>Protection <b id="cfObProtectionLevel">-</b></span>
+      <span>Runtime <b id="cfObRuntimeImpact">-</b></span>
+      <span>Growth <b id="cfObGrowthImpact">-</b></span>
+      <span>Selected <b id="cfObSelectedTech">-</b></span>
+      <span class="cfObTechState" id="cfObTechState"><i></i> ACTIVE</span>
+    </div>
+  </div>
+
+  <div class="cfObToolCard">
+    <label class="cfObInputLabel" id="cfObInputLabel" for="cfObInput"><i class="fa fa-terminal"></i> JAVASCRIPT INPUT</label>
+    <textarea class="cfObInput" id="cfObInput" spellcheck="false" placeholder="// Paste JavaScript, Blogger XML, or full source code here..."></textarea>
+    <div class="cfObActions">
+      <button id="cfObPaste" type="button"><i class="fa fa-paste"></i> PASTE</button>
+      <button id="cfObClear" type="button"><i class="fa fa-trash"></i> CLEAR</button>
+      <button class="cfObProcess" id="cfObProcess" type="button"><i class="fa fa-cogs"></i> OBFUSCATE CODE</button>
+    </div>
+  </div>
+
+  <div class="cfObProgressBar"><span id="cfObProgressBar"></span></div>
+  <div class="cfObMessage" id="cfObMessage">READY</div>
+  <div class="cfObExternalWarning" id="cfObExternalWarning"></div>
+
+  <div class="cfObMethods" data-cf-methods>
+    <div class="cfObDeobSupport" id="cfObDeobSupport">
+      <button class="cfObDeobMethod" data-method="codeflare" type="button"><i class="fa fa-code"></i> CodeFlare</button>
+      <button class="cfObDeobMethod" data-method="packer" type="button"><i class="fa fa-cubes"></i> Packer</button>
+      <button class="cfObDeobMethod" data-method="string-array" type="button"><i class="fa fa-list"></i> String Array</button>
+      <button class="cfObDeobMethod" data-method="hex" type="button"><i class="fa fa-hashtag"></i> Hex</button>
+      <button class="cfObDeobMethod" data-method="unicode" type="button"><i class="fa fa-font"></i> Unicode</button>
+      <button class="cfObDeobMethod" data-method="charcode" type="button"><i class="fa fa-keyboard-o"></i> CharCode</button>
+      <button class="cfObDeobMethod" data-method="bracket" type="button"><i class="fa fa-code"></i> Bracket</button>
+      <button class="cfObDeobMethod" data-method="mangled" type="button"><i class="fa fa-random"></i> Mangled</button>
+      <button class="cfObDeobMethod" data-method="multi-layer" type="button"><i class="fa fa-clone"></i> Multi Layer</button>
+    </div>
+  </div>
+
+  <div class="cfObNormalizePanel" id="cfObNormalizePanel">
+    <div class="cfObNormalizeState" id="cfObNormalizeState">Run Deobfuscate first.</div>
+    <div class="cfObActions">
+      <button class="cfObNormalize" id="cfObNormalizeFull" type="button" disabled><i class="fa fa-magic"></i> NORMALIZE</button>
+      <button id="cfObNormalizeReset" type="button"><i class="fa fa-refresh"></i> RESET</button>
+    </div>
+    <label><input id="cfObNormalizeBeautify" name="cfObNormFmt" type="radio" checked/> Beautify</label>
+    <label><input id="cfObNormalizeFlush" name="cfObNormFmt" type="radio"/> Compact</label>
+  </div>
+
+  <div class="cfObLayerSection" id="cfObLayerSection">
+    <div><b id="cfObLayerStatus">WAITING</b></div>
+    <div>Current <b id="cfObLayerCurrent">0</b> · Detected <b id="cfObLayerDetected">NONE</b> · Remaining <b id="cfObLayerRemaining">0</b></div>
+    <div class="cfObLayerResult" id="cfObLayerResult">READY</div>
+    <div class="cfObLayerList" id="cfObLayerList"><span>No layer processed yet.</span></div>
+  </div>
+
+  <div class="cfObToolCard">
+    <div class="cfObOutputTitle" id="cfObOutputTitle"><i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT</div>
+    <textarea class="cfObOutput" id="cfObOutput" spellcheck="false" readonly></textarea>
+    <div class="cfObActions">
+      <button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY</button>
+      <button class="cfObInject" id="cfObCopyScript" type="button" disabled><i class="fa fa-code-fork"></i> ADD TAG SCRIPT</button>
+    </div>
+    <div><span id="cfObOutputCount">0 CHAR</span> · <span class="cfObResultStatus" id="cfObResultStatus">READY</span></div>
+  </div>
+
+  <div class="cfObToolCard">
+    <span>Original <b id="cfObOriginalSize">0 KB</b></span>
+    <span>Result <b id="cfObResultSize">0 KB</b></span>
+    <span>Change <b id="cfObSizeChange">0%</b></span>
+  </div>
+
+  <div class="cfObPasswordOption" id="cfObPasswordOption">
+    <label><input id="cfObPasswordEnable" type="checkbox"/> Password Protection</label>
+    <div>
+      <input class="cfObPassword" id="cfObPassword" type="password" placeholder="Password"/>
+      <button class="cfObPassEye" type="button"><i class="fa fa-eye"></i></button>
+    </div>
+    <div>
+      <input class="cfObPasswordConfirm" id="cfObPasswordConfirm" type="password" placeholder="Confirm password"/>
+      <button class="cfObPassEye" type="button"><i class="fa fa-eye"></i></button>
+    </div>
+  </div>
+
+  <div class="cfObPasswordAccess" id="cfObPasswordAccess" style="display:none">
+    <input class="cfObAccessPassword" id="cfObAccessPassword" type="password" placeholder="Access password"/>
+  </div>
+
+  <div class="cfObCodeTools" id="cfObCodeTools" style="display:none"></div>
+</div>`;
+return document.getElementById('cfObTool')
+}
+
+_cfJsLabRender();
+
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
 
@@ -206,15 +361,6 @@ return (String(s||'').length/1024).toFixed(2)+' KB'
 
 
 
-(function(){
-try{
-var st=document.createElement('style');
-st.textContent='@media(max-width:600px){.cfObActions,.cfObAction,.cfObButtons{flex-wrap:wrap!important}.cfObInject,.cfObNormalize,[data-action="inject"],[data-action="normalize"]{min-width:0!important;max-width:100%!important;white-space:normal!important}.cfObActions button,.cfObAction button,.cfObButtons button{flex:1 1 140px!important;max-width:100%!important}}';
-document.head.appendChild(st)
-}catch(_e){}
-})();
-
-
 function _installDeobfuscatorMethodsUI(){
 try{
 if(document.getElementById('cfObMethodGrid'))return;
@@ -245,9 +391,6 @@ grid.appendChild(item)
 });
 host.appendChild(grid);
 
-var st=document.createElement('style');
-st.textContent='.cfObMethodGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;margin-top:8px}.cfObMethodCard{font:inherit;font-size:15px;text-align:left;padding:9px 10px;border:1px solid rgba(127,127,127,.25);background:transparent;color:inherit;cursor:pointer;overflow:hidden}.cfObMethodHead{display:flex;align-items:center;gap:7px;min-height:24px}.cfObMethodHead i{width:18px;text-align:center}.cfObMethodDesc{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease;margin-top:0}.cfObMethodCard:hover .cfObMethodDesc,.cfObMethodCard:focus .cfObMethodDesc,.cfObMethodCard.is-open .cfObMethodDesc{max-height:90px;opacity:1;margin-top:7px}@media(max-width:600px){.cfObMethodGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}';
-document.head.appendChild(st)
 }catch(_e){}
 }
 setTimeout(_installDeobfuscatorMethodsUI,0);
