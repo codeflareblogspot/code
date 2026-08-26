@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.04-stable';;
+var CF_JS_LAB_VERSION='v3.05-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -467,6 +467,49 @@ while((m=re.exec(text)))map[m[1]]=String(m[2]||'').trim();
 return map
 }
 
+
+function _markerInsideScript(marked,token){
+marked=String(marked||'');
+var pos=marked.indexOf(token);
+if(pos<0)return false;
+
+/* Determine HTML context from the nearest SCRIPT open/close before marker. */
+var before=marked.slice(0,pos);
+var open=-1,close=-1,m;
+var openRe=/<script\b[^>]*>/ig;
+while((m=openRe.exec(before)))open=m.index;
+var closeRe=/<\/script\s*>/ig;
+while((m=closeRe.exec(before)))close=m.index;
+
+return open>close
+}
+
+function _hasCDATAEnvelope(body){
+body=String(body||'');
+return /\/\/\s*<!\[CDATA\[/.test(body)&&/\/\/\s*\]\]>/.test(body)
+}
+
+function _markerReplacementForContext(marked,token,body){
+body=String(body||'').trim();
+
+if(_markerInsideScript(marked,token)){
+/* Marker is already inside <script>...</script>.
+   Insert JavaScript body only. Never add another SCRIPT or CDATA wrapper. */
+return _stripCDATADeep(_stripScriptWrapper(body)).trim()
+}
+
+/* Marker is outside a SCRIPT element.
+   Add a Blogger-safe script wrapper. Do not duplicate CDATA if the payload
+   already contains a complete CDATA envelope. */
+var clean=_stripScriptWrapper(body).trim();
+if(_hasCDATAEnvelope(clean)){
+return "<script type='text/javascript'>"+clean+"</script>"
+}
+
+clean=_stripCDATADeep(clean).trim();
+return "<script type='text/javascript'>//<![CDATA[\n"+clean+"\n//]]></script>"
+}
+
 function _restoreMarkerSource(marked,map){
 marked=String(marked||'');
 map=map||{};
@@ -476,7 +519,9 @@ var out=marked;
 for(var i=0;i<ids.length;i++){
 var id=ids[i],token=_markerToken(id);
 if(!(id in map))throw new Error('MARKER OUTPUT MISSING - '+id);
-out=out.replace(token,map[id])
+
+var replacement=_markerReplacementForContext(out,token,map[id]);
+out=out.replace(token,replacement)
 }
 
 /* No marker may remain in final source. */
@@ -1968,7 +2013,7 @@ if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
    deobfuscation can reveal literal </script> inside strings used by
    postscribe/dynamic widgets. In an inline script HTML parses that as the
    real closing tag, causing the remaining JavaScript to render as page text. */
-var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1);
+var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1);
 
 if(!isMarkerInject){
 var rawSafe=_protectHtmlRawTextEndTags(payload);
@@ -2005,7 +2050,7 @@ if(addTagOnly){
    No source search, marker lookup, normalize, or injection logic. */
 injected="<script type='text/javascript'>//<![CDATA[\n"+payload+"\n//]]></script>";
 }else if(fullSource){
-if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
 injected=_buildBatchInjectedSource();
 if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
 }else{
