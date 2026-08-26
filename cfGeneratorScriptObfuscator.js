@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.07-stable';;
+var CF_JS_LAB_VERSION='v3.08-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -1997,6 +1997,34 @@ say('INJECTING NORMALIZED DATA...');
 await _ui();
 
 try{
+/* ADD TAG SCRIPT is isolated from marker/source injection. */
+if(S.mode==='obfuscate'){
+var tagPayload=String(E.output&&E.output.value||'');
+if(!tagPayload.trim())throw new Error('OBFUSCATED OUTPUT EMPTY');
+var tagged;
+if(/^\s*<script\b/i.test(tagPayload)&&/<\/script\s*>\s*$/i.test(tagPayload)){
+tagged=tagPayload
+}else{
+var tagBody=_stripScriptWrapper(tagPayload).trim();
+var hasCDATA=/\/\/\s*<!\[CDATA\[/.test(tagBody)&&/\/\/\s*\]\]>/.test(tagBody);
+if(hasCDATA){
+tagged="<script type='text/javascript'>"+tagBody+"</script>"
+}else{
+tagBody=_stripCDATADeep(tagBody).trim();
+tagged="<script type='text/javascript'>//<![CDATA[\n"+tagBody+"\n//]]></script>"
+}
+}
+E.output.value=tagged;
+if(E.outCount)E.outCount.textContent=tagged.length.toLocaleString()+' CHAR';
+if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> SCRIPT TAG OUTPUT';
+if(E.resultSize)E.resultSize.textContent=kb(tagged);
+if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
+S.lastSafeOutput=tagged;S.injectCompleted=true;
+setProgress(100);say('ADD TAG SCRIPT COMPLETE - READY TO COPY');
+_injectButtonState();
+return
+}
+
 var payload='';
 
 if(S.mode==='deobfuscate'){
