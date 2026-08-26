@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.31';
+var CF_JS_LAB_VERSION='v2.32';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -204,6 +204,53 @@ function _fastKBFromChars(s){
 return (String(s||'').length/1024).toFixed(2)+' KB'
 }
 
+
+
+(function(){
+try{
+var st=document.createElement('style');
+st.textContent='@media(max-width:600px){.cfObActions,.cfObAction,.cfObButtons{flex-wrap:wrap!important}.cfObInject,.cfObNormalize,[data-action="inject"],[data-action="normalize"]{min-width:0!important;max-width:100%!important;white-space:normal!important}.cfObActions button,.cfObAction button,.cfObButtons button{flex:1 1 140px!important;max-width:100%!important}}';
+document.head.appendChild(st)
+}catch(_e){}
+})();
+
+
+function _installDeobfuscatorMethodsUI(){
+try{
+if(document.getElementById('cfObMethodGrid'))return;
+var host=document.querySelector('.cfObMethods,.cfObMethodList,[data-cf-methods]');
+if(!host)return;
+var methods=[
+['fa-list','String Table','Resolve indexed string arrays and legacy _0x tables.'],
+['fa-code','Hex / Unicode','Decode hexadecimal and escaped Unicode strings.'],
+['fa-random','Array Rotate','Recover rotated or shifted lookup arrays.'],
+['fa-cubes','Packed Code','Unpack common eval/packer style layers.'],
+['fa-sitemap','Control Flow','Simplify safe control-flow indirection patterns.'],
+['fa-link','Alias Resolve','Resolve safe aliases and indirect references.'],
+['fa-object-group','Property Clean','Convert safe bracket properties to readable dot notation.'],
+['fa-compress','Dead Wrapper','Remove verified unused decoding wrappers.'],
+['fa-magic','Readable Pass','Apply conservative readability transformations.'],
+['fa-check-circle','Syntax Guard','Validate every transformation before accepting it.'],
+['fa-shield','Marker Guard','Process extracted blocks without touching normal source.'],
+['fa-refresh','Multi Pass','Repeat safe transforms until output stabilizes.']
+];
+var grid=document.createElement('div');
+grid.id='cfObMethodGrid'; grid.className='cfObMethodGrid';
+methods.forEach(function(x){
+var item=document.createElement('button');
+item.type='button'; item.className='cfObMethodCard';
+item.innerHTML='<span class="cfObMethodHead"><i class="fa '+x[0]+'"></i><b>'+x[1]+'</b></span><span class="cfObMethodDesc">'+x[2]+'</span>';
+item.addEventListener('click',function(){item.classList.toggle('is-open')});
+grid.appendChild(item)
+});
+host.appendChild(grid);
+
+var st=document.createElement('style');
+st.textContent='.cfObMethodGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:7px;margin-top:8px}.cfObMethodCard{font:inherit;font-size:15px;text-align:left;padding:9px 10px;border:1px solid rgba(127,127,127,.25);background:transparent;color:inherit;cursor:pointer;overflow:hidden}.cfObMethodHead{display:flex;align-items:center;gap:7px;min-height:24px}.cfObMethodHead i{width:18px;text-align:center}.cfObMethodDesc{display:block;max-height:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease;margin-top:0}.cfObMethodCard:hover .cfObMethodDesc,.cfObMethodCard:focus .cfObMethodDesc,.cfObMethodCard.is-open .cfObMethodDesc{max-height:90px;opacity:1;margin-top:7px}@media(max-width:600px){.cfObMethodGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}';
+document.head.appendChild(st)
+}catch(_e){}
+}
+setTimeout(_installDeobfuscatorMethodsUI,0);
 
 function _markerId(n){
 return 'CF_OBF_BLOCK_'+String(n).padStart(3,'0')
@@ -447,7 +494,7 @@ active=hasOutput&&hasSource;
 title=active?'Add obfuscated code inside a SCRIPT tag':'Obfuscate source first'
 }else if(S.mode==='deobfuscate'){
 active=hasOutput&&hasSource&&S.normalizePassed&&!S.normalizeBusy;
-title=active?'Inject normalized deobfuscation result to source':'Run FULL NORMALIZE first'
+title=active?'Inject normalized deobfuscation result to source':'Run NORMALIZE first'
 }else{
 active=false;
 title='Not available in Code Tools mode'
@@ -1557,11 +1604,11 @@ if(m==='obfuscate'){
 E.copyScript.innerHTML='<i class="fa fa-code"></i> ADD TAG SCRIPT';
 E.copyScript.setAttribute('data-action-label','ADD TAG SCRIPT')
 }else if(m==='deobfuscate'){
-E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE';
-E.copyScript.setAttribute('data-action-label','INJECT DATA TO SOURCE')
+E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT SOURCE';
+E.copyScript.setAttribute('data-action-label','INJECT SOURCE')
 }else{
-E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE';
-E.copyScript.setAttribute('data-action-label','INJECT DATA TO SOURCE')
+E.copyScript.innerHTML='<i class="fa fa-code-fork"></i> INJECT SOURCE';
+E.copyScript.setAttribute('data-action-label','INJECT SOURCE')
 }
 }
 
@@ -1641,6 +1688,9 @@ transformed=await _a6(b.original);
 var readable=_readabilityPass(transformed);
 if(_syntaxValid(readable))transformed=readable;
 
+var staticClean=_strongStaticResolve(transformed);
+if(_syntaxValid(staticClean))transformed=staticClean;
+
 transformed=_protectHtmlRawTextEndTags(transformed);
 if(!_syntaxValid(transformed))throw new Error(b.id+' SYNTAX CHECK FAILED');
 
@@ -1701,7 +1751,7 @@ _injectButtonState();
 return
 }
 if(S.mode==='deobfuscate'&&!S.normalizePassed){
-say('INJECT LOCKED - RUN FULL NORMALIZE FIRST');
+say('INJECT LOCKED - RUN NORMALIZE FIRST');
 return
 }
 if(S.mode==='tools')return;
@@ -1838,14 +1888,14 @@ S.injectCompleted=false;
 S.normalizedBase='';
 
 setOutput(out,'DEOBFUSCATION MARKER COLLECTION OUTPUT','SUCCESS');
-setNormalizeFinal(false,'Marker collection selesai. Tekan FULL NORMALIZE untuk merapikan dan memvalidasi setiap blok sebelum Inject.');
+setNormalizeFinal(false,'Marker collection selesai. Tekan NORMALIZE untuk merapikan dan memvalidasi setiap blok sebelum Inject.');
 if(E.normalizeFull)E.normalizeFull.disabled=false;
 
 setProgress(92);
 await _ui();
 updateLayerPanel(out,'COLLECTION COMPLETE');
 _injectButtonState();
-say('MARKER COLLECTION COMPLETE - RUN FULL NORMALIZE')
+say('MARKER COLLECTION COMPLETE - RUN NORMALIZE')
 }else{
 setProgress(14);
 say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
@@ -1873,8 +1923,8 @@ updateLayerPanel(out,S.largeSourceMode?'TARGET ANALYZED':'ANALYZED');
 _injectButtonState();
 
 say(S.largeSourceMode
-?'DEOBFUSCATE COMPLETE - LARGE SOURCE TARGET ONLY - RUN FULL NORMALIZE'
-:'DEOBFUSCATE COMPLETE - RUN FULL NORMALIZE')
+?'DEOBFUSCATE COMPLETE - LARGE SOURCE TARGET ONLY - RUN NORMALIZE'
+:'DEOBFUSCATE COMPLETE - RUN NORMALIZE')
 }
 }
 
@@ -2772,16 +2822,22 @@ return src
 
 function _resolveLegacy0xLiteralTables(src){
 src=String(src||'');
-var current=src;
-var decl=/\bvar\s+(_0x[a-f0-9]+)\s*=\s*(\[(?:(?:\s*(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|null|true|false|-?\d+(?:\.\d+)?)\s*,?))*\])\s*;/ig;
+var current=src, pass=0;
+
+while(pass++<6){
 var tables=[],m;
+/* Supports:
+   var _0xf10a=[...];  let/const ...; and bare _0xf10a=[...]; */
+var decl=/(?:\b(?:var|let|const)\s+)?(_0x[a-f0-9]+)\s*=\s*(\[(?:(?:\s*(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|null|true|false|-?\d+(?:\.\d+)?)\s*,?))*\])\s*;/ig;
 
 while((m=decl.exec(current))){
 var vals=null;
 try{vals=Function('"use strict";return ('+m[2]+')')()}catch(_e){}
 if(Array.isArray(vals))tables.push({name:m[1],vals:vals,full:m[0]})
 }
+if(!tables.length)break;
 
+var any=false;
 for(var t=0;t<tables.length;t++){
 var rec=tables[t],changed=false;
 var ref=new RegExp('\\b'+rec.name+'\\s*\\[\\s*(0x[0-9a-f]+|\\d+)\\s*\\]','ig');
@@ -2798,12 +2854,38 @@ return all
 });
 
 if(changed&&_syntaxValid(next)){
-current=next;
-if(!(new RegExp('\\b'+rec.name+'\\s*\\[','i')).test(current)){
+current=next; any=true;
+
+/* Remove table only after every static table reference has disappeared. */
+var remains=(new RegExp('\\b'+rec.name+'\\s*\\[','i')).test(current);
+if(!remains){
 var removed=current.replace(rec.full,'');
 if(_syntaxValid(removed))current=removed
 }
 }
+}
+if(!any)break
+}
+return current
+}
+
+function _cleanResolvedProperties(src){
+src=String(src||'');
+var out=src;
+/* Safe bracket-string -> dot conversion for valid JS identifiers only. */
+out=out.replace(/\[\s*["']([A-Za-z_$][\w$]*)["']\s*\]/g,function(all,key){
+return'.'+key
+});
+return _syntaxValid(out)?out:src
+}
+
+function _strongStaticResolve(src){
+var current=String(src||''),guard=0;
+while(guard++<6){
+var before=current;
+current=_resolveLegacy0xLiteralTables(current);
+current=_cleanResolvedProperties(current);
+if(current===before)break
 }
 return current
 }
@@ -2812,8 +2894,8 @@ function _deepReadablePass(src){
 src=String(src||'');
 var current=src,r;
 
-current=_safeTransformStep(current,'LEGACY 0X STRING TABLE',function(s){
-return _resolveLegacy0xLiteralTables(s)
+current=_safeTransformStep(current,'STATIC TABLE RESOLVER',function(s){
+return _strongStaticResolve(s)
 });
 
 /* Critical ordering:
@@ -3370,6 +3452,9 @@ await _ui()
 var sem=_conservativeHumanize(current);
 if(_syntaxValid(sem.code))current=sem.code;
 
+var staticClean=_strongStaticResolve(current);
+if(_syntaxValid(staticClean))current=staticClean;
+
 current=_protectHtmlRawTextEndTags(current);
 
 var probe=_syntaxProbe(current);
@@ -3408,15 +3493,15 @@ if(E.resultStatus)E.resultStatus.textContent=safe?'READY TO INJECT':'NORMALIZE C
 setProgress(96);
 updateLayerPanel(out,'MARKER FINAL CHECK');
 setNormalizeFinal(true,safe
-?'FULL NORMALIZE COMPLETE - MARKER BLOCKS READY TO INJECT.'
-:'FULL NORMALIZE STOPPED - '+hardErrors[0]);
+?'NORMALIZE COMPLETE - MARKER BLOCKS READY TO INJECT.'
+:'NORMALIZE STOPPED - '+hardErrors[0]);
 
 _injectButtonState();
 
 if(safe){
-say('FULL NORMALIZE COMPLETE - ALL MARKER BLOCKS VERIFIED')
+say('NORMALIZE COMPLETE - ALL MARKER BLOCKS VERIFIED')
 }else{
-say('FULL NORMALIZE NOT SAFE - '+hardErrors.join(' | '))
+say('NORMALIZE NOT SAFE - '+hardErrors.join(' | '))
 }
 return safe
 }
@@ -3429,7 +3514,7 @@ if(S.mode!=='deobfuscate'||!S.deobfuscateReady||!E.output.value||S.normalizeFina
 /* v2.31: marker collections normalize each extracted script independently.
    Never run one parser/normalizer across several unrelated script blocks. */
 if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
-_busy(true,'FULL NORMALIZE - MARKER COLLECTION');
+_busy(true,'NORMALIZE - MARKER COLLECTION');
 if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
 if(E.normalizeState)E.normalizeState.textContent='Normalizing collected script blocks individually...';
 try{
@@ -3447,7 +3532,7 @@ return
 
 var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=8;
 var seen={},lastFp='',fp='';
-_busy(true,'FULL NORMALIZE - PREPARING');
+_busy(true,'NORMALIZE - PREPARING');
 setProgress(4);
 if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
 if(E.normalizeState)E.normalizeState.textContent='Sedang menganalisis layer. Proses besar akan dihentikan otomatis bila tidak ada perubahan.';
@@ -3518,7 +3603,7 @@ S.lastSafeOutput=S.normalizedBase
 S.normalizedBase=S.lastSafeOutput;
 say('NORMALIZE SAFETY FALLBACK - LAST VALID OUTPUT RESTORED')
 }
-/* FULL NORMALIZE validates the normalized JavaScript payload only.
+/* NORMALIZE validates the normalized JavaScript payload only.
    Blogger/full-source/XML validation belongs to the Inject stage. */
 var finalFlow={syntax:[],flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:[],warnings:[],ok:true,safe:true};
 var normalizeProbe=_syntaxProbe(S.normalizedBase);
@@ -3582,13 +3667,13 @@ _renderNormalizeOutput();
 
 setProgress(100);
 updateLayerPanel(S.normalizedBase,'FINAL CHECK');
-setNormalizeFinal(true,finalFlow.safe?'FULL NORMALIZE COMPLETE - INJECT DATA TO SOURCE sekarang aktif.':'FULL NORMALIZE STOPPED - Integrity check belum aman.');
+setNormalizeFinal(true,finalFlow.safe?'NORMALIZE COMPLETE - INJECT SOURCE sekarang aktif.':'NORMALIZE STOPPED - Integrity check belum aman.');
 if(E.resultStatus)E.resultStatus.textContent=finalFlow.safe?(finalFlow.warnings.length?'NORMALIZED + WARNING':'READY TO INJECT'):'NORMALIZE CHECK ERROR';
 if(finalFlow.safe){
-say(finalFlow.warnings.length?'FULL NORMALIZE COMPLETE - READY TO INJECT (WARNING NON-BLOCKING)':'FULL NORMALIZE COMPLETE - READY TO INJECT');
+say(finalFlow.warnings.length?'NORMALIZE COMPLETE - READY TO INJECT (WARNING NON-BLOCKING)':'NORMALIZE COMPLETE - READY TO INJECT');
 
 }else{
-say('FULL NORMALIZE NOT SAFE - INJECT REMAINS LOCKED - '+_integrityFirstIssue(finalFlow))
+say('NORMALIZE NOT SAFE - INJECT REMAINS LOCKED - '+_integrityFirstIssue(finalFlow))
 }
 
 await _ui();
