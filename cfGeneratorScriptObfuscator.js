@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.56';
+var CF_JS_LAB_VERSION='v3.00-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -484,67 +484,6 @@ if(/\/\*__CF_OBF_BLOCK_\d{3}__\*\//.test(out)){
 throw new Error('MARKER RESTORE INCOMPLETE')
 }
 return out
-}
-
-
-function _tryUnpackOwnEngineWrapper(src){
-src=String(src||'');
-/* Exact structural guard: array -> reverse -> rotate -> join -> atob ->
-   Uint8Array -> TextDecoder -> indirect eval. No eval is executed here. */
-if(!/\batob\s*\(/.test(src)||!/\bTextDecoder\s*\(\s*\)\s*\.decode\s*\(/.test(src)||
-   !/\(\s*0\s*,\s*eval\s*\)\s*\(/.test(src)||!/\.reverse\s*\(\s*\)/.test(src)||
-   !/\.join\s*\(\s*["']{2}\s*\)/.test(src))return null;
-
-var m=/var\s+([A-Za-z_$][\w$]*)\s*=\s*(\[(?:(?:\s*"(?:(?:\\.)|[^"\\])*"\s*,?)+)\])\s*;/.exec(src);
-if(!m)return null;
-
-var arrName=m[1],literal=m[2],arr;
-try{arr=JSON.parse(literal)}catch(_e){return null}
-if(!Array.isArray(arr)||arr.length<2)return null;
-for(var i=0;i<arr.length;i++){
-if(typeof arr[i]!=='string'||!/^[A-Za-z0-9+/=]*$/.test(arr[i]))return null
-}
-
-var esc=arrName.replace(/[$]/g,'\\$&');
-var reverseRe=new RegExp('\\b'+esc+'\\s*\\.\\s*reverse\\s*\\(\\s*\\)');
-if(!reverseRe.test(src))return null;
-
-/* Resolve the rotation amount from:
-   var _back = arr.length - (((N)) % arr.length);
-   arr = arr.slice(_back).concat(arr.slice(0,_back)); */
-var backRe=new RegExp(
-'var\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*'+esc+'\\.length\\s*-\\s*\\(\\s*\\(\\s*\\(?\\s*(\\d+)\\s*\\+\\s*(\\d+)\\s*\\)?\\s*\\)\\s*%\\s*'+esc+'\\.length\\s*\\)'
-);
-var bm=backRe.exec(src);
-if(!bm)return null;
-
-var backName=bm[1].replace(/[$]/g,'\\$&');
-var rotateRe=new RegExp(
-esc+'\\s*=\\s*'+esc+'\\.slice\\s*\\(\\s*'+backName+'\\s*\\)\\s*\\.concat\\s*\\(\\s*'+esc+'\\.slice\\s*\\(\\s*0\\s*,\\s*'+backName+'\\s*\\)\\s*\\)'
-);
-if(!rotateRe.test(src))return null;
-
-arr.reverse();
-var amount=(parseInt(bm[2],10)+parseInt(bm[3],10))%arr.length;
-var back=arr.length-amount;
-arr=arr.slice(back).concat(arr.slice(0,back));
-
-var packed=arr.join(''),binary;
-try{binary=atob(packed)}catch(_e2){return null}
-
-var bytes=new Uint8Array(binary.length);
-for(var j=0;j<binary.length;j++)bytes[j]=binary.charCodeAt(j);
-var decoded;
-try{decoded=new TextDecoder().decode(bytes)}catch(_e3){return null}
-
-if(!decoded||decoded.length<32)return null;
-return{
-decoded:decoded,
-arrayName:arrName,
-chunks:arr.length,
-packedLength:packed.length,
-decodedLength:decoded.length
-}
 }
 
 function _captureInjectSource(src){
@@ -1379,14 +1318,12 @@ if(_packerPresent(body))score+=14;
 if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=4;
 
 /* Legacy _0x array obfuscation used by older Blogger templates. */
-if(/\b(?:var|let|const)\s+_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*=\s*\[/i.test(body))score+=10;
-if(/\b_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*\[\s*(?:0x[a-f0-9]+|\d+)\s*\]/i.test(body))score+=4;
+if(/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body))score+=10;
+if(/\b_0x[a-f0-9]+\s*\[\s*(?:0x[a-f0-9]+|\d+)\s*\]/i.test(body))score+=4;
 
 var hex=(body.match(/\\x[0-9a-f]{2}/gi)||[]).length;
 var uni=(body.match(/\\u[0-9a-f]{4}/gi)||[]).length;
-var mangled=(body.match(/\b_0x[a-z0-9]+(?:x[a-z0-9]+)*\b/gi)||[]).length;
-var legacyX=(body.match(/\b_0x[a-z0-9]+x[a-z0-9]+\b/gi)||[]).length;
-if(legacyX>=3)score+=4;
+var mangled=(body.match(/\b_0x[a-f0-9]+\b/gi)||[]).length;
 
 /* Density bonuses distinguish a real encoded block from an occasional
    escaped string in otherwise normal JavaScript. */
@@ -1413,7 +1350,7 @@ var fragment=_findObfuscatedFragment(body);
 
 /* If the whole script is clearly _0x-obfuscated but the generic fragment
    locator cannot isolate a tail fragment, safely use the script body only. */
-if(!fragment&&/\b(?:var|let|const)\s+_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*=\s*\[/i.test(body)){
+if(!fragment&&/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body)){
 var s=0,e=body.length;
 var c1=body.indexOf('//<![CDATA[');
 if(c1>=0)s=c1+'//<![CDATA['.length;
@@ -1520,6 +1457,25 @@ return prefix+JSON.stringify(value)+suffix
 return _syntaxValid(out)?out:src
 }
 
+
+function _stableRepairDuplicateDeclarations(src){
+src=String(src||'');
+var out='',i=0,q='',esc=false,line=false,block=false;
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+if(line){out+=c;if(c==='\n')line=false;i++;continue}
+if(block){out+=c;if(c==='*'&&n==='/'){out+=n;i+=2;block=false;continue}i++;continue}
+if(q){out+=c;if(esc){esc=false;i++;continue}if(c==='\\'){esc=true;i++;continue}if(c===q)q='';i++;continue}
+if(c==='/'&&n==='/'){out+=c+n;i+=2;line=true;continue}
+if(c==='/'&&n==='*'){out+=c+n;i+=2;block=true;continue}
+if(c==='"'||c==="'"||c==='`'){out+=c;q=c;i++;continue}
+var m=/^(var|let|const)\s+\1\b/.exec(src.slice(i));
+if(m){out+=m[1];i+=m[0].length;continue}
+out+=c;i++
+}
+return out
+}
+
 function _readabilityPass(src){
 src=String(src||'');
 var current=src,next;
@@ -1593,6 +1549,10 @@ current=t.code;
 
 step=_d2(current);
 t=_safeTransform(current,step,'NORMALIZE INDIRECT');
+current=t.code;
+
+step=_stableRepairDuplicateDeclarations(current);
+t=_safeTransform(current,step,'STABLE DUPLICATE DECLARATION REPAIR');
 current=t.code;
 
 step=_readabilityPass(current);
@@ -1858,7 +1818,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
 E.clear.addEventListener('click',function(){
-_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;S.directFullSourceRecovery=false;S.directFullSourceRecovery=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
 if(!E.output.value)return;
 try{
@@ -2002,43 +1962,11 @@ payload=_stripCDATADeep(_stripScriptWrapper(payload)).trim()
 
 if(!payload)throw new Error('VALID PAYLOAD NOT FOUND');
 
-/* Full-source handling.
-   IMPORTANT: a full Blogger/XML/HTML source must NOT be skipped when marker
-   blocks exist. In that case Inject must rebuild the ORIGINAL source and put
-   the final normalized JavaScript back at every marker position.
-
-   Only a native CodeFlare wrapper that decoded directly into a complete source
-   AND has no marker collection is already final. */
-var hasMarkerInject=!!(
-  S.markerCollectionReady &&
-  S.markerBlocks &&
-  S.markerBlocks.length
-);
-
-if(
-  S.mode==='deobfuscate' &&
-  S.directFullSourceRecovery &&
-  !hasMarkerInject &&
-  _looksLikeRecoveredFullSource(payload)
-){
-  S.injectCompleted=true;
-  S.normalizePassed=true;
-  S.normalizeFinal=true;
-  S.normalizedBase=payload;
-  S.lastSafeOutput=payload;
-  setOutput(payload,'CODEFLARE RECOVERED FULL SOURCE','READY TO COPY');
-  if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
-  setProgress(100);
-  _injectButtonState();
-  say('DIRECT FULL SOURCE RECOVERY COMPLETE - NO MARKER INJECTION REQUIRED');
-  return
-}
-
 /* BLOGGER/HTML RAW-TEXT SAFETY:
    deobfuscation can reveal literal </script> inside strings used by
    postscribe/dynamic widgets. In an inline script HTML parses that as the
    real closing tag, causing the remaining JavaScript to render as page text. */
-var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1);
+var isMarkerInject=!!(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1);
 
 if(!isMarkerInject){
 var rawSafe=_protectHtmlRawTextEndTags(payload);
@@ -2064,39 +1992,16 @@ setProgress(35);
 await _ui();
 
 var raw=_getInjectSource();
-
-/* Marker reconstruction has priority in DEOBFUSCATE mode. The raw source may
-   be a complete Blogger/XML/HTML template; that is exactly where normalized
-   blocks need to be restored. */
-/* In OBFUSCATE mode this button is "Add Tag Script", NOT source injection.
-   Even when the original input was a full Blogger/HTML document containing
-   <script>, the generated obfuscated payload must simply be wrapped. */
-var addTagOnly=(S.mode==='obfuscate');
-var fullSource=!addTagOnly&&!!raw&&raw.indexOf('<script')!==-1;
+var fullSource=!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
-if(addTagOnly){
-injected="<script type='text/javascript'>\n"+payload+"\n</script>";
-say('ADD TAG SCRIPT - OBFUSCATED OUTPUT WRAPPED')
-}else if(fullSource){
-/* Marker reconstruction is authoritative whenever collection exists,
-   including ONE block. This is important after SELF ENGINE UNPACK because
-   the normalized payload may no longer resemble the original obfuscated
-   fragment closely enough for a second heuristic target search. */
-if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
-  /* Last-mile synchronization before rebuilding the original source. */
-  _syncNormalizedOutputToMarkers(String(S.normalizedBase||E.output.value||payload));
-
-  if(S.markerBlocks.length===1&&
-     (!S.markerBlocks[0].processed||!String(S.markerBlocks[0].processed).trim())&&
-     payload&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(payload)){
-    S.markerBlocks[0].processed=payload
-  }
-  injected=_buildBatchInjectedSource();
-  if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
+if(fullSource){
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
+injected=_buildBatchInjectedSource();
+if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
 }else{
-  injected=_fastInjectBuild(payload);
-  if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
+injected=_fastInjectBuild(payload);
+if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
 }
 
 /* Full-source reconstruction must preserve external dependencies. */
@@ -2119,7 +2024,7 @@ await _ui();
    of very large Blogger source and was another freeze source. */
 E.output.value=injected;
 if(E.outCount)E.outCount.textContent=injected.length.toLocaleString()+' CHAR';
-if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(addTagOnly?'SCRIPT TAG OUTPUT':(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT'));
+if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT');
 if(E.resultSize)E.resultSize.textContent=kb(injected);
 if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 
@@ -2140,49 +2045,8 @@ setTimeout(function(){setProgress(0)},700);
 _injectButtonState()
 }
 });
-
-function _preObfuscationGuard(src){
-src=String(src||'');
-var clean=_stripCDATADeep(_stripScriptWrapper(src)).trim();
-var reasons=[],score=0;
-
-/* Hard signature: current CodeFlare wrapper metadata. */
-try{
-if(_a3(clean)){
-return{blocked:true,hard:true,score:100,reason:'CODEFLARE PROTECTED SOURCE ALREADY DETECTED'}
-}
-}catch(_e){}
-
-/* Hard signature: known CodeFlare generated runtime wrapper. */
-if(/\bCFJS5\b/.test(clean)&&/\bTextDecoder\b/.test(clean)&&/\batob\s*\(/.test(clean)){
-return{blocked:true,hard:true,score:100,reason:'CODEFLARE WRAPPER ALREADY DETECTED'}
-}
-
-/* Strong third-party / legacy obfuscation indicators.
-   Never block on a single _0x identifier alone. */
-if(/\bvar\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]{20,}?\]/i.test(clean)){score+=35;reasons.push('STRING TABLE')}
-if(/\b_0x[a-f0-9]+(?:x[a-f0-9]+)?\b/i.test(clean)){score+=15;reasons.push('MANGLED IDENTIFIERS')}
-if(/\b(?:eval|Function)\s*\(/.test(clean)&&/\b(?:atob|decodeURIComponent|unescape)\s*\(/.test(clean)){score+=30;reasons.push('RUNTIME DECODER')}
-if(/while\s*\(\s*!!\[\]\s*\)/.test(clean)||/parseInt\s*\(\s*_0x/i.test(clean)){score+=25;reasons.push('ROTATING ARRAY')}
-if(/\[['"][A-Za-z0-9+/=]{80,}['"]\]/.test(clean)||/[A-Za-z0-9+/]{300,}={0,2}/.test(clean)){score+=20;reasons.push('PACKED PAYLOAD')}
-
-/* High-confidence external obfuscation is also stopped to avoid accidental
-   double-obfuscation. The user can deobfuscate/normalize it first. */
-if(score>=60){
-return{
-blocked:true,
-hard:false,
-score:score,
-reason:'SOURCE APPEARS ALREADY OBFUSCATED - '+reasons.join(' + ')
-}
-}
-
-return{blocked:false,hard:false,score:score,reason:reasons.join(' + ')}
-}
-
 E.process.addEventListener('click',async function(){
 S.injectCompleted=false;
-S.directFullSourceRecovery=false;
 _injectButtonState();
 
 var src=String(E.input.value||'');
@@ -2204,19 +2068,6 @@ try{
 var out;
 
 if(S.mode==='obfuscate'){
-var obGuard=_preObfuscationGuard(src);
-if(obGuard.blocked){
-  setProgress(0);
-  if(E.resultStatus)E.resultStatus.textContent='ALREADY OBFUSCATED';
-  say('OBFUSCATION BLOCKED - '+obGuard.reason);
-  setOutput(
-    '',
-    'ENCRYPTION CODE OUTPUT',
-    obGuard.hard?'CODEFLARE PROTECTION DETECTED':'OBFUSCATION DETECTED'
-  );
-  return
-}
-
 S.largeSourceMode=false;
 S.processingSource=src;
 S.originalRawSource=src;
@@ -2226,93 +2077,6 @@ await _ui();
 out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
-/* Native CodeFlare v5 decoder.
-   IMPORTANT: use the metadata written by this engine itself (_a3/_a4).
-   This is more reliable than reverse-engineering the generated wrapper shape,
-   because shuffle/rotate/control-flow/debug/password options can change it. */
-var nativePack=_a3(src);
-if(nativePack){
-say('CODEFLARE ENGINE SIGNATURE DETECTED - NATIVE DECODE');
-setProgress(12);
-await _ui();
-
-var nativeDecoded=await _a4(src);
-if(typeof nativeDecoded!=='string'||!nativeDecoded.length){
-throw new Error('CODEFLARE NATIVE DECODE RETURNED EMPTY SOURCE')
-}
-var nativeIsFullSource=_looksLikeRecoveredFullSource(nativeDecoded);
-
-if(nativeIsFullSource){
-/* Blogger/XML/HTML source is NOT a JavaScript program. Do not pass the entire
-   recovered document through new Function()/syntaxProbe; a leading '<' is
-   expected and valid here. Preserve the decoded document byte-for-byte. */
-S.bloggerMode=_detectBloggerMode(nativeDecoded)||/<b:(?:section|widget|skin|if)\b/i.test(nativeDecoded);
-}else{
-/* Pure JavaScript native recovery still receives a JavaScript syntax guard. */
-nativeDecoded=_protectHtmlRawTextEndTags(nativeDecoded);
-var nativeProbe=_syntaxProbe(nativeDecoded);
-if(!nativeProbe.ok){
-  if(/Unexpected token ['"]?</i.test(String(nativeProbe.message||''))&&/<[A-Za-z!/?][^>]*>/.test(nativeDecoded)){
-    nativeIsFullSource=true;
-    S.bloggerMode=_detectBloggerMode(nativeDecoded)||/<b:(?:section|widget|skin|if)\b/i.test(nativeDecoded)
-  }else{
-    throw new Error('CODEFLARE NATIVE DECODE SYNTAX - '+nativeProbe.message)
-  }
-}
-}
-
-/* Direct recovery is already the final deobfuscation result. */
-S.layerIndex=0;
-S.layerHistory=[];
-S.deobfuscateReady=true;
-S.normalizePassed=true;
-S.normalizeFinal=true;
-S.normalizedBase=nativeDecoded;
-S.lastSafeOutput=nativeDecoded;
-
-/* A recovered full Blogger/XML/HTML document needs no Inject step: the source
-   is already reconstructed. Mark Inject complete so the button cannot try to
-   locate a target script inside the recovered document. */
-S.injectCompleted=false;
-S.directFullSourceRecovery=!!nativeIsFullSource;
-
-setOutput(
-nativeDecoded,
-nativeIsFullSource?'CODEFLARE RECOVERED FULL SOURCE':'CODEFLARE NATIVE DEOBFUSCATION OUTPUT',
-nativeIsFullSource?'SOURCE RECOVERED':'SUCCESS'
-);
-
-setNormalizeFinal(
-true,
-nativeIsFullSource
-?'Full Blogger/XML/HTML source recovered directly. NORMALIZE and INJECT are not required.'
-:'CodeFlare engine wrapper decoded directly from its embedded metadata. Generic legacy transforms skipped.'
-);
-
-setProgress(100);
-await _ui();
-updateLayerPanel(nativeDecoded,nativeIsFullSource?'FULL SOURCE RECOVERY COMPLETE':'CODEFLARE NATIVE DECODE COMPLETE');
-_injectButtonState();
-
-if(nativeIsFullSource){
-say('CODEFLARE FULL SOURCE RECOVERED - READY TO COPY - INJECT NOT REQUIRED')
-}else{
-say('CODEFLARE NATIVE DECODE COMPLETE - ORIGINAL JAVASCRIPT RECOVERED')
-}
-return
-}
-
-/* Fallback for older/self wrappers that do not contain current metadata. */
-var ownPack=_tryUnpackOwnEngineWrapper(src);
-if(ownPack){
-say('LEGACY SELF WRAPPER DETECTED - STATIC UNPACK');
-setProgress(12);
-await _ui();
-src=ownPack.decoded;
-work=_prepareProcessingSource(src);
-say('LEGACY SELF WRAPPER UNPACKED - ANALYZING RECOVERED SOURCE')
-}
-
 if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
 throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
 }
@@ -2395,16 +2159,6 @@ return String(src||'')
 .replace(/\s*\/\/\s*\]\]>\s*$/i,'')
 .replace(/^\s*\/\*\s*<!\[CDATA\[\s*\*\/\s*/i,'')
 .replace(/\s*\/\*\s*\]\]>\s*\*\/\s*$/i,'')
-}
-
-
-function _looksLikeRecoveredFullSource(raw){
-raw=String(raw||'').replace(/^\uFEFF/,'').trim();
-if(!raw)return false;
-return /^(?:<\?xml\b|<!DOCTYPE\b|<html\b|<head\b|<body\b)/i.test(raw)||
-       /<(?:html|head|body|script|style|link|meta|div|b:[A-Za-z-]+)\b/i.test(raw)||
-       /<b:(?:skin|template-skin|section|widget|if|includable)\b/i.test(raw)||
-       /xmlns:b\s*=|xmlns:data\s*=|expr:[A-Za-z-]+\s*=|data:blog\./.test(raw)
 }
 
 function _detectBloggerMode(raw){
@@ -4073,41 +3827,6 @@ return{ok:false,issues:Array.from(new Set(issues)).slice(0,8),warnings:[]}
 }
 }
 
-
-function _syncNormalizedOutputToMarkers(text){
-text=String(text||'');
-if(!S.markerCollectionReady||!S.markerBlocks||!S.markerBlocks.length)return false;
-
-var parsed=_parseMarkerOutput(text);
-var changed=0;
-
-for(var i=0;i<S.markerBlocks.length;i++){
-var b=S.markerBlocks[i];
-var next=parsed[b.id];
-
-if(typeof next==='string'&&next.trim()){
-next=next.trim();
-if(_syntaxValid(_protectHtmlRawTextEndTags(next))){
-b.processed=next;
-changed++
-}
-}
-}
-
-/* A single collected block is displayed as plain normalized JavaScript,
-   without marker wrapper comments. */
-if(S.markerBlocks.length===1&&changed===0){
-var single=text.trim();
-if(single&&!/^\s*\/\*\s*=====\s*CF_OBF_BLOCK_/i.test(single)&&
-   _syntaxValid(_protectHtmlRawTextEndTags(single))){
-S.markerBlocks[0].processed=single;
-changed=1
-}
-}
-
-return changed===S.markerBlocks.length
-}
-
 function _renderNormalizeOutput(){
 if(S.mode!=='deobfuscate')return;
 var base=String(S.normalizedBase||E.output.value||'');
@@ -4153,15 +3872,6 @@ say('INJECT FAILED - NORMALIZE RESULT KEPT')
 }
 
 S.integrity=_integrityReport(formatted,S.originalRawSource||'');
-
-/* The exact final normalized output shown in the textarea is authoritative
-   for the later Inject operation. */
-if(S.normalizeFinal&&S.integrity.safe){
-S.normalizedBase=formatted;
-S.lastSafeOutput=formatted;
-_syncNormalizedOutputToMarkers(formatted)
-}
-
 setOutput(formatted,injected?'INJECTED SOURCE OUTPUT':'HUMAN READABLE CODE OUTPUT',S.normalizeFinal?(S.integrity.ok?'FINAL VALID':'CHECK WARNING'):'NORMALIZED');
 
 if(S.normalizeFinal){
@@ -4691,7 +4401,7 @@ _injectButtonState()
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.largeTargets=[];S.batchReplacements=[];S.batchMode=false;S.markerSource='';S.markerBlocks=[];S.markerCollectionReady=false;S.lastSafeOutput='';S.deobfuscateReady=false;S.directFullSourceRecovery=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.largeTargets=[];S.batchReplacements=[];S.batchMode=false;S.markerSource='';S.markerBlocks=[];S.markerCollectionReady=false;S.lastSafeOutput='';S.deobfuscateReady=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
