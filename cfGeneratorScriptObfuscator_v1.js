@@ -1,7 +1,16 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.13';
+var CF_JS_LAB_VERSION='v2.17';
+(function(){
+var st=document.createElement('style');
+st.id='cfObCopyFeedbackStyle';
+st.textContent=
+'#cfObTool .is-copied{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important;box-shadow:0 0 0 3px rgba(22,163,74,.16)!important;transform:translateY(-1px)}'+
+'#cfObTool .is-copied i{color:#fff!important}';
+if(!document.getElementById(st.id))document.head.appendChild(st)
+})();
+
 function _z(a){return String.fromCharCode.apply(null,a)}
 var tool=document.getElementById('cfObTool'),warning=document.getElementById('cfObExternalWarning');
 if(!tool)return;
@@ -212,7 +221,10 @@ var hasOutput=!!(E.output&&String(E.output.value||'').trim());
 var hasSource=!!_getInjectSource();
 var active=false,title='';
 
-if(S.mode==='obfuscate'){
+if(S.injectCompleted){
+active=false;
+title='Inject already completed - ready to copy'
+}else if(S.mode==='obfuscate'){
 active=hasOutput&&hasSource;
 title=active?'Inject obfuscated result to source':'Obfuscate source first'
 }else if(S.mode==='deobfuscate'){
@@ -228,7 +240,13 @@ E.copyScript.setAttribute('aria-disabled',active?'false':'true');
 E.copyScript.tabIndex=active?0:-1;
 E.copyScript.title=title;
 
-if(S.mode==='deobfuscate'&&!S.normalizePassed&&hasOutput){
+if(S.injectCompleted){
+E.copyScript.classList.add('is-injected')
+}else{
+E.copyScript.classList.remove('is-injected')
+}
+
+if(S.mode==='deobfuscate'&&!S.normalizePassed&&hasOutput&&!S.injectCompleted){
 E.copyScript.classList.add('is-locked')
 }else{
 E.copyScript.classList.remove('is-locked')
@@ -645,6 +663,55 @@ return idx!==null&&idx>=0&&idx<vals.length?JSON.stringify(vals[idx]):all
 });
 });
 pass++;
+}
+return src
+}
+
+function _cleanupUnusedArrayDeclarator(src,name){
+src=String(src||'');
+name=String(name||'');
+if(!name)return src;
+
+var safe=name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+var re=new RegExp('\\b(var|let|const)\\s+'+safe+'\\s*=\\s*\\[','g'),m;
+
+while((m=re.exec(src))){
+var open=src.indexOf('[',m.index);
+var b=_scanJSArrayLiteral(src,open);
+if(!b)return src;
+
+/* Never remove a table that is still referenced anywhere outside its own declarator. */
+var declStart=m.index,arrEnd=b.end;
+var probeEnd=arrEnd;
+while(/\s/.test(src[probeEnd]||''))probeEnd++;
+var tail=src[probeEnd]||'';
+var declEnd=probeEnd+(tail===';'?1:0);
+if(_identifierUsedOutside(src,name,declStart,declEnd))return src;
+
+var candidate=src;
+if(tail===','){
+/* Preserve chained declarations: var rgx=[...],sumLength=... -> var sumLength=... */
+candidate=src.slice(0,declStart)+m[1]+' '+src.slice(probeEnd+1).replace(/^\s*/,'');
+}else if(tail===';'){
+candidate=src.slice(0,declStart)+src.slice(probeEnd+1);
+}else{
+return src
+}
+
+if(_syntaxValid(candidate)&&!_orphanCheck(candidate).length)return candidate;
+return src
+}
+return src
+}
+
+function _finalUnusedTableCleanup(src){
+src=String(src||'');
+if(_packerPresent(src))return src;
+
+/* Mixed regex/string tables are not always visible to the ordinary string-table cache. */
+if(!(src.match(/\brgx\s*\[\s*\d+\s*\]/g)||[]).length){
+var cleaned=_cleanupUnusedArrayDeclarator(src,'rgx');
+if(cleaned!==src)src=cleaned
 }
 return src
 }
@@ -1108,6 +1175,11 @@ if(sem.warnings.length)S.lastSemanticWarnings=sem.warnings;
 if(!_packerPresent(current)){
 next=_p3(current);
 t=_safeTransform(current,next,'STRING TABLE CLEANUP');
+current=t.code;
+
+/* Dedicated final cleanup for mixed RGX tables after every indexed reference is gone. */
+next=_finalUnusedTableCleanup(current);
+t=_safeTransform(current,next,'UNUSED RGX TABLE CLEANUP');
 current=t.code
 }
 
@@ -1168,8 +1240,34 @@ tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('cl
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
 E.clear.addEventListener('click',function(){
 _lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
-E.copy.addEventListener('click',async function(){if(!E.output.value)return;try{await navigator.clipboard.writeText(E.output.value);say('COPIED')}catch(e){E.output.select();document.execCommand('copy');say('COPIED')}});
+E.copy.addEventListener('click',async function(){
+if(!E.output.value)return;
+try{
+await navigator.clipboard.writeText(E.output.value)
+}catch(e){
+E.output.select();
+document.execCommand('copy')
+}
+say('COPIED');
+E.copy.classList.add('is-copied');
+E.copy.setAttribute('data-copy-state','copied');
+var oldHTML=E.copy.innerHTML;
+if(!E.copy.dataset.copyOriginal)E.copy.dataset.copyOriginal=oldHTML;
+E.copy.innerHTML='<i class="fa fa-check"></i> COPIED';
+clearTimeout(S.copyFeedbackTimer);
+S.copyFeedbackTimer=setTimeout(function(){
+E.copy.classList.remove('is-copied');
+E.copy.removeAttribute('data-copy-state');
+if(E.copy.dataset.copyOriginal)E.copy.innerHTML=E.copy.dataset.copyOriginal
+},1800)
+});
 if(E.copyScript)E.copyScript.addEventListener('click',async function(){
+if(S.injectCompleted){
+say('INJECT ALREADY COMPLETE - READY TO COPY');
+if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
+_injectButtonState();
+return
+}
 if(S.mode==='deobfuscate'&&!S.normalizePassed){
 say('INJECT LOCKED - RUN FULL NORMALIZE FIRST');
 return
@@ -1223,6 +1321,7 @@ if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 
 S.injectCompleted=true;
 S.lastSafeOutput=payload;
+_injectButtonState();
 
 setProgress(100);
 say('INJECT COMPLETE - READY TO COPY')
@@ -1235,6 +1334,8 @@ _injectButtonState()
 }
 });
 E.process.addEventListener('click',async function(){
+S.injectCompleted=false;
+_injectButtonState();
 var src=E.input.value;if(src.trim())_captureInjectSource(src);
 _lockFullNormalize();if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
 setProgress(20);E.process.disabled=true;
@@ -1818,6 +1919,15 @@ if(!Object.prototype.hasOwnProperty.call(vals,n))return all;
 var after=whole.slice(off+all.length);
 if(/^\s*=/.test(after)&&!/^\s*==/.test(after))return all;
 
+/* Operand guard. A direct rgx[n] used as the argument of rgx[n].exec/test
+   must not be converted blindly into the same RegExp literal. This is the
+   exact corruption that produced /regex/.exec(/regex/) in the Blogger case. */
+if(name==='rgx'){
+var left=whole.slice(Math.max(0,off-120),off);
+var same=new RegExp('rgx\\s*\\[\\s*'+n+'\\s*\\]\\s*\\.\\s*(?:exec|test)\\s*\\(\\s*$');
+if(same.test(left))return all
+}
+
 var serialized=_serializeResolvedValue(vals[n]);
 if(serialized===null)return all;
 resolved++;
@@ -1919,25 +2029,59 @@ out+=c;i++
 return out
 }
 
-function _deepReadablePass(src){
+function _safeTransformStep(src,label,fn){
 src=String(src||'');
-var current=src,next,r;
-
-/* Resolve index tables repeatedly until stable. */
-for(var i=0;i<4;i++){
-r=_resolveKnownTablesDeep(current);
-if(r.code===current)break;
-if(!_syntaxValid(r.code))break;
-current=r.code
+var out=src;
+try{out=String(fn(src)||src)}catch(e){
+say('SAFE TRANSFORM ROLLBACK - '+label+' - '+String(e&&e.message||e));
+return src
+}
+if(out===src)return src;
+if(!_syntaxValid(out)){
+say('SAFE TRANSFORM ROLLBACK - '+label+' - SYNTAX');
+return src
+}
+return out
 }
 
-/* Decode all remaining quoted HEX/Unicode escapes. */
-next=_decodeAllEscapedStrings(current);
-if(_syntaxValid(next))current=next;
+function _protectRegexSelfExecBeforeResolve(src){
+src=String(src||'');
+/* Repair only the known deterministic rgx[n].exec(rgx[n]) corruption
+   while symbolic rgx references still exist. Once rgx[n] is converted
+   into a RegExp literal, the original operand relationship is lost. */
+var sem=_semanticRepair(src);
+if(sem&&sem.code!==src&&_syntaxValid(sem.code))return sem.code;
+return src
+}
 
-/* Existing property-key readability pass. */
-next=_decodeReadablePropertyKeys(current);
-if(_syntaxValid(next))current=next;
+function _deepReadablePass(src){
+src=String(src||'');
+var current=src,r;
+
+/* Critical ordering:
+   repair symbolic regex self-exec BEFORE resolving rgx[n] into literals. */
+current=_safeTransformStep(current,'REGEX OPERAND PROTECTION',function(s){
+return _protectRegexSelfExecBeforeResolve(s)
+});
+
+/* Resolve index tables one pass at a time. Every changed pass must remain
+   syntactically valid or that individual pass is rolled back. */
+for(var i=0;i<4;i++){
+var before=current;
+r=_resolveKnownTablesDeep(before);
+if(r.code===before)break;
+current=_safeTransformStep(before,'TABLE RESOLVE '+(i+1),function(){return r.code});
+if(current===before)break
+}
+
+/* Each readability transform owns its rollback boundary. */
+current=_safeTransformStep(current,'ESCAPED STRING DECODE',function(s){
+return _decodeAllEscapedStrings(s)
+});
+
+current=_safeTransformStep(current,'PROPERTY KEY READABILITY',function(s){
+return _decodeReadablePropertyKeys(s)
+});
 
 return current
 }
@@ -2033,6 +2177,11 @@ warnings:Array.from(new Set(warnings))
 }
 
 function _semanticCheck(js){
+/* Literal RegExp self-exec is almost always a deobfuscation corruption:
+   /x/.exec(/x/) or /x/.test(/x/). */
+var literalSelf=/\/((?:\\.|[^\/\n])+?)\/([gimuy]*)\s*\.\s*(exec|test)\s*\(\s*\/\1\/\2\s*\)/g;
+while((m=literalSelf.exec(js)))issues.push('REGEX LITERAL SELF '+m[3].toUpperCase()+' DETECTED');
+
 js=String(js||'');
 var issues=[],warnings=[],m;
 if(/\breturn(?:false|true|null|undefined)\b/.test(js)){
@@ -2361,6 +2510,8 @@ return embed
 }
 
 if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
+S.injectCompleted=false;
+_injectButtonState();
 if(S.mode!=='deobfuscate'||!S.deobfuscateReady||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
 
 var out=String(S.normalizedBase||E.output.value),guard=0,maxPass=8;
