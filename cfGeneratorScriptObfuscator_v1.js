@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.20';
+var CF_JS_LAB_VERSION='v2.22';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -74,7 +74,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -95,11 +95,79 @@ if(E.normalizePanel)E.normalizePanel.classList.toggle('is-processing',!!on);
 if(msg)say(msg)
 }
 
+
+function _externalScriptTags(src){
+src=String(src||'');
+var out=[],re=/<script\b[^>]*\bsrc\s*=\s*(["'])([\s\S]*?)\1[^>]*>\s*<\/script\s*>/gi,m;
+while((m=re.exec(src))){
+out.push({full:m[0],src:m[2],index:m.index})
+}
+return out
+}
+
+function _isJQuerySrc(url){
+url=String(url||'').toLowerCase();
+return /(?:^|[\/._-])jquery(?:[-.\d]|\.min|$)/i.test(url)||/jquery\.com\/jquery/i.test(url)
+}
+
+function _dependencySnapshot(src){
+var scripts=_externalScriptTags(src);
+return{
+external:scripts,
+jquery:scripts.filter(function(x){return _isJQuerySrc(x.src)})
+}
+}
+
+function _payloadNeedsJQuery(js){
+js=String(js||'');
+/* Conservative dependency signal: explicit jQuery symbol, common jQuery IIFE,
+   or $ used as a call/member. Ignore CodeFlare's own DOM helper because this
+   check runs against the user's transformed payload, not this engine. */
+return /\bjQuery\b/.test(js)||
+       /(?:^|[^\w$])\$\s*\(/m.test(js)||
+       /(?:^|[^\w$])\$\s*\./m.test(js)
+}
+
+function _sourceHasJQueryLoader(src){
+return _externalScriptTags(src).some(function(x){return _isJQuerySrc(x.src)})
+}
+
+function _dependencyIntegrityReport(original,finalSource,payload){
+var snap=S.dependencySnapshot||_dependencySnapshot(original);
+var report={ok:true,missing:[],warnings:[],jqueryRequired:_payloadNeedsJQuery(payload),jqueryOriginal:!!snap.jquery.length,jqueryFinal:_sourceHasJQueryLoader(finalSource)};
+
+if(report.jqueryRequired&&!report.jqueryFinal){
+report.ok=false;
+report.missing.push(report.jqueryOriginal
+?'JQUERY LOADER LOST DURING INJECT'
+:'JQUERY REQUIRED BUT NOT FOUND IN ORIGINAL SOURCE')
+}
+
+/* Every external script existing in the original full source must survive
+   reconstruction. Compare src URLs rather than complete tags so harmless
+   whitespace/attribute serialization cannot create a false failure. */
+var finalExternal=_externalScriptTags(finalSource).map(function(x){return x.src});
+snap.external.forEach(function(x){
+if(finalExternal.indexOf(x.src)<0)report.missing.push('EXTERNAL SCRIPT LOST: '+x.src)
+});
+if(report.missing.length)report.ok=false;
+return report
+}
+
+function _assertDependencyIntegrity(original,finalSource,payload){
+var r=_dependencyIntegrityReport(original,finalSource,payload);
+if(!r.ok){
+throw new Error('DEPENDENCY CHECK - '+r.missing.slice(0,3).join(' | '))
+}
+return r
+}
+
 function _captureInjectSource(src){
 src=String(src||'');
 if(!src)return;
 S.injectSource=src;
 S.originalRawSource=src;
+S.dependencySnapshot=_dependencySnapshot(src);
 
 /* Cache the replacement coordinates once. Inject itself must stay lightweight. */
 S.injectTarget=null;
@@ -1246,7 +1314,7 @@ if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.clas
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
 E.clear.addEventListener('click',function(){
-_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
 if(!E.output.value)return;
 try{
@@ -1320,7 +1388,14 @@ var injected;
 
 if(fullSource){
 injected=_fastInjectBuild(payload);
-if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
+if(!injected)throw new Error('TARGET SCRIPT NOT FOUND');
+
+/* v2.22: full-source reconstruction is not accepted unless all original
+   external script dependencies survive and required jQuery is available. */
+var depReport=_assertDependencyIntegrity(raw,injected,payload);
+if(depReport.jqueryRequired&&depReport.jqueryFinal){
+say('DEPENDENCY CHECK PASSED - JQUERY AVAILABLE')
+}
 }else{
 injected="<script type='text/javascript'>\n"+payload+"\n</script>"
 }
@@ -2744,7 +2819,9 @@ var newBody=(S.bloggerMode||_hasCDATA(target.body))
 ?'//<![CDATA[\n'+embed+'\n//]]>'
 :embed;
 var rebuilt=open+'\n'+newBody+'\n</script>';
-return raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.length)
+var finalSource=raw.slice(0,target.index)+rebuilt+raw.slice(target.index+target.full.length);
+_assertDependencyIntegrity(raw,finalSource,embed);
+return finalSource
 }
 
 return embed
