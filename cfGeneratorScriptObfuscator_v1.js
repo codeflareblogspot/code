@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.28';
+var CF_JS_LAB_VERSION='v2.30';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -74,7 +74,7 @@ growth:$('cfObGrowthImpact'),selected:$('cfObSelectedTech')
 };
 
 var S={mode:'obfuscate',parserFormat:'beautify',theme:'auto',preset:'balanced',
-normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null,largeSourceMode:false,processingSource:'',inputCharSize:0,obfuscatedTargetCount:0};
+normalizeFinal:false,normalizeFormat:'beautify',layerIndex:0,layerHistory:[],originalSource:'',originalRawSource:'',injectSource:'',normalizedBase:'',lastSafeOutput:'',deobfuscateReady:false,normalizeBusy:false,bloggerMode:false,integrity:{},tableCache:{},normalizePassed:false,injectCompleted:false,injectTarget:null,dependencySnapshot:null,largeSourceMode:false,processingSource:'',inputCharSize:0,obfuscatedTargetCount:0,largeTargets:[],batchReplacements:[],batchMode:false,markerSource:'',markerBlocks:[],markerCollectionReady:false};
 
 var presets={
 light:{rename:1,array:1,encode:1,shuffle:0,rotate:0,split:0,numbers:0,objectKeys:0,controlFlow:0,dead:0,debug:0,selfDefend:0,compact:1,debugLog:0,domain:0},
@@ -193,7 +193,7 @@ S.processingSource=work;
 
 if(S.largeSourceMode){
 var cnt=S.obfuscatedTargetCount||0;
-say('LARGE SOURCE MODE - '+cnt+' OBFUSCATED TARGET'+(cnt===1?'':'S')+' DETECTED - TARGET ONLY PROCESSING');
+say('LARGE SOURCE MODE - '+cnt+' OBFUSCATED TARGET'+(cnt===1?'':'S')+' COLLECTED - MARKER PROCESSING');
 if(E.resultStatus)E.resultStatus.textContent='LARGE SOURCE MODE'
 }
 return work
@@ -204,41 +204,133 @@ function _fastKBFromChars(s){
 return (String(s||'').length/1024).toFixed(2)+' KB'
 }
 
+
+function _markerId(n){
+return 'CF_OBF_BLOCK_'+String(n).padStart(3,'0')
+}
+
+function _markerToken(id){
+return '/*__'+id+'__*/'
+}
+
+function _collectObfuscatedBlocks(src){
+src=String(src||'');
+var list=_findObfuscatorScriptMatches(src);
+if(!list.length)return{source:src,blocks:[],count:0};
+
+/* Work from last to first so absolute offsets remain valid while extracting. */
+var ordered=list.slice().sort(function(a,b){return b.bodyStart-a.bodyStart});
+var marked=src;
+var blocks=[];
+
+for(var i=0;i<ordered.length;i++){
+var t=ordered[i];
+var frag=t.fragment;
+var start=frag?t.bodyStart+frag.start:t.bodyStart;
+var len=frag?frag.length:(t.bodyEnd-t.bodyStart);
+var original=src.slice(start,start+len);
+var id=_markerId(ordered.length-i);
+var marker=_markerToken(id);
+
+marked=marked.slice(0,start)+marker+marked.slice(start+len);
+blocks.push({
+id:id,
+marker:marker,
+index:start,
+length:len,
+original:original,
+score:t.score,
+hadCDATA:_hasCDATA(t.body)
+})
+}
+
+/* Restore logical order 001,002,... for processing/output. */
+blocks.sort(function(a,b){return a.id.localeCompare(b.id)});
+
+return{source:marked,blocks:blocks,count:blocks.length}
+}
+
+function _markerCollectionPreview(blocks,useProcessed){
+blocks=blocks||[];
+var out=[];
+for(var i=0;i<blocks.length;i++){
+var b=blocks[i];
+var body=useProcessed&&typeof b.processed==='string'?b.processed:b.original;
+out.push('/* ===== '+b.id+' ===== */\n'+body+'\n/* ===== /'+b.id+' ===== */')
+}
+return out.join('\n\n')
+}
+
+function _parseMarkerOutput(text){
+text=String(text||'');
+var map={};
+var re=/\/\*\s*=====\s*(CF_OBF_BLOCK_\d{3})\s*=====\s*\*\/([\s\S]*?)\/\*\s*=====\s*\/\1\s*=====\s*\*\//g,m;
+while((m=re.exec(text)))map[m[1]]=String(m[2]||'').trim();
+return map
+}
+
+function _restoreMarkerSource(marked,map){
+marked=String(marked||'');
+map=map||{};
+var ids=(S.markerBlocks||[]).map(function(b){return b.id});
+var out=marked;
+
+for(var i=0;i<ids.length;i++){
+var id=ids[i],token=_markerToken(id);
+if(!(id in map))throw new Error('MARKER OUTPUT MISSING - '+id);
+out=out.replace(token,map[id])
+}
+
+/* No marker may remain in final source. */
+if(/\/\*__CF_OBF_BLOCK_\d{3}__\*\//.test(out)){
+throw new Error('MARKER RESTORE INCOMPLETE')
+}
+return out
+}
+
 function _captureInjectSource(src){
 src=String(src||'');
 if(!src)return;
+
 S.injectSource=src;
 S.originalRawSource=src;
 S.largeSourceMode=_isLargeSource(src);
 S.inputCharSize=src.length;
 S.dependencySnapshot=_dependencySnapshot(src);
 
-/* Cache the replacement coordinates once. Inject itself must stay lightweight. */
 S.injectTarget=null;
+S.largeTargets=[];
+S.batchReplacements=[];
+S.batchMode=false;
+S.markerSource='';
+S.markerBlocks=[];
+S.markerCollectionReady=false;
+
 try{
-var t=_findObfuscatorScriptMatch(src);
-if(t){
-var open=t.open||(t.full.match(/^<script\b[^>]*>/i)||['<script>'])[0];
-var target={
-index:t.index,
-length:t.full.length,
-open:open,
-hadCDATA:_hasCDATA(t.body),
-bodyStart:t.bodyStart,
-bodyEnd:t.bodyEnd,
-fragment:null
-};
+var collection=_collectObfuscatedBlocks(src);
+S.obfuscatedTargetCount=collection.count;
+S.markerSource=collection.source;
+S.markerBlocks=collection.blocks;
+S.markerCollectionReady=collection.count>0;
+S.batchMode=S.largeSourceMode&&collection.count>1;
 
-if(t.fragment){
-target.fragment={
-index:t.bodyStart+t.fragment.start,
-length:t.fragment.length,
-startInBody:t.fragment.start,
-endInBody:t.fragment.end
+/* Compatibility target for single-target legacy path. */
+if(collection.blocks.length){
+var first=collection.blocks[0];
+S.injectTarget={
+index:0,
+length:first.length,
+open:'<script>',
+hadCDATA:first.hadCDATA,
+bodyStart:first.index,
+bodyEnd:first.index+first.length,
+fragment:{
+index:first.index,
+length:first.length,
+startInBody:0,
+endInBody:first.length
 }
 }
-
-S.injectTarget=target
 }
 }catch(_e){}
 }
@@ -1527,6 +1619,80 @@ E.copy.removeAttribute('data-copy-state');
 if(E.copy.dataset.copyOriginal)E.copy.innerHTML=E.copy.dataset.copyOriginal
 },1800)
 });
+
+async function _processLargeTargetBatch(){
+var blocks=(S.markerBlocks||[]).slice();
+if(!blocks.length)throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND');
+
+S.batchReplacements=[];
+var preview=[];
+
+for(var i=0;i<blocks.length;i++){
+var b=blocks[i],transformed=b.original;
+
+say('COLLECTED TARGET '+(i+1)+'/'+blocks.length+' - '+b.id);
+setProgress(14+Math.round((i/blocks.length)*60));
+await _ui();
+
+try{
+transformed=await _a6(b.original);
+
+/* A second readability pass catches classic _0x tables exposed by the first pass. */
+var readable=_readabilityPass(transformed);
+if(_syntaxValid(readable))transformed=readable;
+
+transformed=_protectHtmlRawTextEndTags(transformed);
+if(!_syntaxValid(transformed))throw new Error(b.id+' SYNTAX CHECK FAILED');
+
+b.processed=transformed;
+b.skipped=false;
+preview.push('/* ===== '+b.id+' ===== */\n'+transformed+'\n/* ===== /'+b.id+' ===== */');
+say(b.id+' COMPLETE')
+}catch(err){
+b.processed=b.original;
+b.skipped=true;
+b.error=String(err&&err.message||err);
+preview.push('/* ===== '+b.id+' ===== */\n'+b.original+'\n/* ===== /'+b.id+' ===== */');
+say(b.id+' PRESERVED - '+b.error)
+}
+await _ui()
+}
+
+S.markerBlocks=blocks;
+S.batchReplacements=blocks.map(function(b){
+return{id:b.id,code:b.processed,skipped:!!b.skipped}
+});
+return preview.join('\n\n')
+}
+
+function _buildBatchInjectedSource(){
+if(!S.markerCollectionReady||!S.markerSource)return'';
+
+var map={};
+var outputMap=_parseMarkerOutput(E.output&&E.output.value||'');
+
+/* Prefer current Output so the user can inspect/edit each marked block before Inject.
+   Fall back to the internally validated processed copy when Output was untouched. */
+for(var i=0;i<S.markerBlocks.length;i++){
+var b=S.markerBlocks[i];
+if(outputMap[b.id]){
+map[b.id]=_protectHtmlRawTextEndTags(outputMap[b.id])
+}else if(typeof b.processed==='string'){
+map[b.id]=_protectHtmlRawTextEndTags(b.processed)
+}else{
+map[b.id]=b.original
+}
+
+if(!_syntaxValid(map[b.id])){
+throw new Error('MARKER BLOCK INVALID - '+b.id)
+}
+}
+
+var out=_restoreMarkerSource(S.markerSource,map);
+return out
+}
+
+
 if(E.copyScript)E.copyScript.addEventListener('click',async function(){
 if(S.injectCompleted){
 say('INJECT ALREADY COMPLETE - READY TO COPY');
@@ -1578,11 +1744,15 @@ var fullSource=!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
 if(fullSource){
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
+injected=_buildBatchInjectedSource();
+if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
+}else{
 injected=_fastInjectBuild(payload);
-if(!injected)throw new Error('TARGET SCRIPT NOT FOUND');
+if(!injected)throw new Error('TARGET SCRIPT NOT FOUND')
+}
 
-/* v2.22: full-source reconstruction is not accepted unless all original
-   external script dependencies survive and required jQuery is available. */
+/* Full-source reconstruction must preserve external dependencies. */
 var depReport=_assertDependencyIntegrity(raw,injected,payload);
 if(depReport.jqueryRequired&&depReport.jqueryFinal){
 say('PRESERVATION CHECK PASSED - NON-OBFUSCATED SOURCE UNCHANGED')
@@ -1630,8 +1800,6 @@ E.input.focus();
 return
 }
 
-/* Capture/scanning happens exactly once. For large Blogger templates, all
-   subsequent deobfuscation work runs only on the cached target fragment. */
 _captureInjectSource(src);
 var work=_prepareProcessingSource(src);
 
@@ -1644,8 +1812,6 @@ try{
 var out;
 
 if(S.mode==='obfuscate'){
-/* Obfuscation keeps previous behavior. Large-source target mode is aimed at
-   deobfuscation of full Blogger templates, not whole-template encryption. */
 S.largeSourceMode=false;
 S.processingSource=src;
 S.originalRawSource=src;
@@ -1655,17 +1821,36 @@ await _ui();
 out=await _a2(src);
 setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
-if(S.largeSourceMode&&work===src){
+if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
 throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
 }
 
+if(S.largeSourceMode&&S.markerBlocks&&S.markerBlocks.length>1){
+say('LARGE SOURCE COLLECT - '+S.markerBlocks.length+' MARKED BLOCKS READY');
+out=await _processLargeTargetBatch();
+
+S.layerIndex=0;
+S.layerHistory=[];
+S.deobfuscateReady=true;
+S.normalizePassed=true;
+S.normalizeFinal=true;
+S.injectCompleted=false;
+
+setOutput(out,'DEOBFUSCATION MARKER COLLECTION OUTPUT','SUCCESS');
+setNormalizeFinal(true,'Marker collection selesai. Semua blok target sudah dikumpulkan, diproses, dan siap di-Inject ke marker masing-masing.');
+if(E.normalizeFull)E.normalizeFull.disabled=true;
+
+setProgress(92);
+await _ui();
+updateLayerPanel(out,'BATCH COMPLETE');
+_injectButtonState();
+say('MARKER COLLECTION COMPLETE - READY TO INJECT')
+}else{
 setProgress(14);
 say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
 await _ui();
 
-/* Never run expensive detectors over the entire large XML template. */
 _h1(work);
-
 setProgress(24);
 await _ui();
 
@@ -1689,6 +1874,7 @@ _injectButtonState();
 say(S.largeSourceMode
 ?'DEOBFUSCATE COMPLETE - LARGE SOURCE TARGET ONLY - RUN FULL NORMALIZE'
 :'DEOBFUSCATE COMPLETE - RUN FULL NORMALIZE')
+}
 }
 
 setProgress(100)
@@ -2582,9 +2768,52 @@ if(sem&&sem.code!==src&&_syntaxValid(sem.code))return sem.code;
 return src
 }
 
+
+function _resolveLegacy0xLiteralTables(src){
+src=String(src||'');
+var current=src;
+var decl=/\bvar\s+(_0x[a-f0-9]+)\s*=\s*(\[(?:(?:\s*(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|null|true|false|-?\d+(?:\.\d+)?)\s*,?))*\])\s*;/ig;
+var tables=[],m;
+
+while((m=decl.exec(current))){
+var vals=null;
+try{vals=Function('"use strict";return ('+m[2]+')')()}catch(_e){}
+if(Array.isArray(vals))tables.push({name:m[1],vals:vals,full:m[0]})
+}
+
+for(var t=0;t<tables.length;t++){
+var rec=tables[t],changed=false;
+var ref=new RegExp('\\b'+rec.name+'\\s*\\[\\s*(0x[0-9a-f]+|\\d+)\\s*\\]','ig');
+
+var next=current.replace(ref,function(all,idx){
+var n=/^0x/i.test(idx)?parseInt(idx,16):parseInt(idx,10);
+if(!Number.isFinite(n)||n<0||n>=rec.vals.length)return all;
+var v=rec.vals[n];
+if(typeof v==='string'||typeof v==='number'||typeof v==='boolean'||v===null){
+changed=true;
+return JSON.stringify(v)
+}
+return all
+});
+
+if(changed&&_syntaxValid(next)){
+current=next;
+if(!(new RegExp('\\b'+rec.name+'\\s*\\[','i')).test(current)){
+var removed=current.replace(rec.full,'');
+if(_syntaxValid(removed))current=removed
+}
+}
+}
+return current
+}
+
 function _deepReadablePass(src){
 src=String(src||'');
 var current=src,r;
+
+current=_safeTransformStep(current,'LEGACY 0X STRING TABLE',function(s){
+return _resolveLegacy0xLiteralTables(s)
+});
 
 /* Critical ordering:
    repair symbolic regex self-exec BEFORE resolving rgx[n] into literals. */
@@ -3268,7 +3497,7 @@ _injectButtonState()
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
-S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.lastSafeOutput='';S.deobfuscateReady=false;
+S.normalizeFinal=false;S.normalizeFormat='beautify';S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.largeSourceMode=false;S.processingSource='';S.inputCharSize=0;S.obfuscatedTargetCount=0;S.largeTargets=[];S.batchReplacements=[];S.batchMode=false;S.markerSource='';S.markerBlocks=[];S.markerCollectionReady=false;S.lastSafeOutput='';S.deobfuscateReady=false;
 if(E.normalizeBeautify)E.normalizeBeautify.checked=true;if(E.normalizeFlush)E.normalizeFlush.checked=false;
 E.input.value='';setOutput('','','READY');if(E.access)E.access.value='';if(E.accessBox)E.accessBox.style.display='none';
 if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Reset selesai. Paste kode baru lalu jalankan DEOBFUSCATE.';
