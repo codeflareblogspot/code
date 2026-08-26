@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.41';
+var CF_JS_LAB_VERSION='v2.42';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2695,8 +2695,40 @@ var out=String(src||'');
 out=_renameKnownFunctionParams(out,'rotateLeft',['value','shift']);
 out=_renameKnownFunctionParams(out,'wordToHex',['value']);
 out=_renameKnownFunctionParams(out,'utf8Encode',['text']);
+out=_renameKnownFunctionParams(out,'clickNS4',['event']);
 
 return out
+}
+
+
+function _eventScopedHumanize(src){
+src=String(src||'');
+var names=[],re=/function\s+([A-Za-z_$][\w$]*)\s*\(\s*(_0x[A-Za-z0-9_$]+)\s*\)\s*\{/g,m;
+while((m=re.exec(src))){
+var fnName=m[1],param=m[2];
+var open=src.indexOf('{',m.index+m[0].length-1);
+if(open<0)continue;
+var depth=1,i=open+1,q='',esc=false,line=false,block=false;
+for(;i<src.length;i++){
+var c=src[i],n=src[i+1]||'';
+if(line){if(c==='\n')line=false;continue}
+if(block){if(c==='*'&&n==='/'){block=false;i++}continue}
+if(q){if(esc){esc=false;continue}if(c==='\\'){esc=true;continue}if(c===q)q='';continue}
+if(c==='/'&&n==='/'){line=true;i++;continue}
+if(c==='/'&&n==='*'){block=true;i++;continue}
+if(c==='"'||c==="'"||c==='`'){q=c;continue}
+if(c==='{')depth++;
+else if(c==='}'&&--depth===0)break
+}
+if(depth!==0)continue;
+var body=src.slice(open+1,i);
+var pr=param.replace(/[$]/g,'\\$&');
+if((new RegExp('(?:^|[^A-Za-z0-9_$])'+pr+'\\s*\\.\\s*(?:which|button|target|currentTarget|preventDefault|stopPropagation)\\b')).test(body)){
+names.push(fnName)
+}
+}
+for(var j=0;j<names.length;j++)src=_renameKnownFunctionParams(src,names[j],['event']);
+return src
 }
 
 function _md5SemanticHumanize(src){
@@ -2843,6 +2875,9 @@ if(_syntaxValid(next))out=next;
 
 /* Run DOM semantic pass again after other decoding/humanizing. */
 next=_domSemanticHumanize(out);
+if(_syntaxValid(next))out=next;
+
+next=_eventScopedHumanize(out);
 if(_syntaxValid(next))out=next;
 
 return out
