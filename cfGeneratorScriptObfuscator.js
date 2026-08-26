@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.00-stable';;
+var CF_JS_LAB_VERSION='v3.01-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -1318,12 +1318,14 @@ if(_packerPresent(body))score+=14;
 if(/_\$_[A-Za-z0-9_$]+\s*\[\s*\d+\s*\]/.test(body))score+=4;
 
 /* Legacy _0x array obfuscation used by older Blogger templates. */
-if(/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body))score+=10;
-if(/\b_0x[a-f0-9]+\s*\[\s*(?:0x[a-f0-9]+|\d+)\s*\]/i.test(body))score+=4;
+if(/\b(?:var|let|const)\s+_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*=\s*\[/i.test(body))score+=10;
+if(/\b_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*\[\s*(?:0x[a-f0-9]+|\d+)\s*\]/i.test(body))score+=4;
 
 var hex=(body.match(/\\x[0-9a-f]{2}/gi)||[]).length;
 var uni=(body.match(/\\u[0-9a-f]{4}/gi)||[]).length;
-var mangled=(body.match(/\b_0x[a-f0-9]+\b/gi)||[]).length;
+var mangled=(body.match(/\b_0x[a-z0-9]+(?:x[a-z0-9]+)*\b/gi)||[]).length;
+var legacyMangled=(body.match(/\b_0x[a-z0-9]+x[a-z0-9]+\b/gi)||[]).length;
+if(legacyMangled>=3)score+=4;
 
 /* Density bonuses distinguish a real encoded block from an occasional
    escaped string in otherwise normal JavaScript. */
@@ -1350,7 +1352,7 @@ var fragment=_findObfuscatedFragment(body);
 
 /* If the whole script is clearly _0x-obfuscated but the generic fragment
    locator cannot isolate a tail fragment, safely use the script body only. */
-if(!fragment&&/\b(?:var|let|const)\s+_0x[a-f0-9]+\s*=\s*\[/i.test(body)){
+if(!fragment&&/\b(?:var|let|const)\s+_0x[a-z0-9]+(?:x[a-z0-9]+)*\s*=\s*\[/i.test(body)){
 var s=0,e=body.length;
 var c1=body.indexOf('//<![CDATA[');
 if(c1>=0)s=c1+'//<![CDATA['.length;
