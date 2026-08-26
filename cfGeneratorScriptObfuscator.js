@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.01-stable';;
+var CF_JS_LAB_VERSION='v3.04-stable';;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -1994,10 +1994,17 @@ setProgress(35);
 await _ui();
 
 var raw=_getInjectSource();
-var fullSource=!!raw&&raw.indexOf('<script')!==-1;
+var addTagOnly=(S.mode==='obfuscate');
+var fullSource=!addTagOnly&&!!raw&&raw.indexOf('<script')!==-1;
 var injected;
 
-if(fullSource){
+if(addTagOnly){
+/* ADD TAG SCRIPT has exactly one job:
+   character 0  -> <script type='text/javascript'>
+   final char+1 -> </script>
+   No source search, marker lookup, normalize, or injection logic. */
+injected="<script type='text/javascript'>//<![CDATA[\n"+payload+"\n//]]></script>";
+}else if(fullSource){
 if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
 injected=_buildBatchInjectedSource();
 if(!injected)throw new Error('MARKER SOURCE BUILD FAILED')
@@ -2026,7 +2033,7 @@ await _ui();
    of very large Blogger source and was another freeze source. */
 E.output.value=injected;
 if(E.outCount)E.outCount.textContent=injected.length.toLocaleString()+' CHAR';
-if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT');
+if(E.outTitle)E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> '+(addTagOnly?'SCRIPT TAG OUTPUT':(fullSource?'INJECTED SOURCE OUTPUT':'SCRIPT TAG OUTPUT'));
 if(E.resultSize)E.resultSize.textContent=kb(injected);
 if(E.resultStatus)E.resultStatus.textContent='READY TO COPY';
 
