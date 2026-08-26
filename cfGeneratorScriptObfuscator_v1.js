@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.19';
+var CF_JS_LAB_VERSION='v2.20';
 (function(){
 var st=document.createElement('style');
 st.id='cfObCopyFeedbackStyle';
@@ -1044,6 +1044,9 @@ say('NORMALIZE INCOMPLETE - HEX '+complete.hex+' | RGX '+complete.rgx+(complete.
 }
 var finalNormalized=S.normalizeFormat==='flush'?_b6(current):_safeBeautify(current);
 finalNormalized=_protectHtmlRawTextEndTags(finalNormalized);
+if(S.normalizeFormat!=='flush'&&finalNormalized!==current){
+say('FINAL READABLE FORMAT COMPLETE - SYNTAX VERIFIED')
+}
 return finalNormalized
 }
 
@@ -1757,15 +1760,200 @@ if(cur>max)max=cur;
 return max>1800
 }
 
+
+function _readableBeautifyV2(js){
+js=String(js||'').replace(/\r\n?/g,'\n').replace(/\t/g,'  ');
+
+var out='',indent=0,lineStart=true,pendingSpace=false;
+var par=0,br=0,brace=0;
+var i=0,lastSig='',lineLen=0;
+var q='',esc=false,lineComment=false,blockComment=false;
+var regex=false,charClass=false;
+
+function pad(){
+return'  '.repeat(Math.max(0,indent))
+}
+function trimRight(){
+out=out.replace(/[ \t]+$/,'')
+}
+function nl(){
+trimRight();
+if(!out.endsWith('\n'))out+='\n';
+lineStart=true;
+pendingSpace=false;
+lineLen=0
+}
+function write(x){
+if(lineStart){
+var p=pad();
+out+=p;
+lineLen=p.length;
+lineStart=false
+}
+if(pendingSpace){
+if(out&&!/[ \n\t]$/.test(out)){
+out+=' ';
+lineLen++
+}
+pendingSpace=false
+}
+out+=x;
+var k=x.lastIndexOf('\n');
+lineLen=k>=0?x.length-k-1:lineLen+x.length
+}
+function regexCanStart(prev){
+return !prev||/[({[=,:;!&|?+\-*%^~<>]/.test(prev)
+}
+function nextWord(pos){
+var m=js.slice(pos).match(/^\s*([A-Za-z_$][\w$]*)/);
+return m?m[1]:''
+}
+
+for(;i<js.length;i++){
+var c=js[i],n=js[i+1]||'';
+
+if(lineComment){
+write(c);
+if(c==='\n'){lineComment=false;lineStart=true;lineLen=0}
+continue
+}
+if(blockComment){
+write(c);
+if(c==='*'&&n==='/'){write('/');i++;blockComment=false}
+continue
+}
+if(q){
+write(c);
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c===q)q='';
+continue
+}
+if(regex){
+write(c);
+if(esc){esc=false;continue}
+if(c==='\\'){esc=true;continue}
+if(c==='['){charClass=true;continue}
+if(c===']'&&charClass){charClass=false;continue}
+if(c==='/'&&!charClass){
+regex=false;
+while(/[A-Za-z]/.test(js[i+1]||'')){i++;write(js[i])}
+lastSig='/'
+}
+continue
+}
+
+if(c==='/'&&n==='/'){
+write('//');i++;lineComment=true;continue
+}
+if(c==='/'&&n==='*'){
+write('/*');i++;blockComment=true;continue
+}
+if(c==='"'||c==="'"||c==='`'){
+write(c);q=c;esc=false;lastSig='S';continue
+}
+if(c==='/'&&regexCanStart(lastSig)){
+write(c);regex=true;charClass=false;esc=false;continue
+}
+
+if(/\s/.test(c)){
+pendingSpace=true;
+continue
+}
+
+if(c==='('){write(c);par++;lastSig=c;continue}
+if(c===')'){write(c);par=Math.max(0,par-1);lastSig=c;continue}
+if(c==='['){write(c);br++;lastSig=c;continue}
+if(c===']'){write(c);br=Math.max(0,br-1);lastSig=c;continue}
+
+if(c==='{'){
+if(!lineStart&&out&&!/[ \n\t]$/.test(out))out+=' ';
+write('{');
+brace++;
+indent++;
+nl();
+lastSig=c;
+continue
+}
+
+if(c==='}'){
+trimRight();
+if(!lineStart)nl();
+indent=Math.max(0,indent-1);
+brace=Math.max(0,brace-1);
+write('}');
+var w=nextWord(i+1);
+if(w==='else'||w==='catch'||w==='finally'){
+out+=' ';
+lineLen++;
+pendingSpace=false
+}else{
+var rest=js.slice(i+1).match(/^\s*([;,)\]])/);
+if(!rest)nl()
+}
+lastSig=c;
+continue
+}
+
+if(c===';'){
+write(';');
+/* Never split the three clauses of for(...;...;...). */
+if(par===0&&br===0)nl();
+else if(lineLen>150)pendingSpace=true;
+lastSig=c;
+continue
+}
+
+if(c===','){
+write(',');
+/* Comma is a safe whitespace boundary. Wrap only long statements so
+   ordinary compact argument lists stay compact. */
+if(lineLen>150&&br===0){
+nl()
+}else{
+pendingSpace=true
+}
+lastSig=c;
+continue
+}
+
+/* Readability-only line wrapping at logical operators. This inserts
+   whitespace only and never rewrites tokens. */
+if((c==='&'&&n==='&')||(c==='|'&&n==='|')){
+write(c+n);i++;
+if(lineLen>170)nl();else pendingSpace=true;
+lastSig=n;
+continue
+}
+
+write(c);
+lastSig=c
+}
+
+trimRight();
+out=out.replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').replace(/^\s*\n/,'').replace(/\n\s*$/,'');
+return out
+}
+
 function _safeBeautify(js){
 js=String(js||'');
-if(_largeExpressionRisk(js)){
-say('BEAUTIFY CONSERVATIVE - LARGE EXPRESSION PRESERVED');
-return js
-}
-var out;
-try{out=beautify(js)}catch(_e){return js}
-return _syntaxValid(out)?out:js
+
+var out='';
+try{
+out=_readableBeautifyV2(js);
+out=_protectHtmlRawTextEndTags(out);
+if(_syntaxValid(out))return out
+}catch(_e){}
+
+/* Legacy beautifier is retained only as a syntax-checked fallback. */
+try{
+out=beautify(js);
+out=_protectHtmlRawTextEndTags(out);
+if(_syntaxValid(out))return out
+}catch(_e2){}
+
+say('BEAUTIFY ROLLBACK - ORIGINAL STRUCTURE PRESERVED');
+return _protectHtmlRawTextEndTags(js)
 }
 
 function _scanJSArrayLiteral(src,start){
