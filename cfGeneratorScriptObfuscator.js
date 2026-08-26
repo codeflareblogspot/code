@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.49';
+var CF_JS_LAB_VERSION='v2.50';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2141,32 +2141,59 @@ var nativeDecoded=await _a4(src);
 if(typeof nativeDecoded!=='string'||!nativeDecoded.length){
 throw new Error('CODEFLARE NATIVE DECODE RETURNED EMPTY SOURCE')
 }
-nativeDecoded=_protectHtmlRawTextEndTags(nativeDecoded);
+var nativeIsFullSource=_looksLikeRecoveredFullSource(nativeDecoded);
 
+if(nativeIsFullSource){
+/* Blogger/XML/HTML source is NOT a JavaScript program. Do not pass the entire
+   recovered document through new Function()/syntaxProbe; a leading '<' is
+   expected and valid here. Preserve the decoded document byte-for-byte. */
+S.bloggerMode=_detectBloggerMode(nativeDecoded)||/<b:(?:section|widget|skin|if)\b/i.test(nativeDecoded);
+}else{
+/* Pure JavaScript native recovery still receives a JavaScript syntax guard. */
+nativeDecoded=_protectHtmlRawTextEndTags(nativeDecoded);
 var nativeProbe=_syntaxProbe(nativeDecoded);
 if(!nativeProbe.ok){
 throw new Error('CODEFLARE NATIVE DECODE SYNTAX - '+nativeProbe.message)
 }
+}
 
-/* Direct recovery is the final deobfuscation result. Do NOT feed our own
-   recovered engine back through the generic _0x/legacy pipeline: doing so can
-   mistake legitimate internal engine code for another obfuscation layer. */
+/* Direct recovery is already the final deobfuscation result. */
 S.layerIndex=0;
 S.layerHistory=[];
 S.deobfuscateReady=true;
 S.normalizePassed=true;
 S.normalizeFinal=true;
-S.injectCompleted=false;
 S.normalizedBase=nativeDecoded;
 S.lastSafeOutput=nativeDecoded;
 
-setOutput(nativeDecoded,'CODEFLARE NATIVE DEOBFUSCATION OUTPUT','SUCCESS');
-setNormalizeFinal(true,'CodeFlare engine wrapper decoded directly from its embedded metadata. Generic legacy transforms skipped.');
+/* A recovered full Blogger/XML/HTML document needs no Inject step: the source
+   is already reconstructed. Mark Inject complete so the button cannot try to
+   locate a target script inside the recovered document. */
+S.injectCompleted=!!nativeIsFullSource;
+
+setOutput(
+nativeDecoded,
+nativeIsFullSource?'CODEFLARE RECOVERED FULL SOURCE':'CODEFLARE NATIVE DEOBFUSCATION OUTPUT',
+nativeIsFullSource?'SOURCE RECOVERED':'SUCCESS'
+);
+
+setNormalizeFinal(
+true,
+nativeIsFullSource
+?'Full Blogger/XML/HTML source recovered directly. NORMALIZE and INJECT are not required.'
+:'CodeFlare engine wrapper decoded directly from its embedded metadata. Generic legacy transforms skipped.'
+);
+
 setProgress(100);
 await _ui();
-updateLayerPanel(nativeDecoded,'CODEFLARE NATIVE DECODE COMPLETE');
+updateLayerPanel(nativeDecoded,nativeIsFullSource?'FULL SOURCE RECOVERY COMPLETE':'CODEFLARE NATIVE DECODE COMPLETE');
 _injectButtonState();
-say('CODEFLARE NATIVE DECODE COMPLETE - ORIGINAL SOURCE RECOVERED');
+
+if(nativeIsFullSource){
+say('CODEFLARE FULL SOURCE RECOVERED - READY TO COPY - INJECT NOT REQUIRED')
+}else{
+say('CODEFLARE NATIVE DECODE COMPLETE - ORIGINAL JAVASCRIPT RECOVERED')
+}
 return
 }
 
@@ -2263,6 +2290,15 @@ return String(src||'')
 .replace(/\s*\/\/\s*\]\]>\s*$/i,'')
 .replace(/^\s*\/\*\s*<!\[CDATA\[\s*\*\/\s*/i,'')
 .replace(/\s*\/\*\s*\]\]>\s*\*\/\s*$/i,'')
+}
+
+
+function _looksLikeRecoveredFullSource(raw){
+raw=String(raw||'').replace(/^\uFEFF/,'').trim();
+if(!raw)return false;
+return /^(?:<\?xml\b|<!DOCTYPE\b|<html\b|<head\b|<body\b)/i.test(raw)||
+       /<b:(?:skin|template-skin|section|widget|if|includable)\b/i.test(raw)||
+       /xmlns:b\s*=|xmlns:data\s*=|expr:[A-Za-z-]+\s*=|data:blog\./.test(raw)
 }
 
 function _detectBloggerMode(raw){
