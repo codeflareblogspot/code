@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v2.45';
+var CF_JS_LAB_VERSION='v2.46';
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
 function _loadCodeFlareJsLabCSS(){
@@ -2731,6 +2731,62 @@ for(var j=0;j<names.length;j++)src=_renameKnownFunctionParams(src,names[j],['eve
 return src
 }
 
+
+function _readableOperatorSpacing(src){
+src=String(src||'');
+var out='',i=0,q='',esc=false,line=false,block=false,regex=false,charClass=false,lastSig='';
+function canStartRegex(prev){return !prev||/[({[=,:;!&|?+\-*%^~<>]/.test(prev)}
+function trimRight(){out=out.replace(/[ \t]+$/,'')}
+function addSpace(){if(out&&!/[ \t\n\r]$/.test(out))out+=' '}
+function nextNonSpace(pos){while(pos<src.length&&/\s/.test(src[pos]))pos++;return src[pos]||''}
+
+while(i<src.length){
+var c=src[i],n=src[i+1]||'';
+
+if(line){out+=c;if(c==='\n')line=false;i++;continue}
+if(block){out+=c;if(c==='*'&&n==='/'){out+=n;i+=2;block=false;continue}i++;continue}
+if(q){out+=c;if(esc){esc=false;i++;continue}if(c==='\\'){esc=true;i++;continue}if(c===q)q='';i++;continue}
+if(regex){
+out+=c;
+if(esc){esc=false;i++;continue}
+if(c==='\\'){esc=true;i++;continue}
+if(c==='['){charClass=true;i++;continue}
+if(c===']'&&charClass){charClass=false;i++;continue}
+if(c==='/'&&!charClass){regex=false;lastSig='/'}i++;continue
+}
+if(c==='/'&&n==='/'){out+=c+n;i+=2;line=true;continue}
+if(c==='/'&&n==='*'){out+=c+n;i+=2;block=true;continue}
+if(c==='"'||c==="'"||c==='`'){out+=c;q=c;i++;continue}
+if(c==='/'&&canStartRegex(lastSig)){out+=c;regex=true;charClass=false;i++;continue}
+
+var three=src.substr(i,3),two=src.substr(i,2),op='';
+if(three==='>>>'||three==='==='||three==='!==')op=three;
+else if(['<<','>>','<=','>=','==','!=','&&','||','+=','-=','*=','/=','%=','&=','|=','^=','=>'].indexOf(two)>=0)op=two;
+
+if(op){
+trimRight();addSpace();out+=op;addSpace();
+i+=op.length;lastSig=op.charAt(op.length-1);continue
+}
+if(c==='&'||c==='|'||c==='^'||c==='='||c==='<'||c==='>'||c==='%'||c==='*'){
+trimRight();addSpace();out+=c;addSpace();
+i++;lastSig=c;continue
+}
+if(c==='+'||c==='-'){
+var prev=out.replace(/\s+$/,'').slice(-1),nx=nextNonSpace(i+1);
+if(/[A-Za-z0-9_$)\]]/.test(prev)&&/[A-Za-z0-9_$(\[~!]/.test(nx)){
+trimRight();addSpace();out+=c;addSpace()
+}else out+=c;
+i++;lastSig=c;continue
+}
+out+=c;if(!/\s/.test(c))lastSig=c;i++
+}
+return out
+}
+function _applyReadableFormatting(src){
+var next=_readableOperatorSpacing(src);
+return _syntaxValid(next)?next:src
+}
+
 function _md5SemanticHumanize(src){
 src=String(src||'');
 
@@ -4081,6 +4137,10 @@ if(_syntaxValid(staticClean))current=staticClean;
    patterns that were not visible on the first semantic pass. */
 semanticClean=_advancedSemanticHumanize(current);
 if(_syntaxValid(semanticClean))current=semanticClean;
+
+/* Whitespace-only readability pass. Never accepted if syntax changes. */
+var readableClean=_applyReadableFormatting(current);
+if(_syntaxValid(readableClean))current=readableClean;
 
 current=_protectHtmlRawTextEndTags(current);
 
