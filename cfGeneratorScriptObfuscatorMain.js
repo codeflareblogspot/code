@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.26';
+var CF_JS_LAB_VERSION='v3.27';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -1770,7 +1770,7 @@ E.layerList.innerHTML=S.layerHistory.map(function(x,i){return'<div class="cfObLa
 function setNormalizeFinal(on,msg){
 S.normalizeFinal=!!on;
 if(E.normalizePanel)E.normalizePanel.classList.toggle('is-final',!!on);
-if(E.normalizeState)E.normalizeState.textContent=msg||(on?'Final layer reached. Tidak ada layer Normalize yang terdeteksi lagi.':'Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.');
+if(E.normalizeState)E.normalizeState.textContent=msg||(on?'Final layer reached.':'Processing deobfuscation.');
 if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeBusy||!!on||!S.deobfuscateReady||!(S.mode==='deobfuscate'&&E.output.value)
 }
 
@@ -2181,9 +2181,12 @@ if(!_syntaxValid(payload))throw new Error('RAW-TEXT PROTECTION SYNTAX FAILED')
    Never parse the concatenated collection as one JavaScript program. */
 for(var mbi=0;mbi<S.markerBlocks.length;mbi++){
 var mb=S.markerBlocks[mbi];
-var mbCode=typeof mb.processed==='string'?mb.processed:mb.original;
+if(mb.skipped||typeof mb.processed!=='string'||!String(mb.processed).trim()){
+throw new Error('DEOBFUSCATED BLOCK NOT READY - '+mb.id)
+}
+var mbCode=mb.processed;
 if(!_syntaxValid(_protectHtmlRawTextEndTags(mbCode))){
-throw new Error('MARKER BLOCK INVALID - '+mb.id)
+throw new Error('DEOBFUSCATED BLOCK INVALID - '+mb.id)
 }
 }
 say('MARKER INJECT CHECK - ALL BLOCKS VALID')
@@ -2359,12 +2362,8 @@ say('CODEFLARE ENGINE SOURCE OPENED - READY TO COPY');
 return
 }
 
-if(S.largeSourceMode&&!(S.markerBlocks&&S.markerBlocks.length)){
-throw new Error('LARGE SOURCE MODE - SUPPORTED OBFUSCATED TARGET NOT FOUND')
-}
-
-if(S.largeSourceMode&&S.markerBlocks&&S.markerBlocks.length>1){
-say('LARGE SOURCE COLLECT - '+S.markerBlocks.length+' MARKED BLOCKS READY');
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
+say('SOURCE COLLECT - '+S.markerBlocks.length+' MARKED BLOCK'+(S.markerBlocks.length===1?'':'S')+' READY');
 out=await _processLargeTargetBatch();
 
 S.layerIndex=0;
@@ -2375,14 +2374,22 @@ S.normalizeFinal=false;
 S.injectCompleted=false;
 S.normalizedBase='';
 
+/* Always show the recovered marker collection immediately. */
 setOutput(out,'DEOBFUSCATION MARKER COLLECTION OUTPUT','SUCCESS');
-setProgress(82);
+setProgress(76);
 await _ui();
 updateLayerPanel(out,'COLLECTION COMPLETE');
 say('MARKER COLLECTION COMPLETE - AUTO FORMAT');
+
 await _runIntegratedNormalize();
+
+/* _runIntegratedNormalize must leave a visible final output. */
+if(!String(E.output.value||'').trim()){
+throw new Error('DEOBFUSCATION OUTPUT EMPTY')
+}
+
 _injectButtonState();
-say('DEOBFUSCATE COMPLETE - READY TO INJECT')
+say('DEOBFUSCATE COMPLETE - RESULT VISIBLE - READY TO INJECT')
 }else{
 setProgress(14);
 say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
@@ -2407,8 +2414,16 @@ await _ui();
 updateLayerPanel(out,S.largeSourceMode?'TARGET ANALYZED':'ANALYZED');
 say('DEOBFUSCATE CORE COMPLETE - AUTO FORMAT');
 await _runIntegratedNormalize();
+
+if(!String(E.output.value||'').trim()){
+S.normalizedBase=String(out||'');
+S.lastSafeOutput=S.normalizedBase;
+S.normalizePassed=_syntaxValid(S.normalizedBase);
+setOutput(S.normalizedBase,'DEOBFUSCATION CODE OUTPUT',S.normalizePassed?'READY TO INJECT':'CHECK OUTPUT');
+}
+
 _injectButtonState();
-say('DEOBFUSCATE COMPLETE - READY TO INJECT')
+say('DEOBFUSCATE COMPLETE - RESULT VISIBLE - '+(S.normalizePassed?'READY TO INJECT':'CHECK OUTPUT'))
 }
 }
 
@@ -4454,10 +4469,13 @@ current=_protectHtmlRawTextEndTags(current);
 var probe=_syntaxProbe(current);
 if(!probe.ok){
 hardErrors.push(b.id+': '+probe.message);
-current=b.processed||b.original
+b.skipped=true;
+b.error=probe.message;
+continue
 }
 
 b.processed=current;
+b.skipped=false;
 normalizedBlocks.push(
 '/* ===== '+b.id+' ===== */\n'+current+'\n/* ===== /'+b.id+' ===== */'
 )
@@ -4465,10 +4483,19 @@ normalizedBlocks.push(
 
 S.markerBlocks=S.markerBlocks.slice();
 var out=normalizedBlocks.join('\n\n');
+var safe=hardErrors.length===0;
+
+if(!safe){
+S.normalizePassed=false;
+S.normalizeFinal=true;
+S.integrity={syntax:hardErrors.slice(),flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],hard:hardErrors.slice(),warnings:[],safe:false,ok:false};
+if(E.resultStatus)E.resultStatus.textContent='DEOBFUSCATION CHECK ERROR';
+say('DEOBFUSCATION BLOCK FAILED - '+hardErrors[0]);
+return false
+}
+
 S.normalizedBase=out;
 S.lastSafeOutput=out;
-
-var safe=hardErrors.length===0;
 S.integrity={
 syntax:hardErrors.slice(),
 flow:[],orphan:[],identifier:[],scope:[],semantic:[],blogger:[],
@@ -4508,7 +4535,7 @@ S.normalizeFinal=false;
 
 /* v2.31: marker collections normalize each extracted script independently.
    Never run one parser/normalizer across several unrelated script blocks. */
-if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>1){
+if(S.markerCollectionReady&&S.markerBlocks&&S.markerBlocks.length>=1){
 _busy(true,'NORMALIZE - MARKER COLLECTION');
 if(E.resultStatus)E.resultStatus.textContent='PROCESSING';
 if(E.normalizeState)E.normalizeState.textContent='Normalizing collected script blocks individually...';
