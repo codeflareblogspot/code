@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.20';
+var CF_JS_LAB_VERSION='v3.21';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -164,7 +164,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 <div class="cfObCodeTools" id="cfObCodeTools" style="display:none;">
   <div class="cfObCodeToolsHead"><div><b><i class="fa fa-wrench"></i> CODE TOOLS</b><small>Format dan konversi source tanpa menjalankan JavaScript.</small></div><span>TEXT SAFE</span></div>
   <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="beautify"><i class="fa fa-align-left"></i><span><b>Beautify Code</b><small>Rapikan indentasi dan struktur agar mudah dibaca.</small></span></button><button type="button" class="cfObToolCard" data-action="minify"><i class="fa fa-compress"></i><span><b>Minify Code</b><small>Padatkan whitespace dan komentar secara konservatif.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
-  <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify menambahkan &lt;br /&gt; dan indentasi. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle"><button type="button" class="active" data-format="beautify">BEAUTIFY</button><button type="button" data-format="minify">MINIFY</button></div></div>
+  <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify menambahkan &lt;br /&gt; dan indentasi. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle cfObNormalizeFormat"><label><input type="checkbox" data-format="beautify" checked><i></i><span>BEAUTIFY</span></label><label><input type="checkbox" data-format="minify"><i></i><span>MINIFY</span></label></div></div>
 </div>
 <div class="cfObPassword" id="cfObPasswordOption">
   <label class="cfObPasswordToggle"><span><i class="fa fa-key"></i> Deobfuscation Password Protection</span><input id="cfObPasswordEnable" type="checkbox"><i></i></label>
@@ -4672,7 +4672,14 @@ if(a==='bloggerParse')r=ct.bloggerParse(src,S.parserFormat);
 if(a==='bloggerUnparse')r=ct.bloggerUnparse(src);
 setOutput(r,a==='beautify'?'BEAUTIFIED CODE OUTPUT':a==='minify'?'MINIFIED CODE OUTPUT':a==='bloggerParse'?'BLOGGER PARSED OUTPUT':'BLOGGER UNPARSED OUTPUT','SUCCESS');say('SUCCESS')
 })});
-tool.querySelectorAll('.cfObParserToggle button').forEach(function(b){b.addEventListener('click',function(){tool.querySelectorAll('.cfObParserToggle button').forEach(function(x){x.classList.remove('active')});b.classList.add('active');S.parserFormat=b.dataset.format||'beautify'})});
+tool.querySelectorAll('.cfObParserToggle input[data-format]').forEach(function(b){
+b.addEventListener('change',function(){
+if(!b.checked){b.checked=true;return}
+tool.querySelectorAll('.cfObParserToggle input[data-format]').forEach(function(x){if(x!==b)x.checked=false});
+S.parserFormat=b.dataset.format||'beautify';
+say('BLOGGER PARSER FORMAT - '+S.parserFormat.toUpperCase())
+})
+});
 var themeBtns=tool.querySelectorAll('.cfObThemeBtn');
 function theme(t){S.theme=t;tool.dataset.theme=t;themeBtns.forEach(function(b){b.classList.toggle('active',b.dataset.theme===t)});try{localStorage.setItem('cfObTheme',t)}catch(e){}}
 themeBtns.forEach(function(b){b.addEventListener('click',function(){theme(b.dataset.theme)})});
