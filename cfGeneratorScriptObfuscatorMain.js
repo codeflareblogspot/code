@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.19';
+var CF_JS_LAB_VERSION='v3.20';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -27,20 +27,20 @@ var st=document.createElement('style');
 st.textContent=[
 '.cfObBottom{justify-content:flex-end}',
 '.cfObBottom .cfObCopyActions{margin-left:auto}',
-'.cfObDeobFormat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 10px;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard)}',
+'.cfObDeobFormat{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:15px;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
 '.cfObDeobFormatText{display:flex;flex-direction:column;gap:3px}',
 '.cfObDeobFormatText b,.cfObDeobFormatText small{font-size:15px}',
 
 /* Analyst Log follows the same neutral panel surface as the existing analyst/source panels.
    No fixed white background: all surfaces inherit the active CodeFlare theme variables. */
-'.cfObDeobLog{position:relative;margin-top:10px;overflow:hidden;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
+'.cfObDeobLog{position:relative;margin:10px 0 0;padding:0;overflow:hidden;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
 '.cfObDeobLog:before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--cfObAccent);opacity:.75}',
-'.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding:10px 14px;box-sizing:border-box;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);color:var(--cfObText);font-size:15px;font-weight:600}',
+'.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding:15px;box-sizing:border-box;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);color:var(--cfObText);font-size:15px;font-weight:600}',
 '.cfObDeobLogHead>span{display:flex;align-items:center;gap:7px;font-size:15px}',
 '.cfObDeobLogHead>span i{color:var(--cfObAccent)}',
 '.cfObDeobLogHead b{display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--cfObText)}',
 '.cfObDeobLogHead b i{display:inline-block;width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#2eb85c;box-shadow:0 0 0 3px rgba(46,184,92,.12)}',
-'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:10px 14px;box-sizing:border-box;background:var(--cfObCard);color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
+'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:15px;box-sizing:border-box;background:var(--cfObCard);color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
 '.cfObLogLine{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:5px 0;border-bottom:1px dashed var(--cfObBorder);color:var(--cfObText)}',
 '.cfObLogLine:last-child{border-bottom:0}',
 '.cfObLogLine time{color:var(--cfObMuted);opacity:1}',
@@ -53,7 +53,18 @@ st.textContent=[
    Values remain variable-driven so Light/Night changes are immediate. */
 '#cfObTool[data-theme="dark"] .cfObDeobLog,#cfObTool.cfObDark .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
 '#cfObTool[data-theme="light"] .cfObDeobLog,#cfObTool.cfObLight .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
-'@media(max-width:600px){.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:10px 12px}.cfObDeobLogBody{padding:8px 12px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}}'
+'.cfObDeobSupport{margin:10px 0;padding:0;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText);overflow:hidden}',
+'.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);font-size:15px}',
+'.cfObDeobSupportHead>div{display:flex;flex-direction:column;gap:3px}.cfObDeobSupportHead span,.cfObDeobSupportHead small,.cfObDeobSupportHead b{font-size:15px}',
+'.cfObDeobSupportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:15px}',
+'.cfObDeobMethod{display:flex;align-items:flex-start;gap:9px;min-width:0;padding:10px;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText);box-sizing:border-box;cursor:pointer}',
+'.cfObDeobMethod>i{margin-top:2px;color:var(--cfObMuted)}',
+'.cfObDeobMethod span{display:flex;min-width:0;flex-direction:column;gap:2px}.cfObDeobMethod b,.cfObDeobMethod small,.cfObDeobMethod em{font-size:15px}.cfObDeobMethod small{color:var(--cfObMuted)}.cfObDeobMethod em{font-style:normal;color:var(--cfObMuted)}',
+'.cfObDeobMethod.is-detected{border-color:var(--cfObAccent);box-shadow:inset 3px 0 0 var(--cfObAccent)}',
+'.cfObDeobMethod.is-detected>i,.cfObDeobMethod.is-detected em{color:var(--cfObAccent)}',
+'.cfObDeobSupportNote{display:flex;align-items:flex-start;gap:8px;padding:12px 15px;border-top:1px solid var(--cfObBorder);background:var(--cfObSoft);font-size:15px}.cfObDeobSupportNote span,.cfObDeobSupportNote b{font-size:15px}',
+'@media(max-width:800px){.cfObDeobSupportGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
+'@media(max-width:600px){.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:15px}.cfObDeobLogBody{padding:15px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}.cfObDeobSupportGrid{grid-template-columns:1fr}.cfObDeobSupportHead{align-items:flex-start;flex-direction:column}}'
 ].join('');
 document.head.appendChild(st)
 })();
@@ -127,6 +138,29 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <div class="cfObDetect"><div><span>Detected Pattern</span><b id="cfObPattern">NORMAL / UNKNOWN</b></div><div><span>Source Engine</span><b id="cfObSourceEngine">GENERIC / UNKNOWN</b></div><div><span>Complexity</span><b id="cfObComplexity" data-level="low">LOW</b></div><div><span>Recommended</span><b id="cfObRecommended">OBFUSCATE</b></div></div>
   <div class="cfObRecovery" id="cfObRecovery"><div><span>Estimated Recovery</span><b id="cfObRecoveryValue">95%</b></div><div class="cfObRecoveryTrack"><i id="cfObRecoveryBar" style="width:95%"></i></div><small>Estimasi berdasarkan pola yang terdeteksi, bukan jaminan pemulihan source asli.</small></div>
 </div>
+
+<div class="cfObDeobSupport" id="cfObDeobSupport" style="display:none;">
+  <div class="cfObDeobSupportHead">
+    <div>
+      <span><i class="fa fa-unlock-alt"></i> DEOBFUSCATION METHODS</span>
+      <small>Engine akan menganalisis pola source dan menandai metode yang terdeteksi.</small>
+    </div>
+    <b><i></i> AUTO DETECT</b>
+  </div>
+  <div class="cfObDeobSupportGrid">
+    <div class="cfObDeobMethod" data-method="codeflare"><i class="fa fa-cube"></i><span><b>CodeFlare Protected</b><small>Native CodeFlare protected source.</small><em>FULL SUPPORT</em></span></div>
+    <div class="cfObDeobMethod" data-method="packer"><i class="fa fa-random"></i><span><b>P.A.C.K.E.R / Base62</b><small>Unpack eval(function(p,a,c,k,e,...)).</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="string-array"><i class="fa fa-list-ol"></i><span><b>String Array</b><small>Resolve indexed string table.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="hex"><i class="fa fa-code"></i><span><b>Hex Escape</b><small>Decode \\xNN escaped strings.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="unicode"><i class="fa fa-font"></i><span><b>Unicode Escape</b><small>Decode \\uNNNN escaped strings.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="charcode"><i class="fa fa-calculator"></i><span><b>String.fromCharCode</b><small>Resolve static char codes.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="bracket"><i class="fa fa-table"></i><span><b>Bracket Property</b><small>Normalize object["property"].</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="mangled"><i class="fa fa-tag"></i><span><b>Mangled Identifier</b><small>Detect _0x... identifiers.</small><em>SUPPORTED</em></span></div>
+    <div class="cfObDeobMethod" data-method="multi-layer"><i class="fa fa-files-o"></i><span><b>Multi-Layer Source</b><small>Multiple supported layers detected.</small><em>MULTI-PASS</em></span></div>
+  </div>
+  <div class="cfObDeobSupportNote"><i class="fa fa-info-circle"></i><span><b>AUTO ANALYSIS</b> Metode yang terdeteksi akan ditandai otomatis saat Paste atau saat source berubah.</span></div>
+</div>
+
 <div class="cfObCodeTools" id="cfObCodeTools" style="display:none;">
   <div class="cfObCodeToolsHead"><div><b><i class="fa fa-wrench"></i> CODE TOOLS</b><small>Format dan konversi source tanpa menjalankan JavaScript.</small></div><span>TEXT SAFE</span></div>
   <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="beautify"><i class="fa fa-align-left"></i><span><b>Beautify Code</b><small>Rapikan indentasi dan struktur agar mudah dibaca.</small></span></button><button type="button" class="cfObToolCard" data-action="minify"><i class="fa fa-compress"></i><span><b>Minify Code</b><small>Padatkan whitespace dan komentar secara konservatif.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
@@ -1868,6 +1902,7 @@ if(E.accessBox)E.accessBox.style.display='none';
 if(E.techBox)E.techBox.style.display=m==='obfuscate'?'block':'none';
 
 
+if(E.deobSupport)E.deobSupport.style.display=m==='deobfuscate'?'block':'none';
 if(E.deobFormat)E.deobFormat.style.display=m==='deobfuscate'?'flex':'none';
 if(E.activityLog)E.activityLog.style.display='block';
 if(m==='deobfuscate')_h1(E.input.value);
