@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.25';
+var CF_JS_LAB_VERSION='v3.26';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -25,6 +25,34 @@ _loadCodeFlareJsLabCSS();
 (function(){
 var st=document.createElement('style');
 st.textContent=[
+'.cfObDeobSupport{margin:0 14px 12px;border:1px solid var(--cfobBorder);background:var(--cfobPanel);color:var(--cfobText)}',
+'.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--cfobBorder);background:var(--cfobPanel2)}',
+'.cfObDeobSupportHead>div{min-width:0}.cfObDeobSupportHead span{display:block;font-size:15px;font-weight:700}.cfObDeobSupportHead span i{margin-right:6px;color:var(--cfob)}',
+'.cfObDeobSupportHead small{display:block;margin-top:4px;font-size:15px;line-height:1.5;color:var(--cfobMuted);font-weight:400}',
+'.cfObDeobSupportHead>b{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;padding:6px 8px;border:1px solid rgba(0,131,218,.22);font-size:15px;color:var(--cfob)}',
+'.cfObDeobSupportHead>b i{width:7px;height:7px;border-radius:50%;background:#20b86a;box-shadow:0 0 8px rgba(32,184,106,.45)}',
+'.cfObDeobSupportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px}',
+'.cfObDeobMethod{display:flex;align-items:flex-start;gap:10px;min-width:0;padding:11px;border:1px solid var(--cfobBorder);background:var(--cfobPanel2);color:var(--cfobText);transition:border-color .2s,transform .2s}',
+'.cfObDeobMethod>i{margin-top:2px;color:var(--cfobMuted)}',
+'.cfObDeobMethod span{display:flex;min-width:0;flex-direction:column;gap:2px}.cfObDeobMethod b,.cfObDeobMethod small,.cfObDeobMethod em{font-size:15px}.cfObDeobMethod small{color:var(--cfobMuted)}.cfObDeobMethod em{font-style:normal;color:var(--cfobMuted)}',
+'.cfObDeobMethod.is-detected{border-color:var(--cfob);box-shadow:inset 3px 0 0 var(--cfob)}',
+'.cfObDeobMethod.is-detected>i,.cfObDeobMethod.is-detected em{color:var(--cfob)}',
+'.cfObDeobSupportNote{display:flex;align-items:flex-start;gap:8px;padding:11px 14px;border-top:1px solid var(--cfobBorder);background:var(--cfobSoft);color:var(--cfobMuted);font-size:15px}',
+
+/* Activity Log follows the actual Light/Dark variables from the generator CSS. */
+'.cfObDeobLog{margin:0 14px 12px!important;width:auto!important;border:1px solid var(--cfobBorder)!important;background:var(--cfobPanel)!important;color:var(--cfobText)!important;box-sizing:border-box;overflow:hidden}',
+'.cfObDeobLogHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px!important;border-bottom:1px solid var(--cfobBorder)!important;background:var(--cfobPanel2)!important;color:var(--cfobText)!important;font-size:15px;font-weight:700}',
+'.cfObDeobLogHead>span{color:var(--cfob)!important}',
+'.cfObDeobLogHead b{color:var(--cfobText)!important}',
+'.cfObDeobLogBody{max-height:190px;overflow:auto;padding:10px 14px!important;background:var(--cfobPanel)!important;color:var(--cfobText)!important;font-family:monospace;font-size:15px;line-height:1.55}',
+'.cfObLogLine{border-bottom:1px dashed var(--cfobBorder2)!important;color:var(--cfobText)!important}',
+'.cfObLogLine time{color:var(--cfobMuted)!important}.cfObLogLine span{color:var(--cfobText)!important}',
+'.cfObDeobLogBody::-webkit-scrollbar-track{background:var(--cfobPanel)}.cfObDeobLogBody::-webkit-scrollbar-thumb{background:var(--cfobBorder)}',
+
+/* Code Tools: Beautify / Minify ticks stay close together, not stretched apart. */
+'.cfObParserToggle.cfObNormalizeFormat{display:flex!important;align-items:center;justify-content:flex-start;gap:6px;flex-wrap:wrap}',
+'.cfObParserToggle.cfObNormalizeFormat label{flex:0 0 auto!important;width:auto!important;min-width:118px!important;margin:0!important}',
+
 '.cfObBottom{justify-content:flex-end}',
 '.cfObBottom .cfObCopyActions{margin-left:auto}',
 '.cfObDeobFormat{align-items:center;justify-content:space-between;gap:12px;margin:12px 15px!important;width:auto!important;box-sizing:border-box}',
@@ -39,17 +67,17 @@ st.textContent=[
 '.cfObDeobLog:before{display:none}',
 '.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;font-size:15px;font-weight:600}',
 '.cfObDeobLogHead>span{display:flex;align-items:center;gap:7px;font-size:15px}',
-'.cfObDeobLogHead>span i{color:var(--cfObAccent)}',
-'.cfObDeobLogHead b{display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--cfObText)}',
+'.cfObDeobLogHead>span i{color:var(--cfob)}',
+'.cfObDeobLogHead b{display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--cfobText)}',
 '.cfObDeobLogHead b i{display:inline-block;width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#2eb85c;box-shadow:0 0 0 3px rgba(46,184,92,.12)}',
-'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:12px;box-sizing:border-box;color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
-'.cfObLogLine{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:5px 0;border-bottom:1px dashed var(--cfObBorder);color:var(--cfObText)}',
+'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:12px;box-sizing:border-box;color:var(--cfobText);font-family:monospace;font-size:15px;line-height:1.55}',
+'.cfObLogLine{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:5px 0;border-bottom:1px dashed var(--cfobBorder);color:var(--cfobText)}',
 '.cfObLogLine:last-child{border-bottom:0}',
-'.cfObLogLine time{color:var(--cfObMuted);opacity:1}',
-'.cfObLogLine span{min-width:0;overflow-wrap:anywhere;color:var(--cfObText)}',
+'.cfObLogLine time{color:var(--cfobMuted);opacity:1}',
+'.cfObLogLine span{min-width:0;overflow-wrap:anywhere;color:var(--cfobText)}',
 '.cfObDeobLogBody::-webkit-scrollbar{width:8px}',
-'.cfObDeobLogBody::-webkit-scrollbar-track{background:var(--cfObCard)}',
-'.cfObDeobLogBody::-webkit-scrollbar-thumb{background:var(--cfObBorder);border-radius:8px}',
+'.cfObDeobLogBody::-webkit-scrollbar-track{background:var(--cfobPanel)}',
+'.cfObDeobLogBody::-webkit-scrollbar-thumb{background:var(--cfobBorder);border-radius:8px}',
 
 /* Explicit selectors for the lab theme attribute/classes used by the existing UI.
    Values remain variable-driven so Light/Night changes are immediate. */
@@ -59,12 +87,15 @@ st.textContent=[
 '.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}',
 '.cfObDeobSupportHead>div{display:flex;flex-direction:column;gap:3px}.cfObDeobSupportHead span,.cfObDeobSupportHead small,.cfObDeobSupportHead b{font-size:15px}',
 '.cfObDeobSupportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}',
-'.cfObDeobMethod{display:flex;align-items:flex-start;gap:9px;min-width:0;padding:10px;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText);box-sizing:border-box;cursor:pointer}',
-'.cfObDeobMethod>i{margin-top:2px;color:var(--cfObMuted)}',
-'.cfObDeobMethod span{display:flex;min-width:0;flex-direction:column;gap:2px}.cfObDeobMethod b,.cfObDeobMethod small,.cfObDeobMethod em{font-size:15px}.cfObDeobMethod small{color:var(--cfObMuted)}.cfObDeobMethod em{font-style:normal;color:var(--cfObMuted)}',
-'.cfObDeobMethod.is-detected{border-color:var(--cfObAccent);box-shadow:inset 3px 0 0 var(--cfObAccent)}',
-'.cfObDeobMethod.is-detected>i,.cfObDeobMethod.is-detected em{color:var(--cfObAccent)}',
-'.cfObDeobSupportNote{display:flex;align-items:flex-start;gap:8px;padding:12px 15px;border-top:1px solid var(--cfObBorder);background:var(--cfObSoft);font-size:15px}.cfObDeobSupportNote span,.cfObDeobSupportNote b{font-size:15px}',
+'.cfObDeobMethod{display:flex;align-items:flex-start;gap:9px;min-width:0;padding:10px;border:1px solid var(--cfobBorder);background:var(--cfobPanel);color:var(--cfobText);box-sizing:border-box;cursor:pointer}',
+'.cfObDeobMethod>i{margin-top:2px;color:var(--cfobMuted)}',
+'.cfObDeobMethod span{display:flex;min-width:0;flex-direction:column;gap:2px}.cfObDeobMethod b,.cfObDeobMethod small,.cfObDeobMethod em{font-size:15px}.cfObDeobMethod small{color:var(--cfobMuted)}.cfObDeobMethod em{font-style:normal;color:var(--cfobMuted)}',
+'.cfObDeobMethod.is-detected{border-color:var(--cfob);box-shadow:inset 3px 0 0 var(--cfob)}',
+'.cfObDeobMethod.is-detected>i,.cfObDeobMethod.is-detected em{color:var(--cfob)}',
+'.cfObDeobSupportNote{display:flex;align-items:flex-start;gap:8px;padding:12px 15px;border-top:1px solid var(--cfobBorder);background:var(--cfobSoft);font-size:15px}.cfObDeobSupportNote span,.cfObDeobSupportNote b{font-size:15px}',
+
+'.cfObDeobSupport{margin:0 14px 12px!important;border:1px solid var(--cfobBorder)!important;background:var(--cfobPanel)!important;color:var(--cfobText)!important}',
+'.cfObDeobMethod{border:1px solid var(--cfobBorder)!important;background:var(--cfobPanel2)!important;color:var(--cfobText)!important}',
 '@media(max-width:800px){.cfObDeobSupportGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
 '@media(max-width:600px){.cfObDeobFormat,.cfObDeobLog,.cfObDeobSupport{margin-left:10px!important;margin-right:10px!important}.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:15px}.cfObDeobLogBody{padding:15px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}.cfObDeobSupportGrid{grid-template-columns:1fr}.cfObDeobSupportHead{align-items:flex-start;flex-direction:column}}'
 ].join('');
@@ -141,8 +172,8 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <div class="cfObRecovery" id="cfObRecovery"><div><span>Estimated Recovery</span><b id="cfObRecoveryValue">95%</b></div><div class="cfObRecoveryTrack"><i id="cfObRecoveryBar" style="width:95%"></i></div><small>Estimasi berdasarkan pola yang terdeteksi, bukan jaminan pemulihan source asli.</small></div>
 </div>
 
-<div class="cfObDeobSupport cfObInsight" id="cfObDeobSupport" style="display:none;">
-  <div class="cfObDeobSupportHead cfObInsightHead">
+<div class="cfObDeobSupport" id="cfObDeobSupport" style="display:none;">
+  <div class="cfObDeobSupportHead">
     <div>
       <span><i class="fa fa-unlock-alt"></i> DEOBFUSCATION METHODS</span>
       <small>Engine akan menganalisis pola source dan menandai metode yang terdeteksi.</small>
@@ -185,8 +216,8 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 
 
 <div class="cfObBottom"><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
-<div class="cfObDeobLog cfObInsight" id="cfObDeobLog" style="display:none;">
-  <div class="cfObDeobLogHead cfObInsightHead"><span><i class="fa fa-terminal"></i> ACTIVITY LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
+<div class="cfObDeobLog" id="cfObDeobLog" style="display:none;">
+  <div class="cfObDeobLogHead"><span><i class="fa fa-terminal"></i> ACTIVITY LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
   <div class="cfObDeobLogBody" id="cfObDeobLogBody"><div class="cfObLogLine"><time>--:--:--</time><span>Activity log ready.</span></div></div>
 </div>
 </div><!-- /#cfObTool -->
