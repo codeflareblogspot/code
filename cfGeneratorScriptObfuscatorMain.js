@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.13-split-main';
+var CF_JS_LAB_VERSION='v3.15-split-main';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -123,7 +123,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 <div class="cfObCodeTools" id="cfObCodeTools" style="display:none;">
   <div class="cfObCodeToolsHead"><div><b><i class="fa fa-wrench"></i> CODE TOOLS</b><small>Format dan konversi source tanpa menjalankan JavaScript.</small></div><span>TEXT SAFE</span></div>
   <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="beautify"><i class="fa fa-align-left"></i><span><b>Beautify Code</b><small>Rapikan indentasi dan struktur agar mudah dibaca.</small></span></button><button type="button" class="cfObToolCard" data-action="minify"><i class="fa fa-compress"></i><span><b>Minify Code</b><small>Padatkan whitespace dan komentar secara konservatif.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
-  <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify adalah default. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle"><button type="button" class="active" data-format="beautify">BEAUTIFY</button><button type="button" data-format="minify">MINIFY</button></div></div>
+  <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify menambahkan &lt;br /&gt; dan indentasi. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle"><button type="button" class="active" data-format="beautify">BEAUTIFY</button><button type="button" data-format="minify">MINIFY</button></div></div>
 </div>
 <div class="cfObPassword" id="cfObPasswordOption">
   <label class="cfObPasswordToggle"><span><i class="fa fa-key"></i> Deobfuscation Password Protection</span><input id="cfObPasswordEnable" type="checkbox"><i></i></label>
@@ -1974,20 +1974,36 @@ var map={};
 
 for(var i=0;i<S.markerBlocks.length;i++){
 var b=S.markerBlocks[i];
-var body=typeof b.processed==='string'?b.processed:b.original;
-body=_protectHtmlRawTextEndTags(String(body||'').trim());
 
-if(!body)throw new Error('MARKER BLOCK EMPTY - '+b.id);
-if(!_syntaxValid(body))throw new Error('MARKER BLOCK INVALID - '+b.id);
+/* INJECT semantics:
+   the original obfuscated fragment MUST be replaced by the recovered code.
+   Never fall back to b.original, because that produces a source that still
+   contains the obfuscator even though the UI reports INJECT COMPLETE. */
+if(b.skipped||typeof b.processed!=='string'||!String(b.processed).trim()){
+throw new Error('DEOBFUSCATED BLOCK NOT READY - '+b.id)
+}
+
+var body=_protectHtmlRawTextEndTags(String(b.processed).trim());
+if(!body)throw new Error('DEOBFUSCATED BLOCK EMPTY - '+b.id);
+if(!_syntaxValid(body))throw new Error('DEOBFUSCATED BLOCK INVALID - '+b.id);
 
 map[b.id]=body
 }
 
 var out=_restoreMarkerSource(S.markerSource,map);
 
-/* Hard guard: no temporary marker is allowed to survive injection. */
 if(/\/\*__CF_OBF_BLOCK_\d{3}__\*\//.test(out)){
 throw new Error('MARKER RESTORE INCOMPLETE')
+}
+
+/* Final hard guard: every successfully processed obfuscated fragment must be
+   absent from the reconstructed source. This catches accidental no-op inject. */
+for(var j=0;j<S.markerBlocks.length;j++){
+var oldCode=String(S.markerBlocks[j].original||'').trim();
+var newCode=String(S.markerBlocks[j].processed||'').trim();
+if(oldCode&&newCode&&oldCode!==newCode&&out.indexOf(oldCode)!==-1){
+throw new Error('OBFUSCATED BLOCK STILL PRESENT - '+S.markerBlocks[j].id)
+}
 }
 return out
 }
@@ -2016,7 +2032,7 @@ if(S.mode==='tools')return;
 E.copyScript.disabled=true;
 if(E.resultStatus)E.resultStatus.textContent='INJECTING...';
 setProgress(10);
-say('INJECTING NORMALIZED DATA...');
+say('REPLACING OBFUSCATED CODE WITH DEOBFUSCATED SOURCE...');
 await _ui();
 
 try{
@@ -2052,7 +2068,7 @@ var payload='';
 
 if(S.mode==='deobfuscate'){
 /* Do not read/re-parse the huge textarea. Use the validated checkpoint. */
-payload=String(S.normalizedBase||S.lastSafeOutput||'').trim()
+payload=String(S.normalizedBase||S.lastSafeOutput||E.output.value||'').trim()
 }else{
 payload=String(E.output.value||'').trim();
 payload=_stripCDATADeep(_stripScriptWrapper(payload)).trim()
@@ -2152,7 +2168,7 @@ if(!isMarkerInject)S.lastSafeOutput=addTagOnly?injected:payload;
 _injectButtonState();
 
 setProgress(100);
-say('INJECT COMPLETE - READY TO COPY')
+say('INJECT COMPLETE - OBFUSCATED CODE REPLACED - READY TO COPY')
 }catch(err){
 if(E.resultStatus)E.resultStatus.textContent='INJECT ERROR';
 say('INJECT FAILED - '+String(err&&err.message||err));
@@ -2238,6 +2254,14 @@ S.normalizeFinal=true;
 S.normalizedBase=cfOpened;
 S.lastSafeOutput=cfOpened;
 S.injectCompleted=false;
+
+/* Native CodeFlare decode is already the recovered source. Bind it to the
+   captured marker target immediately so Inject replaces the obfuscated block. */
+if(S.markerBlocks&&S.markerBlocks.length===1){
+S.markerBlocks[0].processed=cfOpened;
+S.markerBlocks[0].skipped=false;
+S.batchReplacements=[{id:S.markerBlocks[0].id,code:cfOpened,skipped:false}];
+}
 
 setOutput(cfOpened,'CODEFLARE NATIVE DEOBFUSCATION OUTPUT','SOURCE OPENED');
 setProgress(100);
@@ -4207,7 +4231,13 @@ S.injectTarget=t
    and every other byte remain exactly as in the original source. */
 if(t.fragment&&t.fragment.length>0){
 var before=raw.slice(0,t.fragment.index);
+var oldFragment=raw.slice(t.fragment.index,t.fragment.index+t.fragment.length);
 var after=raw.slice(t.fragment.index+t.fragment.length);
+
+/* Injection must be a real replacement, not a no-op copy of the obfuscator. */
+if(String(payload).trim()===String(oldFragment).trim()){
+throw new Error('DEOBFUSCATED CODE SAME AS OBFUSCATED TARGET - INJECT BLOCKED')
+}
 var result=before+payload+after;
 
 /* Byte-preservation guard: everything outside the target fragment must be
@@ -4581,7 +4611,12 @@ updateLayerPanel('','WAITING');analyze();E.input.focus();say('READY FOR NEW CODE
 
 tool.querySelectorAll('.cfObToolCard').forEach(function(b){b.addEventListener('click',function(){
 var src=E.input.value;if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
-var a=b.dataset.action,r='';if(a==='beautify')r=beautify(src);if(a==='minify')r=minify(src);if(a==='bloggerParse')r=bloggerParse(src);if(a==='bloggerUnparse')r=bloggerUnparse(src);
+var a=b.dataset.action,r='',ct=window.CFCodeToolsEngine;
+if(!ct)throw new Error('CODE TOOLS ENGINE NOT READY');
+if(a==='beautify')r=ct.beautify(src);
+if(a==='minify')r=ct.minify(src);
+if(a==='bloggerParse')r=ct.bloggerParse(src,S.parserFormat);
+if(a==='bloggerUnparse')r=ct.bloggerUnparse(src);
 setOutput(r,a==='beautify'?'BEAUTIFIED CODE OUTPUT':a==='minify'?'MINIFIED CODE OUTPUT':a==='bloggerParse'?'BLOGGER PARSED OUTPUT':'BLOGGER UNPARSED OUTPUT','SUCCESS');say('SUCCESS')
 })});
 tool.querySelectorAll('.cfObParserToggle button').forEach(function(b){b.addEventListener('click',function(){tool.querySelectorAll('.cfObParserToggle button').forEach(function(x){x.classList.remove('active')});b.classList.add('active');S.parserFormat=b.dataset.format||'beautify'})});
