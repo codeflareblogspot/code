@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.29';
+var CF_JS_LAB_VERSION='v3.30';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -1006,18 +1006,155 @@ return marker+'(function(){'+lock+self+dbg+obj+dead+'var '+arr+'='+JSON.stringif
 function _c1(el,msg){if(!el)return;el.classList.add('cfObFieldError');try{el.scrollIntoView({behavior:'smooth',block:'center'})}catch(e){}setTimeout(function(){try{el.focus()}catch(e){}},180);if(msg)say(msg)}
 function _a9(s){return String(s).replace(/\bconsole\s*\.\s*(?:log|debug|info|trace)\s*\((?:[^()"'`]|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\([^()]*\))*\)\s*;?/g,'').replace(/\/\*\s*CF(?:JS|DEBUG|MARKER)[\s\S]*?\*\//gi,'')}
 
+
+function _isJavaScriptScriptTag(openTag){
+openTag=String(openTag||'');
+if(/\bsrc\s*=/i.test(openTag))return false;
+
+/* Do not obfuscate data/template/JSON script blocks. */
+var tm=openTag.match(/\btype\s*=\s*(["'])(.*?)\1/i);
+if(!tm)return true;
+var type=String(tm[2]||'').trim().toLowerCase();
+return !type||
+type==='text/javascript'||
+type==='application/javascript'||
+type==='application/ecmascript'||
+type==='text/ecmascript'||
+type==='module'
+}
+
+function _sourceNeedsScriptPreservation(src){
+src=String(src||'');
+var scripts=src.match(/<script\b/gi)||[];
+if(!scripts.length)return false;
+
+/* A source containing several SCRIPT elements, external loaders, or surrounding
+   HTML/Blogger markup is a document/source fragment, not one JavaScript body. */
+if(scripts.length>1)return true;
+if(/<script\b[^>]*\bsrc\s*=/i.test(src))return true;
+if(/<script\b/i.test(src)&&/<\/?(?:html|head|body|div|section|article|b:|style|link|meta)\b/i.test(src))return true;
+
+/* Exactly one inline SCRIPT wrapper is safe for the engine's single-wrapper
+   stripping path only when it occupies the whole input. */
+return !/^\s*<script\b[^>]*>[\s\S]*<\/script\s*>\s*$/i.test(src)
+}
+
+function _scriptBodyForObfuscation(body){
+return _stripCDATADeep(String(body||'')).trim()
+}
+
+async function _obfuscatePreservedSource(src,opt,passConfig){
+src=String(src||'');
+var re=/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi,m;
+var targets=[];
+
+while((m=re.exec(src))){
+var full=m[0];
+var open=(full.match(/^<script\b[^>]*>/i)||[''])[0];
+var body=m[2]||'';
+var bodyStart=m.index+open.length;
+
+if(!_isJavaScriptScriptTag(open))continue;
+
+var clean=_scriptBodyForObfuscation(body);
+if(!clean)continue;
+
+/* Never double-obfuscate a native CodeFlare block. */
+var nativeFound=null;
+try{nativeFound=_a3(clean)}catch(_e){nativeFound=null}
+if(nativeFound){
+say('OBFUSCATE SKIP - SCRIPT '+(targets.length+1)+' ALREADY CODEFLARE');
+continue
+}
+
+targets.push({
+id:'CF_OBF_BLOCK_'+String(targets.length+1).padStart(3,'0'),
+index:m.index,
+length:full.length,
+open:open,
+body:body,
+clean:clean,
+hadCDATA:_hasCDATA(body)
+})
+}
+
+if(!targets.length){
+throw new Error('NO INLINE JAVASCRIPT BLOCK FOUND')
+}
+
+say('SOURCE MODE - '+targets.length+' INLINE SCRIPT BLOCK'+(targets.length===1?'':'S')+' COLLECTED');
+
+var replacements={};
+for(var i=0;i<targets.length;i++){
+var t=targets[i];
+say('OBFUSCATING '+t.id+' ('+(i+1)+'/'+targets.length+')');
+setProgress(18+Math.round((i/targets.length)*65));
+await _ui();
+
+var encoded=await window.CFObfuscatorEngine.obfuscate(t.clean,passConfig);
+encoded=String(encoded||'').trim();
+if(!encoded)throw new Error('OBFUSCATION EMPTY - '+t.id);
+if(!_syntaxValid(encoded))throw new Error('OBFUSCATION INVALID - '+t.id);
+
+var bodyOut=t.hadCDATA
+?'//<![CDATA[\n'+encoded+'\n//]]>'
+:encoded;
+
+replacements[t.id]=t.open+'\n'+bodyOut+'\n</script>'
+}
+
+/* Replace from last block to first so every byte outside the target SCRIPT
+   elements remains exactly where it was. External <script src>, markup,
+   Blogger XML, comments and article content are untouched. */
+var out=src;
+for(var j=targets.length-1;j>=0;j--){
+var b=targets[j];
+out=out.slice(0,b.index)+replacements[b.id]+out.slice(b.index+b.length)
+}
+
+/* Hard preservation guards. */
+var originalExternal=_externalScriptTags(src).map(function(x){return x.src});
+var finalExternal=_externalScriptTags(out).map(function(x){return x.src});
+for(var k=0;k<originalExternal.length;k++){
+if(finalExternal.indexOf(originalExternal[k])<0){
+throw new Error('EXTERNAL SCRIPT LOST - '+originalExternal[k])
+}
+}
+
+if(/<script\b[^>]*\bsrc\s*=/i.test(src)&&!/<script\b[^>]*\bsrc\s*=/i.test(out)){
+throw new Error('EXTERNAL SCRIPT PRESERVATION FAILED')
+}
+
+S.markerSource=src;
+S.markerBlocks=targets.map(function(t){
+return{id:t.id,original:t.body,processed:replacements[t.id],hadCDATA:t.hadCDATA,skipped:false}
+});
+S.markerCollectionReady=true;
+S.obfuscatedTargetCount=targets.length;
+
+return out
+}
+
 async function _a2(src){
 if(!window.CFObfuscatorEngine||typeof window.CFObfuscatorEngine.obfuscate!=='function'){
 throw new Error('OBFUSCATOR ENGINE NOT READY')
 }
 var opt=techValues();
-try{
-return await window.CFObfuscatorEngine.obfuscate(src,{
+var passConfig={
 tech:opt,
 passwordEnabled:!!(E.passEnable&&E.passEnable.checked),
 password:E.pass?E.pass.value:'',
 passwordConfirm:E.pass2?E.pass2.value:''
-})
+};
+
+try{
+if(_sourceNeedsScriptPreservation(src)){
+return await _obfuscatePreservedSource(src,opt,passConfig)
+}
+
+/* RAW JS or one complete inline SCRIPT wrapper.
+   The engine strips only the outer SCRIPT/CDATA wrapper and encodes JS body. */
+return await window.CFObfuscatorEngine.obfuscate(src,passConfig)
 }catch(err){
 var msg=String(err&&err.message||err);
 if(msg==='DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME')_c1(E.domain,msg);
@@ -2319,7 +2456,7 @@ return
 setProgress(20);
 await _ui();
 out=await _a2(src);
-setOutput(out,'ENCRYPTION CODE OUTPUT','SUCCESS')
+setOutput(out,_sourceNeedsScriptPreservation(src)?'OBFUSCATED SOURCE OUTPUT':'ENCRYPTION CODE OUTPUT','SUCCESS')
 }else{
 /* CODEFLARE SELF-OBFUSCATED SOURCE:
    File size is irrelevant. If the input carries CodeFlare's own metadata,
