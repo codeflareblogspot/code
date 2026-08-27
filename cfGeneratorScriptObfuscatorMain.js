@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.27';
+var CF_JS_LAB_VERSION='v3.28';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -25,6 +25,9 @@ _loadCodeFlareJsLabCSS();
 (function(){
 var st=document.createElement('style');
 st.textContent=[
+'.cfObCopyActions button.is-copied,#cfObCopy.is-copied{background:#20b86a!important;border-color:#20b86a!important;color:#fff!important;box-shadow:0 0 0 3px rgba(32,184,106,.14)!important}',
+'.cfObCopyActions button.is-copied i,#cfObCopy.is-copied i{color:#fff!important}',
+
 '.cfObDeobSupport{margin:0 14px 12px;border:1px solid var(--cfobBorder);background:var(--cfobPanel);color:var(--cfobText)}',
 '.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-bottom:1px solid var(--cfobBorder);background:var(--cfobPanel2)}',
 '.cfObDeobSupportHead>div{min-width:0}.cfObDeobSupportHead span{display:block;font-size:15px;font-weight:700}.cfObDeobSupportHead span i{margin-right:6px;color:var(--cfob)}',
@@ -1995,7 +1998,7 @@ S.copyFeedbackTimer=setTimeout(function(){
 E.copy.classList.remove('is-copied');
 E.copy.removeAttribute('data-copy-state');
 if(E.copy.dataset.copyOriginal)E.copy.innerHTML=E.copy.dataset.copyOriginal
-},1800)
+},2200)
 });
 
 async function _processLargeTargetBatch(){
