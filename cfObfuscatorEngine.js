@@ -62,8 +62,27 @@ var marker=opt.debugLog?'/*CFJS5:'+meta+'*/':'';
 return marker+'(function(){'+lock+self+dbg+obj+dead+'var '+arr+'='+JSON.stringify(chunks)+';'+fs+undoShuffle+undoRotate+f1+'var '+p+'='+arr+'.join("");'+f2+'var '+b+'=atob('+p+'),'+u+'=new Uint8Array('+b+'.length);for(var '+i+'=0;'+i+'<'+b+'.length;'+i+'++)'+u+'['+i+']='+b+'.charCodeAt('+i+');var '+s+'=new TextDecoder().decode('+u+');'+fe+'(0,eval)('+s+');})();'+(opt.debugLog?'':'var _q7n='+JSON.stringify(meta)+';')
 }
 
+
+function stripOuterScriptAndCDATA(src){
+var s=String(src||'').trim();
+
+/* Obfuscator must encode JavaScript BODY only.
+   If the user pastes <script>...</script>, eval() cannot execute those HTML tags. */
+var m=s.match(/^<script\b[^>]*>([\s\S]*?)<\/script\s*>\s*$/i);
+if(m)s=m[1];
+
+s=s
+.replace(/^\s*\/\/\s*<!\[CDATA\[\s*/i,'')
+.replace(/\s*\/\/\s*\]\]>\s*$/i,'')
+.replace(/^\s*\/\*\s*<!\[CDATA\[\s*\*\/\s*/i,'')
+.replace(/\s*\/\*\s*\]\]>\s*\*\/\s*$/i,'');
+
+return s.trim()
+}
+
 async function obfuscate(src,options){
 options=options||{};
+src=stripOuterScriptAndCDATA(src);
 var opt=Object.assign({},options.tech||{});
 opt.host=String(opt.host||'').trim().toLowerCase().replace(/^https?:\/\//,'').replace(/\/.*$/,'');
 if(opt.domain&&!opt.host)throw new Error('DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME');
@@ -91,7 +110,8 @@ return protectScriptEnds(buildWrapper(opt,randomId(),chunks,meta))
 }
 
 g.CFObfuscatorEngine=Object.freeze({
-version:'3.12-modular',
+version:'3.29',
+stripOuterScriptAndCDATA:stripOuterScriptAndCDATA,
 obfuscate:obfuscate
 });
 })(window);
