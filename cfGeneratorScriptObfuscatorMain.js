@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.30';
+var CF_JS_LAB_VERSION='v3.31';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -1135,11 +1135,45 @@ S.obfuscatedTargetCount=targets.length;
 return out
 }
 
+
+function _validateProtectionPassword(showLog){
+if(!(E.passEnable&&E.passEnable.checked))return true;
+
+var p1=E.pass?String(E.pass.value||''):'';
+var p2=E.pass2?String(E.pass2.value||''):'';
+
+if(!p1.trim()){
+_c1(E.pass,'ISI PASSWORD');
+if(showLog)say('PASSWORD PROTECTION - PASSWORD REQUIRED');
+return false
+}
+if(!p2.trim()){
+_c1(E.pass2,'ISI KONFIRMASI PASSWORD');
+if(showLog)say('PASSWORD PROTECTION - CONFIRM PASSWORD REQUIRED');
+return false
+}
+if(p1!==p2){
+E.pass.classList.add('cfObFieldError');
+E.pass2.classList.add('cfObFieldError');
+if(showLog)say('PASSWORD PROTECTION - PASSWORD MISMATCH');
+return false
+}
+
+E.pass.classList.remove('cfObFieldError');
+E.pass2.classList.remove('cfObFieldError');
+return true
+}
+
 async function _a2(src){
 if(!window.CFObfuscatorEngine||typeof window.CFObfuscatorEngine.obfuscate!=='function'){
 throw new Error('OBFUSCATOR ENGINE NOT READY')
 }
 var opt=techValues();
+
+if(!_validateProtectionPassword(true)){
+throw new Error('PASSWORD MISMATCH')
+}
+
 var passConfig={
 tech:opt,
 passwordEnabled:!!(E.passEnable&&E.passEnable.checked),
@@ -2094,8 +2128,42 @@ tool.querySelectorAll('#cfObPreset button').forEach(function(b){b.addEventListen
 tool.querySelectorAll('[data-tech]').forEach(function(x){x.addEventListener('change',function(){if(S.mode!=='obfuscate')return;customPreset();if(x.dataset.tech==='domain'){E.domain.disabled=!x.checked;if(!x.checked)E.domain.classList.remove('cfObFieldError')}updateTechSummary()})});
 if(E.domain)E.domain.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError');updateTechSummary()});
 E.input.addEventListener('input',function(){analyze();if(S.mode==='deobfuscate')_h1(E.input.value)});
-if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.classList.toggle('active',this.checked);if(!this.checked){E.pass.classList.remove('cfObFieldError');E.pass2.classList.remove('cfObFieldError')}});
-[E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
+if(E.passEnable)E.passEnable.addEventListener('change',function(){
+E.passBox.classList.toggle('active',this.checked);
+if(!this.checked){
+E.pass.classList.remove('cfObFieldError');
+E.pass2.classList.remove('cfObFieldError')
+}else{
+_validateProtectionPassword(false)
+}
+});
+[E.pass,E.pass2].forEach(function(el){
+if(!el)return;
+el.addEventListener('input',function(){
+if(!(E.passEnable&&E.passEnable.checked)){
+E.pass.classList.remove('cfObFieldError');
+E.pass2.classList.remove('cfObFieldError');
+return
+}
+
+var p1=String(E.pass.value||''),p2=String(E.pass2.value||'');
+if(!p1){
+E.pass.classList.add('cfObFieldError')
+}else{
+E.pass.classList.remove('cfObFieldError')
+}
+
+if(!p2){
+E.pass2.classList.remove('cfObFieldError')
+}else if(p1!==p2){
+E.pass.classList.add('cfObFieldError');
+E.pass2.classList.add('cfObFieldError')
+}else{
+E.pass.classList.remove('cfObFieldError');
+E.pass2.classList.remove('cfObFieldError')
+}
+})
+});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
 E.paste.addEventListener('click',async function(){
 try{
