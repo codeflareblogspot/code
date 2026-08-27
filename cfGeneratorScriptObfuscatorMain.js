@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.22';
+var CF_JS_LAB_VERSION='v3.25';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -27,14 +27,16 @@ var st=document.createElement('style');
 st.textContent=[
 '.cfObBottom{justify-content:flex-end}',
 '.cfObBottom .cfObCopyActions{margin-left:auto}',
-'.cfObDeobFormat{align-items:center;justify-content:space-between;gap:12px}',
+'.cfObDeobFormat{align-items:center;justify-content:space-between;gap:12px;margin:12px 15px!important;width:auto!important;box-sizing:border-box}',
+'.cfObDeobFormat.cfObInsight{border-color:inherit}',
 '.cfObDeobFormatText{display:flex;flex-direction:column;gap:3px}',
 '.cfObDeobFormatText b,.cfObDeobFormatText small{font-size:15px}',
 
 /* Analyst Log follows the same neutral panel surface as the existing analyst/source panels.
    No fixed white background: all surfaces inherit the active CodeFlare theme variables. */
-'.cfObDeobLog{position:relative;overflow:hidden}',
-'.cfObDeobLog:before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--cfObAccent);opacity:.75}',
+'.cfObDeobLog{position:relative;overflow:hidden;margin:12px 15px!important;width:auto!important;box-sizing:border-box}',
+'.cfObDeobLog.cfObInsight{border-color:inherit}',
+'.cfObDeobLog:before{display:none}',
 '.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;font-size:15px;font-weight:600}',
 '.cfObDeobLogHead>span{display:flex;align-items:center;gap:7px;font-size:15px}',
 '.cfObDeobLogHead>span i{color:var(--cfObAccent)}',
@@ -51,8 +53,8 @@ st.textContent=[
 
 /* Explicit selectors for the lab theme attribute/classes used by the existing UI.
    Values remain variable-driven so Light/Night changes are immediate. */
-'#cfObTool[data-theme="dark"] .cfObDeobLog,#cfObTool.cfObDark .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
-'#cfObTool[data-theme="light"] .cfObDeobLog,#cfObTool.cfObLight .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
+'#cfObTool[data-theme="dark"] .cfObDeobLog,#cfObTool.cfObDark .cfObDeobLog{color:inherit}',
+'#cfObTool[data-theme="light"] .cfObDeobLog,#cfObTool.cfObLight .cfObDeobLog{color:inherit}',
 '.cfObDeobSupport{overflow:hidden}',
 '.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}',
 '.cfObDeobSupportHead>div{display:flex;flex-direction:column;gap:3px}.cfObDeobSupportHead span,.cfObDeobSupportHead small,.cfObDeobSupportHead b{font-size:15px}',
@@ -64,7 +66,7 @@ st.textContent=[
 '.cfObDeobMethod.is-detected>i,.cfObDeobMethod.is-detected em{color:var(--cfObAccent)}',
 '.cfObDeobSupportNote{display:flex;align-items:flex-start;gap:8px;padding:12px 15px;border-top:1px solid var(--cfObBorder);background:var(--cfObSoft);font-size:15px}.cfObDeobSupportNote span,.cfObDeobSupportNote b{font-size:15px}',
 '@media(max-width:800px){.cfObDeobSupportGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}',
-'@media(max-width:600px){.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:15px}.cfObDeobLogBody{padding:15px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}.cfObDeobSupportGrid{grid-template-columns:1fr}.cfObDeobSupportHead{align-items:flex-start;flex-direction:column}}'
+'@media(max-width:600px){.cfObDeobFormat,.cfObDeobLog,.cfObDeobSupport{margin-left:10px!important;margin-right:10px!important}.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:15px}.cfObDeobLogBody{padding:15px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}.cfObDeobSupportGrid{grid-template-columns:1fr}.cfObDeobSupportHead{align-items:flex-start;flex-direction:column}}'
 ].join('');
 document.head.appendChild(st)
 })();
@@ -163,7 +165,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 
 <div class="cfObCodeTools" id="cfObCodeTools" style="display:none;">
   <div class="cfObCodeToolsHead"><div><b><i class="fa fa-wrench"></i> CODE TOOLS</b><small>Format dan konversi source tanpa menjalankan JavaScript.</small></div><span>TEXT SAFE</span></div>
-  <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="beautify"><i class="fa fa-align-left"></i><span><b>Beautify Code</b><small>Rapikan indentasi dan struktur agar mudah dibaca.</small></span></button><button type="button" class="cfObToolCard" data-action="minify"><i class="fa fa-compress"></i><span><b>Minify Code</b><small>Padatkan whitespace dan komentar secara konservatif.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
+  <div class="cfObToolCards"><button type="button" class="cfObToolCard" data-action="bloggerParse"><i class="fa fa-code"></i><span><b>Blogger Parser</b><small>Escape kode dan pertahankan baris dengan &lt;br /&gt;.</small></span></button><button type="button" class="cfObToolCard" data-action="bloggerUnparse"><i class="fa fa-exchange"></i><span><b>Blogger Unparser</b><small>Kembalikan entity dan &lt;br /&gt; menjadi source biasa.</small></span></button></div>
   <div class="cfObParserOption"><div><b>BLOGGER PARSER FORMAT</b><small>Beautify menambahkan &lt;br /&gt; dan indentasi. Minify menghasilkan satu baris.</small></div><div class="cfObParserToggle cfObNormalizeFormat"><label><input type="checkbox" data-format="beautify" checked><i></i><span>BEAUTIFY</span></label><label><input type="checkbox" data-format="minify"><i></i><span>MINIFY</span></label></div></div>
 </div>
 <div class="cfObPassword" id="cfObPasswordOption">
@@ -4666,11 +4668,9 @@ tool.querySelectorAll('.cfObToolCard').forEach(function(b){b.addEventListener('c
 var src=E.input.value;if(!src.trim()){say('INPUT EMPTY');E.input.focus();return}
 var a=b.dataset.action,r='',ct=window.CFCodeToolsEngine;
 if(!ct)throw new Error('CODE TOOLS ENGINE NOT READY');
-if(a==='beautify')r=ct.beautify(src);
-if(a==='minify')r=ct.minify(src);
 if(a==='bloggerParse')r=ct.bloggerParse(src,S.parserFormat);
 if(a==='bloggerUnparse')r=ct.bloggerUnparse(src);
-setOutput(r,a==='beautify'?'BEAUTIFIED CODE OUTPUT':a==='minify'?'MINIFIED CODE OUTPUT':a==='bloggerParse'?'BLOGGER PARSED OUTPUT':'BLOGGER UNPARSED OUTPUT','SUCCESS');say('SUCCESS')
+setOutput(r,a==='bloggerParse'?'BLOGGER PARSED OUTPUT':'BLOGGER UNPARSED OUTPUT','SUCCESS');say('SUCCESS')
 })});
 tool.querySelectorAll('.cfObParserToggle input[data-format]').forEach(function(b){
 b.addEventListener('change',function(){
