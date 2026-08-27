@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.19-split-main';
+var CF_JS_LAB_VERSION='v3.19';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
