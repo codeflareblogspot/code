@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.21';
+var CF_JS_LAB_VERSION='v3.22';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -27,20 +27,20 @@ var st=document.createElement('style');
 st.textContent=[
 '.cfObBottom{justify-content:flex-end}',
 '.cfObBottom .cfObCopyActions{margin-left:auto}',
-'.cfObDeobFormat{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:10px 0;padding:15px;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
+'.cfObDeobFormat{align-items:center;justify-content:space-between;gap:12px}',
 '.cfObDeobFormatText{display:flex;flex-direction:column;gap:3px}',
 '.cfObDeobFormatText b,.cfObDeobFormatText small{font-size:15px}',
 
 /* Analyst Log follows the same neutral panel surface as the existing analyst/source panels.
    No fixed white background: all surfaces inherit the active CodeFlare theme variables. */
-'.cfObDeobLog{position:relative;margin:10px 0 0;padding:0;overflow:hidden;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
+'.cfObDeobLog{position:relative;overflow:hidden}',
 '.cfObDeobLog:before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--cfObAccent);opacity:.75}',
-'.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding:15px;box-sizing:border-box;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);color:var(--cfObText);font-size:15px;font-weight:600}',
+'.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;font-size:15px;font-weight:600}',
 '.cfObDeobLogHead>span{display:flex;align-items:center;gap:7px;font-size:15px}',
 '.cfObDeobLogHead>span i{color:var(--cfObAccent)}',
 '.cfObDeobLogHead b{display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--cfObText)}',
 '.cfObDeobLogHead b i{display:inline-block;width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#2eb85c;box-shadow:0 0 0 3px rgba(46,184,92,.12)}',
-'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:15px;box-sizing:border-box;background:var(--cfObCard);color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
+'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:12px;box-sizing:border-box;color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
 '.cfObLogLine{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:5px 0;border-bottom:1px dashed var(--cfObBorder);color:var(--cfObText)}',
 '.cfObLogLine:last-child{border-bottom:0}',
 '.cfObLogLine time{color:var(--cfObMuted);opacity:1}',
@@ -53,10 +53,10 @@ st.textContent=[
    Values remain variable-driven so Light/Night changes are immediate. */
 '#cfObTool[data-theme="dark"] .cfObDeobLog,#cfObTool.cfObDark .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
 '#cfObTool[data-theme="light"] .cfObDeobLog,#cfObTool.cfObLight .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
-'.cfObDeobSupport{margin:10px 0;padding:0;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText);overflow:hidden}',
-'.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);font-size:15px}',
+'.cfObDeobSupport{overflow:hidden}',
+'.cfObDeobSupportHead{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}',
 '.cfObDeobSupportHead>div{display:flex;flex-direction:column;gap:3px}.cfObDeobSupportHead span,.cfObDeobSupportHead small,.cfObDeobSupportHead b{font-size:15px}',
-'.cfObDeobSupportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:15px}',
+'.cfObDeobSupportGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:12px}',
 '.cfObDeobMethod{display:flex;align-items:flex-start;gap:9px;min-width:0;padding:10px;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText);box-sizing:border-box;cursor:pointer}',
 '.cfObDeobMethod>i{margin-top:2px;color:var(--cfObMuted)}',
 '.cfObDeobMethod span{display:flex;min-width:0;flex-direction:column;gap:2px}.cfObDeobMethod b,.cfObDeobMethod small,.cfObDeobMethod em{font-size:15px}.cfObDeobMethod small{color:var(--cfObMuted)}.cfObDeobMethod em{font-style:normal;color:var(--cfObMuted)}',
@@ -139,8 +139,8 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <div class="cfObRecovery" id="cfObRecovery"><div><span>Estimated Recovery</span><b id="cfObRecoveryValue">95%</b></div><div class="cfObRecoveryTrack"><i id="cfObRecoveryBar" style="width:95%"></i></div><small>Estimasi berdasarkan pola yang terdeteksi, bukan jaminan pemulihan source asli.</small></div>
 </div>
 
-<div class="cfObDeobSupport" id="cfObDeobSupport" style="display:none;">
-  <div class="cfObDeobSupportHead">
+<div class="cfObDeobSupport cfObInsight" id="cfObDeobSupport" style="display:none;">
+  <div class="cfObDeobSupportHead cfObInsightHead">
     <div>
       <span><i class="fa fa-unlock-alt"></i> DEOBFUSCATION METHODS</span>
       <small>Engine akan menganalisis pola source dan menandai metode yang terdeteksi.</small>
@@ -172,7 +172,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <small>Password digunakan untuk validasi Deobfuscate pada CodeFlare. Jangan gunakan password akun penting.</small>
 </div>
 <div class="cfObPassword cfObPasswordAccess" id="cfObPasswordAccess" style="display:none;"><div class="cfObProtectedTitle"><i class="fa fa-shield"></i> CODEFLARE PROTECTED OUTPUT DETECTED</div><div class="cfObPassField"><input id="cfObAccessPassword" type="password" autocomplete="current-password" placeholder="Enter deobfuscation password"><button class="cfObPassEye" type="button" aria-label="Show password"><i class="fa fa-eye"></i></button></div><small>Masukkan password yang digunakan saat output CodeFlare dibuat.</small></div>
-<div class="cfObDeobFormat" id="cfObDeobFormat" style="display:none;">
+<div class="cfObDeobFormat cfObInsight" id="cfObDeobFormat" style="display:none;">
   <div class="cfObDeobFormatText"><b><i class="fa fa-indent"></i> OUTPUT FORMAT</b><small>Pilih format hasil sebelum menjalankan Deobfuscator.</small></div>
   <div class="cfObNormalizeFormat"><label><input id="cfObNormalizeBeautify" type="checkbox" checked><i></i><span>BEAUTIFY</span></label><label><input id="cfObNormalizeFlush" type="checkbox"><i></i><span>RATA KIRI TANPA TAB</span></label></div>
 </div>
@@ -183,8 +183,8 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 
 
 <div class="cfObBottom"><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
-<div class="cfObDeobLog" id="cfObDeobLog" style="display:none;">
-  <div class="cfObDeobLogHead"><span><i class="fa fa-terminal"></i> ACTIVITY LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
+<div class="cfObDeobLog cfObInsight" id="cfObDeobLog" style="display:none;">
+  <div class="cfObDeobLogHead cfObInsightHead"><span><i class="fa fa-terminal"></i> ACTIVITY LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
   <div class="cfObDeobLogBody" id="cfObDeobLogBody"><div class="cfObLogLine"><time>--:--:--</time><span>Activity log ready.</span></div></div>
 </div>
 </div><!-- /#cfObTool -->
