@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.31';
+var CF_JS_LAB_VERSION='v3.32';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -1164,7 +1164,34 @@ E.pass2.classList.remove('cfObFieldError');
 return true
 }
 
+
+function _detectAlreadyObfuscatedSource(src){
+src=String(src||'');
+var nativeMeta=null;
+try{nativeMeta=_a3(src)}catch(_e){nativeMeta=null}
+if(nativeMeta)return{yes:true,type:'CODEFLARE NATIVE'};
+
+if(/\/\*\s*=====\s*CF_OBF_BLOCK_\d+\s*=====\s*\*\//i.test(src)){
+return{yes:true,type:'CODEFLARE MARKER BLOCK'}
+}
+
+/* Detect the native CodeFlare runtime shape even when embedded inside a
+   full Blogger/HTML source where detectNative() cannot unwrap the whole file. */
+if(/(?:\batob\s*\(|TextDecoder\s*\(\)|new\s+TextDecoder|Uint8Array\s*\()/i.test(src)&&
+   /(?:\(\s*0\s*,\s*eval\s*\)|\beval\s*\()/i.test(src)&&
+   /(?:var\s+_[A-Za-z0-9_$]+\s*=\s*["'][A-Za-z0-9+/=]{24,}["']|["'][A-Za-z0-9+/=]{40,}["'])/.test(src)){
+return{yes:true,type:'OBFUSCATED RUNTIME'}
+}
+
+return{yes:false,type:''}
+}
+
 async function _a2(src){
+var precheck=_detectAlreadyObfuscatedSource(src);
+if(precheck.yes){
+say('WARNING - SOURCE ALREADY OBFUSCATED ['+precheck.type+']');
+throw new Error('SOURCE ALREADY OBFUSCATED')
+}
 if(!window.CFObfuscatorEngine||typeof window.CFObfuscatorEngine.obfuscate!=='function'){
 throw new Error('OBFUSCATOR ENGINE NOT READY')
 }
@@ -2137,6 +2164,17 @@ E.pass2.classList.remove('cfObFieldError')
 _validateProtectionPassword(false)
 }
 });
+
+if(E.access)E.access.addEventListener('keydown',function(ev){
+if(ev.key!=='Enter'&&ev.keyCode!==13)return;
+ev.preventDefault();
+if(S.mode!=='deobfuscate')return;
+if(E.process&& !E.process.disabled){
+say('PASSWORD ENTER - EXECUTE DEOBFUSCATOR');
+E.process.click()
+}
+});
+
 [E.pass,E.pass2].forEach(function(el){
 if(!el)return;
 el.addEventListener('input',function(){
@@ -2508,13 +2546,12 @@ S.originalSource=_stripCDATA(_stripScriptWrapper(src));
    CodeFlare native output must never be obfuscated a second time.
    Detection is done on the complete input and also works through
    <script> + Blogger CDATA because _a3 unwraps those first. */
-var alreadyCodeFlare=null;
-try{alreadyCodeFlare=_a3(src)}catch(_alreadyErr){alreadyCodeFlare=null}
+var alreadyObfuscated=_detectAlreadyObfuscatedSource(src);
 
-if(alreadyCodeFlare){
+if(alreadyObfuscated.yes){
 setProgress(0);
 setOutput(src,'ENCRYPTION CODE OUTPUT','ALREADY OBFUSCATED');
-say('SOURCE ALREADY OBFUSCATED BY CODEFLARE - PROCESS BLOCKED');
+say('WARNING - SOURCE ALREADY OBFUSCATED ['+alreadyObfuscated.type+'] - PROCESS BLOCKED');
 S.lastSafeOutput=src;
 S.injectCompleted=false;
 _injectButtonState();
