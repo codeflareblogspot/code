@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.15-split-main';
+var CF_JS_LAB_VERSION='v3.16-split-main';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -50,27 +50,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <textarea id="cfObInput" spellcheck="false" placeholder="// Paste JavaScript, Blogger XML, or full source code here..."></textarea>
 </div>
 
-<div class="cfObDeobSupport" id="cfObDeobSupport" style="display:none;">
-  <div class="cfObDeobSupportHead">
-    <div>
-      <span><i class="fa fa-unlock-alt"></i> SUPPORTED DEOBFUSCATION METHODS</span>
-      <small>Engine akan menganalisis pola source dan mencoba membuka layer yang didukung secara bertahap.</small>
-    </div>
-    <b><i></i> AUTO DETECT</b>
-  </div>
-  <div class="cfObDeobSupportGrid">
-    <div class="cfObDeobMethod" data-method="codeflare"><i class="fa fa-cube"></i><span><b>CodeFlare Protected</b><small>Membuka output yang dibuat oleh engine CodeFlare.</small><em>FULL SUPPORT</em></span></div>
-    <div class="cfObDeobMethod" data-method="packer"><i class="fa fa-random"></i><span><b>P.A.C.K.E.R / Base62</b><small>Mendeteksi pola eval(function(p,a,c,k,e,...)) dan mencoba unpack payload.</small><em>SUPPORTED</em></span></div>
-    <div class="cfObDeobMethod" data-method="string-array"><i class="fa fa-list-ol"></i><span><b>String Array</b><small>Mencari indexed string table dan mengganti referensi dengan nilai aslinya.</small><em>SUPPORTED</em></span></div>
-    <div class="cfObDeobMethod" data-method="hex"><i class="fa fa-code"></i><span><b>Hex Escape</b><small>Mengubah pola seperti \\x48\\x65\\x6c\\x6c\\x6f menjadi karakter yang dapat dibaca.</small><em>SUPPORTED</em></span></div>
-    <div class="cfObDeobMethod" data-method="unicode"><i class="fa fa-font"></i><span><b>Unicode Escape</b><small>Mendekode escape Unicode seperti \\u0063\\u006f\\u0064\\u0065.</small><em>SUPPORTED</em></span></div>
-    <div class="cfObDeobMethod" data-method="charcode"><i class="fa fa-calculator"></i><span><b>String.fromCharCode</b><small>Mengubah rangkaian character code statis menjadi string yang mudah dibaca.</small><em>SUPPORTED</em></span></div>
-    <div class="cfObDeobMethod" data-method="bracket"><i class="fa fa-table"></i><span><b>Bracket Property</b><small>Menormalisasi akses seperti object["property"] menjadi object.property jika aman.</small><em>NORMALIZE</em></span></div>
-    <div class="cfObDeobMethod" data-method="mangled"><i class="fa fa-tag"></i><span><b>Mangled Identifier</b><small>Mendeteksi identifier seperti _0x12ab dan memberi nama yang lebih mudah dianalisis.</small><em>HUMANIZE</em></span></div>
-    <div class="cfObDeobMethod" data-method="multi-layer"><i class="fa fa-files-o"></i><span><b>Multi-Layer Source</b><small>Normalize dapat dijalankan bertahap selama masih ditemukan layer yang didukung.</small><em>MULTI-PASS</em></span></div>
-  </div>
-  <div class="cfObDeobSupportNote"><i class="fa fa-info-circle"></i><span><b>AUTO ANALYSIS</b> Tidak semua obfuscator menggunakan pola yang sama. Source Analysis dan Layer Analysis akan menunjukkan pola yang berhasil dikenali oleh engine.</span></div>
-</div>
+
 <div class="cfObTechBox" id="cfObOptions">
   <div class="cfObTechHead">
     <div class="cfObTechTitle">
@@ -131,37 +111,21 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
   <small>Password digunakan untuk validasi Deobfuscate pada CodeFlare. Jangan gunakan password akun penting.</small>
 </div>
 <div class="cfObPassword cfObPasswordAccess" id="cfObPasswordAccess" style="display:none;"><div class="cfObProtectedTitle"><i class="fa fa-shield"></i> CODEFLARE PROTECTED OUTPUT DETECTED</div><div class="cfObPassField"><input id="cfObAccessPassword" type="password" autocomplete="current-password" placeholder="Enter deobfuscation password"><button class="cfObPassEye" type="button" aria-label="Show password"><i class="fa fa-eye"></i></button></div><small>Masukkan password yang digunakan saat output CodeFlare dibuat.</small></div>
+<div class="cfObDeobFormat" id="cfObDeobFormat" style="display:none;">
+  <div class="cfObDeobFormatText"><b><i class="fa fa-indent"></i> OUTPUT FORMAT</b><small>Pilih format hasil sebelum menjalankan Deobfuscator.</small></div>
+  <div class="cfObNormalizeFormat"><label><input id="cfObNormalizeBeautify" type="checkbox" checked><i></i><span>BEAUTIFY</span></label><label><input id="cfObNormalizeFlush" type="checkbox"><i></i><span>RATA KIRI TANPA TAB</span></label></div>
+</div>
 <div class="cfObActions"><button id="cfObProcess" class="cfObPrimary" type="button"><i class="fa fa-cogs"></i> OBFUSCATE CODE</button></div>
 <div class="cfObProgress"><i id="cfObProgressBar"></i></div>
 <div class="cfObSection"><div class="cfObLabel"><span id="cfObOutputTitle"><i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT</span><span id="cfObOutputCount">0 CHAR</span></div><textarea id="cfObOutput" spellcheck="false" readonly placeholder="// Result will appear here..."></textarea></div>
 <div class="cfObResultInfo" id="cfObResultInfo"><div><span>Original</span><b id="cfObOriginalSize">0 KB</b></div><div><span>Output</span><b id="cfObResultSize">0 KB</b></div><div><span>Size Change</span><b id="cfObSizeChange">0%</b></div><div><span>Status</span><b id="cfObResultStatus">READY</b></div></div>
-<div class="cfObLayerSection" id="cfObLayerSection" style="display:none;">
-<div class="cfObLayerAnalysis" id="cfObLayerAnalysis">
-  <div class="cfObLayerHead"><span><i class="fa fa-sitemap"></i> DEOBFUSCATION LAYER ANALYSIS</span><b id="cfObLayerStatus">WAITING</b></div>
-  <div class="cfObLayerGrid">
-    <div><small>CURRENT LAYER</small><b id="cfObLayerCurrent">0</b></div>
-    <div><small>DETECTED</small><b id="cfObLayerDetected">NONE</b></div>
-    <div><small>REMAINING</small><b id="cfObLayerRemaining">0</b></div>
-    <div><small>STATUS</small><b id="cfObLayerResult">READY</b></div>
-  </div>
-  <div class="cfObLayerList" id="cfObLayerList"><span>No layer processed yet.</span></div>
-</div>
-</div>
-<div class="cfObNormalizePanel" id="cfObNormalizePanel" style="display:none;">
-<div class="cfObNormalizeInfo"><span class="cfObNormalizeIcon"><i class="fa fa-magic"></i></span><div><b>HUMANIZE &amp; NORMALIZE OUTPUT</b><small id="cfObNormalizeState">Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.</small><div class="cfObNormalizeTopRow">
-<div class="cfObNormalizeFormat"><label><input id="cfObNormalizeBeautify" type="checkbox" checked><i></i><span>BEAUTIFY</span></label><label><input id="cfObNormalizeFlush" type="checkbox"><i></i><span>RATA KIRI TANPA TAB</span></label></div>
-</div>
-<div class="cfObNormalizeHelp">
-Beautify menggunakan indentasi 2 spasi agar hasil tetap rapi saat dipindah ke Notepad atau word processor. Rata Kiri Tanpa Tab menghapus indentasi.
-</div>
-<div class="cfObNormalizeActions">
-<button id="cfObNormalizeFull" type="button" disabled><i class="fa fa-bolt"></i> FULL NORMALIZE</button>
-<button id="cfObNormalizeReset" type="button"><i class="fa fa-refresh"></i> RESET</button>
-</div>
-</div>
-</div>
-</div>
+
+
 <div class="cfObBottom"><span id="cfObMessage">SYSTEM READY</span><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
+<div class="cfObDeobLog" id="cfObDeobLog" style="display:none;">
+  <div class="cfObDeobLogHead"><span><i class="fa fa-terminal"></i> DEOBFUSCATION ANALYST LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
+  <div class="cfObDeobLogBody" id="cfObDeobLogBody"><div class="cfObLogLine"><time>--:--:--</time><span>Analyst log ready. Paste source untuk memulai deteksi.</span></div></div>
+</div>
 </div><!-- /#cfObTool -->
 <div class="cfObExternalWarning" id="cfObExternalWarning" style="display:none;"><div class="cfObExternalWarningIcon"><i class="fa fa-shield"></i></div><div class="cfObExternalWarningBody"><b>CODEFLARE JAVASCRIPT OBFUSCATOR PROTECTED</b><p>Generator hanya dapat digunakan melalui halaman resmi CodeFlare.</p><a href="https://www.codeflare.net/2026/08/generator-javascript-obfuscate-encryption.html" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> Buka CodeFlare JavaScript Obfuscator</a></div></div>`;
 }
@@ -222,6 +186,7 @@ paste:$('cfObPaste'),clear:$('cfObClear'),tools:$('cfObCodeTools'),
 passBox:$('cfObPasswordOption'),passEnable:$('cfObPasswordEnable'),
 pass:$('cfObPassword'),pass2:$('cfObPasswordConfirm'),
 accessBox:$('cfObPasswordAccess'),access:$('cfObAccessPassword'),
+deobFormat:$('cfObDeobFormat'),deobLog:$('cfObDeobLog'),deobLogBody:$('cfObDeobLogBody'),deobLogState:$('cfObDeobLogState'),
 normalizePanel:$('cfObNormalizePanel'),normalizeFull:$('cfObNormalizeFull'),
 normalizeReset:$('cfObNormalizeReset'),normalizeState:$('cfObNormalizeState'),
 normalizeBeautify:$('cfObNormalizeBeautify'),normalizeFlush:$('cfObNormalizeFlush'),
@@ -247,10 +212,30 @@ balanced:{rename:1,array:1,encode:1,shuffle:1,rotate:1,split:1,numbers:1,objectK
 strong:{rename:1,array:1,encode:1,shuffle:1,rotate:1,split:1,numbers:1,objectKeys:1,controlFlow:1,dead:1,debug:1,selfDefend:1,compact:1,debugLog:0,domain:0}
 };
 
-function say(t){if(E.message)E.message.textContent=t;if(E.status)E.status.innerHTML='<i></i> '+t}
+function _generatorStatus(t){
+if(!E.status)return;
+var busy=/LOADING|PROCESSING|ANALYZING|DEOBFUSCAT|OBFUSCAT|INJECTING|OPENING|NORMALIZING/i.test(String(t||''));
+E.status.innerHTML='<i></i> '+(busy?'LOADING':'GENERATOR READY')
+}
+function _log(t){
+if(S.mode!=='deobfuscate'||!E.deobLogBody)return;
+var d=new Date(),tm=[d.getHours(),d.getMinutes(),d.getSeconds()].map(function(n){return String(n).padStart(2,'0')}).join(':');
+var row=document.createElement('div');row.className='cfObLogLine';
+var time=document.createElement('time');time.textContent=tm;
+var span=document.createElement('span');span.textContent=String(t||'');
+row.appendChild(time);row.appendChild(span);E.deobLogBody.appendChild(row);
+while(E.deobLogBody.children.length>80)E.deobLogBody.removeChild(E.deobLogBody.firstChild);
+E.deobLogBody.scrollTop=E.deobLogBody.scrollHeight;
+if(E.deobLogState)E.deobLogState.innerHTML='<i></i> '+(/ERROR|FAILED|INVALID|STOPPED/i.test(String(t))?'CHECK':'ACTIVE')
+}
+function say(t){if(E.message)E.message.textContent=t;_log(t)}
 function kb(s){return(new Blob([String(s||'')]).size/1024).toFixed(2)+' KB'}
 
-function setProgress(n){if(E.progress)E.progress.style.width=Math.max(0,Math.min(100,n))+'%'}
+function setProgress(n){
+n=Math.max(0,Math.min(100,n));
+if(E.progress)E.progress.style.width=n+'%';
+_generatorStatus(n>0&&n<100?'LOADING':'READY')
+}
 
 function _ui(){return new Promise(function(resolve){if(typeof requestAnimationFrame==='function')requestAnimationFrame(function(){resolve()});else setTimeout(resolve,0)})}
 function _busy(on,msg){
@@ -691,7 +676,7 @@ active=hasOutput&&hasSource;
 title=active?'Add obfuscated code inside a SCRIPT tag':'Obfuscate source first'
 }else if(S.mode==='deobfuscate'){
 active=hasOutput&&hasSource&&S.normalizePassed&&!S.normalizeBusy;
-title=active?'Inject normalized deobfuscation result to source':'Run NORMALIZE first'
+title=active?'Inject deobfuscated result to source':'Run DEOBFUSCATOR first'
 }else{
 active=false;
 title='Not available in Code Tools mode'
@@ -1847,19 +1832,21 @@ if(E.tools)E.tools.style.display=m==='tools'?'block':'none';
 if(E.process)E.process.style.display=m==='tools'?'none':'block';
 if(E.passBox)E.passBox.style.display=m==='obfuscate'?'block':'none';
 if(E.accessBox)E.accessBox.style.display='none';
-if(E.deobSupport)E.deobSupport.style.display=m==='deobfuscate'?'block':'none';
+
 if(E.techBox)E.techBox.style.display=m==='obfuscate'?'block':'none';
-if(E.layerSection)E.layerSection.style.display=m==='deobfuscate'?'block':'none';
-if(E.normalizePanel)E.normalizePanel.style.display=m==='deobfuscate'?'flex':'none';
-if(E.normalizeFull)E.normalizeFull.disabled=S.normalizeFinal||!S.deobfuscateReady||!(m==='deobfuscate'&&E.output.value);if(m==='deobfuscate')_h1(E.input.value);else if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});
-if(m!=='deobfuscate'&&E.normalizePanel)E.normalizePanel.classList.remove('is-final');
+
+
+if(E.deobFormat)E.deobFormat.style.display=m==='deobfuscate'?'flex':'none';
+if(E.deobLog)E.deobLog.style.display=m==='deobfuscate'?'block':'none';
+if(m==='deobfuscate')_h1(E.input.value);
+
 if(m!=='deobfuscate'){S.normalizePassed=false;S.injectCompleted=false}
 _injectButtonState();
 setTechEnabled(m==='obfuscate');
 if(m==='obfuscate'){E.process.innerHTML='<i class="fa fa-cogs"></i> OBFUSCATE CODE';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT'}
-else if(m==='deobfuscate'){E.process.innerHTML='<i class="fa fa-unlock-alt"></i> DEOBFUSCATE CODE';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> DEOBFUSCATION CODE OUTPUT'}
+else if(m==='deobfuscate'){E.process.innerHTML='<i class="fa fa-unlock-alt"></i> DEOBFUSCATE & FORMAT';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> DEOBFUSCATION CODE OUTPUT'}
 else E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> CODE TOOLS OUTPUT';
-analyze();say('READY')
+analyze();_generatorStatus('READY');say('READY')
 }
 
 tool.querySelectorAll('.cfObModeBtn').forEach(function(b){b.addEventListener('click',function(){mode(b.dataset.mode)})});
@@ -1888,7 +1875,7 @@ say('USE CTRL+V')
 }
 });
 E.clear.addEventListener('click',function(){
-_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
+_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobLogBody)E.deobLogBody.innerHTML='';analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
 if(!E.output.value)return;
 try{
@@ -2024,7 +2011,7 @@ _injectButtonState();
 return
 }
 if(S.mode==='deobfuscate'&&!S.normalizePassed){
-say('INJECT LOCKED - RUN NORMALIZE FIRST');
+say('INJECT LOCKED - RUN DEOBFUSCATOR FIRST');
 return
 }
 if(S.mode==='tools')return;
@@ -2251,6 +2238,7 @@ S.processingSource=cfOpened;
 S.deobfuscateReady=true;
 S.normalizePassed=true;
 S.normalizeFinal=true;
+cfOpened=_a5(cfOpened);
 S.normalizedBase=cfOpened;
 S.lastSafeOutput=cfOpened;
 S.injectCompleted=false;
@@ -2288,14 +2276,13 @@ S.injectCompleted=false;
 S.normalizedBase='';
 
 setOutput(out,'DEOBFUSCATION MARKER COLLECTION OUTPUT','SUCCESS');
-setNormalizeFinal(false,'Marker collection selesai. Tekan NORMALIZE untuk merapikan dan memvalidasi setiap blok sebelum Inject.');
-if(E.normalizeFull)E.normalizeFull.disabled=false;
-
-setProgress(92);
+setProgress(82);
 await _ui();
 updateLayerPanel(out,'COLLECTION COMPLETE');
+say('MARKER COLLECTION COMPLETE - AUTO FORMAT');
+await _runIntegratedNormalize();
 _injectButtonState();
-say('MARKER COLLECTION COMPLETE - RUN NORMALIZE')
+say('DEOBFUSCATE COMPLETE - READY TO INJECT')
 }else{
 setProgress(14);
 say(S.largeSourceMode?'LARGE SOURCE MODE - ANALYZING TARGET':'ANALYZING SOURCE');
@@ -2309,22 +2296,19 @@ out=await _a6(work);
 
 S.layerIndex=0;
 S.layerHistory=[];
-setNormalizeFinal(false,'Deobfuscation selesai - NORMALIZE OUTPUT untuk membuka dan merapikan layer berikutnya.');
 setOutput(out,'DEOBFUSCATION CODE OUTPUT','SUCCESS');
 
 S.deobfuscateReady=true;
 S.normalizePassed=false;
 S.injectCompleted=false;
-if(E.normalizeFull)E.normalizeFull.disabled=false;
 
-setProgress(88);
+setProgress(76);
 await _ui();
 updateLayerPanel(out,S.largeSourceMode?'TARGET ANALYZED':'ANALYZED');
+say('DEOBFUSCATE CORE COMPLETE - AUTO FORMAT');
+await _runIntegratedNormalize();
 _injectButtonState();
-
-say(S.largeSourceMode
-?'DEOBFUSCATE COMPLETE - LARGE SOURCE TARGET ONLY - RUN NORMALIZE'
-:'DEOBFUSCATE COMPLETE - RUN NORMALIZE')
+say('DEOBFUSCATE COMPLETE - READY TO INJECT')
 }
 }
 
@@ -4416,10 +4400,11 @@ say('NORMALIZE NOT SAFE - '+hardErrors.join(' | '))
 return safe
 }
 
-if(E.normalizeFull)E.normalizeFull.addEventListener('click',async function(){
+async function _runIntegratedNormalize(){
 S.injectCompleted=false;
 _injectButtonState();
-if(S.mode!=='deobfuscate'||!S.deobfuscateReady||!E.output.value||S.normalizeFinal||S.normalizeBusy)return;
+if(S.mode!=='deobfuscate'||!S.deobfuscateReady||!E.output.value||S.normalizeBusy)return;
+S.normalizeFinal=false;
 
 /* v2.31: marker collections normalize each extracted script independently.
    Never run one parser/normalizer across several unrelated script blocks. */
@@ -4597,7 +4582,8 @@ setTimeout(function(){setProgress(0)},700)
 _busy(false);
 _injectButtonState()
 }
-});
+}
+
 
 if(E.normalizeReset)E.normalizeReset.addEventListener('click',function(){
 _lockFullNormalize();
@@ -4630,4 +4616,10 @@ mode('obfuscate');analyze();
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',cfGeneratorInit,{once:true})}
 else{cfGeneratorInit()}
+
+(function(){
+var st=document.createElement('style');
+st.textContent='.cfObDeobFormat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 10px;border:1px solid var(--cfObBorder,#d9e2ec);background:var(--cfObSoft,rgba(0,131,218,.06));box-sizing:border-box}.cfObDeobFormatText{display:flex;flex-direction:column;gap:3px}.cfObDeobFormatText b,.cfObDeobFormatText small{font-size:15px}.cfObDeobLog{margin-top:10px;border:1px solid var(--cfObBorder,#d9e2ec);background:var(--cfObPanel,#fff);overflow:hidden}.cfObDeobLogHead{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--cfObBorder,#d9e2ec);font-size:15px;font-weight:600}.cfObDeobLogHead b{font-size:15px}.cfObDeobLogHead b i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#28a745;margin-right:5px}.cfObDeobLogBody{max-height:190px;overflow:auto;padding:8px 12px;font-family:monospace;font-size:15px;line-height:1.55}.cfObLogLine{display:grid;grid-template-columns:72px minmax(0,1fr);gap:8px;padding:3px 0;border-bottom:1px dashed rgba(127,127,127,.15)}.cfObLogLine:last-child{border-bottom:0}.cfObLogLine time{opacity:.65}.cfObLogLine span{overflow-wrap:anywhere}@media(max-width:600px){.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObLogLine{grid-template-columns:66px minmax(0,1fr)}}';
+document.head.appendChild(st)
+})();
 })();
