@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.11-split-main';
+var CF_JS_LAB_VERSION='v3.12-split-main';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -920,80 +920,37 @@ function _c1(el,msg){if(!el)return;el.classList.add('cfObFieldError');try{el.scr
 function _a9(s){return String(s).replace(/\bconsole\s*\.\s*(?:log|debug|info|trace)\s*\((?:[^()"'`]|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\([^()]*\))*\)\s*;?/g,'').replace(/\/\*\s*CF(?:JS|DEBUG|MARKER)[\s\S]*?\*\//gi,'')}
 
 async function _a2(src){
-var opt=techValues();
-if(opt.domain&&!opt.host){_c1(E.domain,'DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME');throw new Error('DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME')}
-var source=opt.debugLog?String(src):_a9(src);source=opt.compact?minify(source):source;
-/* Preserve Blogger/HTML raw-text safety inside the encoded source too. */
-source=_protectHtmlRawTextEndTags(source);
-var payload=b64enc(source),step=opt.split?73:Math.max(payload.length,1),chunks=[];
-for(var i=0;i<payload.length;i+=step)chunks.push(payload.slice(i,i+step));
-if(opt.array===false)chunks=[chunks.join('')];
-if(opt.rotate&&chunks.length){var shift=7%chunks.length;chunks=chunks.slice(shift).concat(chunks.slice(0,shift))}
-if(opt.shuffle)chunks.reverse();
-var protectedOn=E.passEnable.checked,hash='';
-if(protectedOn){
-if(!E.pass.value){_c1(E.pass,'ISI PASSWORD');throw new Error('ISI PASSWORD')}
-if(!E.pass2.value){_c1(E.pass2,'ISI KONFIRMASI PASSWORD');throw new Error('ISI KONFIRMASI PASSWORD')}
-if(E.pass.value!==E.pass2.value){_c1(E.pass2,'PASSWORD MISMATCH');throw new Error('PASSWORD MISMATCH')}
-hash=await sha256(E.pass.value)
+if(!window.CFObfuscatorEngine||typeof window.CFObfuscatorEngine.obfuscate!=='function'){
+throw new Error('OBFUSCATOR ENGINE NOT READY')
 }
-var meta=b64enc(JSON.stringify({v:5,p:protectedOn?1:0,h:hash,t:opt}));
-return _protectHtmlRawTextEndTags(_a1(opt,randomId(),chunks,meta))
+var opt=techValues();
+try{
+return await window.CFObfuscatorEngine.obfuscate(src,{
+tech:opt,
+passwordEnabled:!!(E.passEnable&&E.passEnable.checked),
+password:E.pass?E.pass.value:'',
+passwordConfirm:E.pass2?E.pass2.value:''
+})
+}catch(err){
+var msg=String(err&&err.message||err);
+if(msg==='DOMAIN LOCK ACTIVE - ISI ALLOWED HOSTNAME')_c1(E.domain,msg);
+else if(msg==='ISI PASSWORD')_c1(E.pass,msg);
+else if(msg==='ISI KONFIRMASI PASSWORD'||msg==='PASSWORD MISMATCH')_c1(E.pass2,msg);
+throw err
+}
 }
 function _a3(s){
-/* Native CodeFlare detector must work identically with:
-   - raw obfuscated JS
-   - Add Tag Script output
-   - Blogger CDATA wrapper
-   - Domain Lock enabled
-   - Password protection enabled */
-s=String(s||'');
-s=_stripCDATADeep(_stripScriptWrapper(s)).trim();
-
-var mm=s.match(/\/\*CFJS5:([A-Za-z0-9+/=]+)\*\//);
-var hm=s.match(/var\s+_q7n\s*=\s*["']([A-Za-z0-9+/=]+)["']\s*;?/);
-/* Domain Lock also creates an array named _ha BEFORE the real payload.
-   Never take the first array blindly. Collect candidates and select the
-   actual encoded payload (largest valid string-array), excluding _ha. */
-var arrays=[];
-var ar=/var\s+(_[A-Za-z0-9]+|cfPayload)\s*=\s*(\[[\s\S]*?\])\s*;/g,am;
-while((am=ar.exec(s))){
-if(am[1]==='_ha')continue;
-try{
-var candidate=JSON.parse(am[2]);
-if(Array.isArray(candidate)&&candidate.length&&candidate.every(function(v){return typeof v==='string'})){
-arrays.push({name:am[1],chunks:candidate,size:candidate.join('').length})
+if(window.CFDeobfuscatorEngine&&typeof window.CFDeobfuscatorEngine.detectNative==='function'){
+return window.CFDeobfuscatorEngine.detectNative(s)
 }
-}catch(_arrayErr){}
-}
-
-if(!arrays.length||(!mm&&!hm))return null;
-
-try{
-var meta=JSON.parse(b64dec(mm?mm[1]:hm[1]));
-arrays.sort(function(a,b){return b.size-a.size});
-return{meta:meta,chunks:arrays[0].chunks,payloadVar:arrays[0].name}
-}catch(e){
 return null
 }
-}
 async function _a4(s){
-var x=_a3(s);if(!x)return null;
-
-/* Domain Lock only controls execution on the destination hostname.
-   It must never prevent CodeFlare's own native decoder from opening the file.
-   Password protection, when enabled, remains mandatory. */
-if(x.meta.p){
-E.accessBox.style.display='block';
-var accessPassword=String(E.access.value||'');
-if(!accessPassword)throw new Error('PASSWORD REQUIRED');
-var h=await sha256(accessPassword);
-if(h!==x.meta.h)throw new Error('PASSWORD INVALID')
-}
-var chunks=x.chunks.slice();
-if(x.meta.t&&x.meta.t.shuffle)chunks.reverse();
-if(x.meta.t&&x.meta.t.rotate&&chunks.length){var back=chunks.length-(7%chunks.length);chunks=chunks.slice(back).concat(chunks.slice(0,back))}
-return b64dec(chunks.join(''))
+if(!window.CFDeobfuscatorEngine||typeof window.CFDeobfuscatorEngine.decodeNative!=='function')return null;
+var detected=window.CFDeobfuscatorEngine.detectNative(s);
+if(!detected)return null;
+if(detected.meta&&detected.meta.p&&E.accessBox)E.accessBox.style.display='block';
+return window.CFDeobfuscatorEngine.decodeNative(s,{password:E.access?E.access.value:''})
 }
 function _b4(src){
 src=String(src||'');
@@ -1688,17 +1645,10 @@ return finalNormalized
 }
 
 function _a7(s){
-s=String(s||'');var a=[];
-if(/\b(?:var|let|const)\s+[A-Za-z_$][\w$]*\s*=\s*\[(?:\s*['"][\s\S]*?['"]\s*,?){3,}\]/.test(s)&&/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,/i.test(s))a.push('INDIRECT PACKER ARRAY');
-if(/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,/i.test(s))a.push('P.A.C.K.E.R / BASE62');
-if(/\b(?:var|let|const)\s+[A-Za-z_$][\w$]*\s*=\s*\[(?:\s*['"][\s\S]*?['"]\s*,?){3,}\]/.test(s))a.push('STRING ARRAY');
-if(/\b[A-Za-z_$][\w$]*\s*\[\s*(?:0x[0-9a-f]+|\d+(?:\s*[+\-*/%]\s*\d+)+)\s*\]/i.test(s))a.push('COMPUTED ARRAY INDEX');
-if(/\\x[0-9a-f]{2}/i.test(s))a.push('HEX ESCAPE');
-if(/\\u[0-9a-f]{4}/i.test(s))a.push('UNICODE ESCAPE');
-if(/String\.fromCharCode\s*\(/.test(s))a.push('FROM CHAR CODE');
-if(/\b(?:_0x[a-f0-9]+|__0x[a-f0-9]+|_\$[A-Za-z0-9]+)\b/i.test(s))a.push('MANGLED IDENTIFIER');
-if(/\[['"][A-Za-z_$][\w$]*['"]\]/.test(s))a.push('BRACKET PROPERTY');
-return a
+if(window.CFDeobfuscatorEngine&&typeof window.CFDeobfuscatorEngine.analyze==='function'){
+return window.CFDeobfuscatorEngine.analyze(s)
+}
+return []
 }
 function _a8(s){return _a7(s).length>0}
 
@@ -4614,6 +4564,4 @@ mode('obfuscate');analyze();
 }
 if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',cfGeneratorInit,{once:true})}
 else{cfGeneratorInit()}
-_injectButtonState();
-if(E.normalizeFull)E.normalizeFull.disabled=true;
 })();
