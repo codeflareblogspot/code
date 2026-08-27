@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.16-split-main';
+var CF_JS_LAB_VERSION='v3.19-split-main';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -24,11 +24,38 @@ _loadCodeFlareJsLabCSS();
 
 (function(){
 var st=document.createElement('style');
-st.id='cfObCopyFeedbackStyle';
-st.textContent=
-'#cfObTool .is-copied{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important;box-shadow:0 0 0 3px rgba(22,163,74,.16)!important;transform:translateY(-1px)}'+
-'#cfObTool .is-copied i{color:#fff!important}';
-if(!document.getElementById(st.id))document.head.appendChild(st)
+st.textContent=[
+'.cfObBottom{justify-content:flex-end}',
+'.cfObBottom .cfObCopyActions{margin-left:auto}',
+'.cfObDeobFormat{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin:0 0 10px;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard)}',
+'.cfObDeobFormatText{display:flex;flex-direction:column;gap:3px}',
+'.cfObDeobFormatText b,.cfObDeobFormatText small{font-size:15px}',
+
+/* Analyst Log follows the same neutral panel surface as the existing analyst/source panels.
+   No fixed white background: all surfaces inherit the active CodeFlare theme variables. */
+'.cfObDeobLog{position:relative;margin-top:10px;overflow:hidden;box-sizing:border-box;border:1px solid var(--cfObBorder);background:var(--cfObCard);color:var(--cfObText)}',
+'.cfObDeobLog:before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--cfObAccent);opacity:.75}',
+'.cfObDeobLogHead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:50px;padding:10px 14px;box-sizing:border-box;border-bottom:1px solid var(--cfObBorder);background:var(--cfObHead);color:var(--cfObText);font-size:15px;font-weight:600}',
+'.cfObDeobLogHead>span{display:flex;align-items:center;gap:7px;font-size:15px}',
+'.cfObDeobLogHead>span i{color:var(--cfObAccent)}',
+'.cfObDeobLogHead b{display:inline-flex;align-items:center;gap:7px;font-size:15px;color:var(--cfObText)}',
+'.cfObDeobLogHead b i{display:inline-block;width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:#2eb85c;box-shadow:0 0 0 3px rgba(46,184,92,.12)}',
+'.cfObDeobLogBody{position:relative;max-height:190px;overflow:auto;padding:10px 14px;box-sizing:border-box;background:var(--cfObCard);color:var(--cfObText);font-family:monospace;font-size:15px;line-height:1.55}',
+'.cfObLogLine{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;padding:5px 0;border-bottom:1px dashed var(--cfObBorder);color:var(--cfObText)}',
+'.cfObLogLine:last-child{border-bottom:0}',
+'.cfObLogLine time{color:var(--cfObMuted);opacity:1}',
+'.cfObLogLine span{min-width:0;overflow-wrap:anywhere;color:var(--cfObText)}',
+'.cfObDeobLogBody::-webkit-scrollbar{width:8px}',
+'.cfObDeobLogBody::-webkit-scrollbar-track{background:var(--cfObCard)}',
+'.cfObDeobLogBody::-webkit-scrollbar-thumb{background:var(--cfObBorder);border-radius:8px}',
+
+/* Explicit selectors for the lab theme attribute/classes used by the existing UI.
+   Values remain variable-driven so Light/Night changes are immediate. */
+'#cfObTool[data-theme="dark"] .cfObDeobLog,#cfObTool.cfObDark .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
+'#cfObTool[data-theme="light"] .cfObDeobLog,#cfObTool.cfObLight .cfObDeobLog{background:var(--cfObCard);color:var(--cfObText)}',
+'@media(max-width:600px){.cfObDeobFormat{align-items:flex-start;flex-direction:column}.cfObDeobLogHead{padding:10px 12px}.cfObDeobLogBody{padding:8px 12px}.cfObLogLine{grid-template-columns:70px minmax(0,1fr);gap:7px}}'
+].join('');
+document.head.appendChild(st)
 })();
 
 function _z(a){return String.fromCharCode.apply(null,a)}
@@ -121,10 +148,10 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
 <div class="cfObResultInfo" id="cfObResultInfo"><div><span>Original</span><b id="cfObOriginalSize">0 KB</b></div><div><span>Output</span><b id="cfObResultSize">0 KB</b></div><div><span>Size Change</span><b id="cfObSizeChange">0%</b></div><div><span>Status</span><b id="cfObResultStatus">READY</b></div></div>
 
 
-<div class="cfObBottom"><span id="cfObMessage">SYSTEM READY</span><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
+<div class="cfObBottom"><div class="cfObCopyActions"><button id="cfObCopy" type="button"><i class="fa fa-copy"></i> COPY CODE</button><button id="cfObCopyScript" type="button"><i class="fa fa-code-fork"></i> INJECT DATA TO SOURCE</button></div></div>
 <div class="cfObDeobLog" id="cfObDeobLog" style="display:none;">
-  <div class="cfObDeobLogHead"><span><i class="fa fa-terminal"></i> DEOBFUSCATION ANALYST LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
-  <div class="cfObDeobLogBody" id="cfObDeobLogBody"><div class="cfObLogLine"><time>--:--:--</time><span>Analyst log ready. Paste source untuk memulai deteksi.</span></div></div>
+  <div class="cfObDeobLogHead"><span><i class="fa fa-terminal"></i> ACTIVITY LOG</span><b id="cfObDeobLogState"><i></i> READY</b></div>
+  <div class="cfObDeobLogBody" id="cfObDeobLogBody"><div class="cfObLogLine"><time>--:--:--</time><span>Activity log ready.</span></div></div>
 </div>
 </div><!-- /#cfObTool -->
 <div class="cfObExternalWarning" id="cfObExternalWarning" style="display:none;"><div class="cfObExternalWarningIcon"><i class="fa fa-shield"></i></div><div class="cfObExternalWarningBody"><b>CODEFLARE JAVASCRIPT OBFUSCATOR PROTECTED</b><p>Generator hanya dapat digunakan melalui halaman resmi CodeFlare.</p><a href="https://www.codeflare.net/2026/08/generator-javascript-obfuscate-encryption.html" target="_blank" rel="noopener"><i class="fa fa-external-link"></i> Buka CodeFlare JavaScript Obfuscator</a></div></div>`;
@@ -186,7 +213,7 @@ paste:$('cfObPaste'),clear:$('cfObClear'),tools:$('cfObCodeTools'),
 passBox:$('cfObPasswordOption'),passEnable:$('cfObPasswordEnable'),
 pass:$('cfObPassword'),pass2:$('cfObPasswordConfirm'),
 accessBox:$('cfObPasswordAccess'),access:$('cfObAccessPassword'),
-deobFormat:$('cfObDeobFormat'),deobLog:$('cfObDeobLog'),deobLogBody:$('cfObDeobLogBody'),deobLogState:$('cfObDeobLogState'),
+deobFormat:$('cfObDeobFormat'),activityLog:$('cfObDeobLog'),activityLogBody:$('cfObDeobLogBody'),activityLogState:$('cfObDeobLogState'),
 normalizePanel:$('cfObNormalizePanel'),normalizeFull:$('cfObNormalizeFull'),
 normalizeReset:$('cfObNormalizeReset'),normalizeState:$('cfObNormalizeState'),
 normalizeBeautify:$('cfObNormalizeBeautify'),normalizeFlush:$('cfObNormalizeFlush'),
@@ -195,7 +222,7 @@ layerCurrent:$('cfObLayerCurrent'),layerDetected:$('cfObLayerDetected'),
 layerRemaining:$('cfObLayerRemaining'),layerResult:$('cfObLayerResult'),
 layerList:$('cfObLayerList'),deobSupport:$('cfObDeobSupport'),
 outTitle:$('cfObOutputTitle'),outCount:$('cfObOutputCount'),
-message:$('cfObMessage'),status:$('cfObStatus'),progress:$('cfObProgressBar'),
+status:$('cfObStatus'),progress:$('cfObProgressBar'),
 original:$('cfObOriginalSize'),resultSize:$('cfObResultSize'),
 sizeChange:$('cfObSizeChange'),resultStatus:$('cfObResultStatus'),
 techBox:$('cfObOptions'),techState:$('cfObTechState'),domain:$('cfObDomain'),
@@ -218,17 +245,22 @@ var busy=/LOADING|PROCESSING|ANALYZING|DEOBFUSCAT|OBFUSCAT|INJECTING|OPENING|NOR
 E.status.innerHTML='<i></i> '+(busy?'LOADING':'GENERATOR READY')
 }
 function _log(t){
-if(S.mode!=='deobfuscate'||!E.deobLogBody)return;
+if(!E.activityLogBody)return;
 var d=new Date(),tm=[d.getHours(),d.getMinutes(),d.getSeconds()].map(function(n){return String(n).padStart(2,'0')}).join(':');
 var row=document.createElement('div');row.className='cfObLogLine';
 var time=document.createElement('time');time.textContent=tm;
-var span=document.createElement('span');span.textContent=String(t||'');
-row.appendChild(time);row.appendChild(span);E.deobLogBody.appendChild(row);
-while(E.deobLogBody.children.length>80)E.deobLogBody.removeChild(E.deobLogBody.firstChild);
-E.deobLogBody.scrollTop=E.deobLogBody.scrollHeight;
-if(E.deobLogState)E.deobLogState.innerHTML='<i></i> '+(/ERROR|FAILED|INVALID|STOPPED/i.test(String(t))?'CHECK':'ACTIVE')
+var span=document.createElement('span');
+var modeLabel=S.mode==='obfuscate'?'OBFUSCATOR':S.mode==='deobfuscate'?'DEOBFUSCATOR':'CODE TOOLS';
+span.textContent='['+modeLabel+'] '+String(t||'');
+row.appendChild(time);row.appendChild(span);E.activityLogBody.appendChild(row);
+while(E.activityLogBody.children.length>100)E.activityLogBody.removeChild(E.activityLogBody.firstChild);
+E.activityLogBody.scrollTop=E.activityLogBody.scrollHeight;
+if(E.activityLogState){
+var txt=String(t||'');
+E.activityLogState.innerHTML='<i></i> '+(/ERROR|FAILED|INVALID|STOPPED/i.test(txt)?'CHECK':/COMPLETE|SUCCESS|COPIED|READY/i.test(txt)?'READY':'ACTIVE')
 }
-function say(t){if(E.message)E.message.textContent=t;_log(t)}
+}
+function say(t){_log(t)}
 function kb(s){return(new Blob([String(s||'')]).size/1024).toFixed(2)+' KB'}
 
 function setProgress(n){
@@ -1837,7 +1869,7 @@ if(E.techBox)E.techBox.style.display=m==='obfuscate'?'block':'none';
 
 
 if(E.deobFormat)E.deobFormat.style.display=m==='deobfuscate'?'flex':'none';
-if(E.deobLog)E.deobLog.style.display=m==='deobfuscate'?'block':'none';
+if(E.activityLog)E.activityLog.style.display='block';
 if(m==='deobfuscate')_h1(E.input.value);
 
 if(m!=='deobfuscate'){S.normalizePassed=false;S.injectCompleted=false}
@@ -1846,7 +1878,7 @@ setTechEnabled(m==='obfuscate');
 if(m==='obfuscate'){E.process.innerHTML='<i class="fa fa-cogs"></i> OBFUSCATE CODE';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> ENCRYPTION CODE OUTPUT'}
 else if(m==='deobfuscate'){E.process.innerHTML='<i class="fa fa-unlock-alt"></i> DEOBFUSCATE & FORMAT';E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> DEOBFUSCATION CODE OUTPUT'}
 else E.outTitle.innerHTML='<i class="fa fa-file-code-o"></i> CODE TOOLS OUTPUT';
-analyze();_generatorStatus('READY');say('READY')
+analyze();_generatorStatus('READY');say('MODE READY')
 }
 
 tool.querySelectorAll('.cfObModeBtn').forEach(function(b){b.addEventListener('click',function(){mode(b.dataset.mode)})});
@@ -1875,7 +1907,7 @@ say('USE CTRL+V')
 }
 });
 E.clear.addEventListener('click',function(){
-_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobLogBody)E.deobLogBody.innerHTML='';analyze();say('CLEARED')});
+_lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;setOutput('','','READY');updateLayerPanel('','WAITING');if(E.activityLogBody)E.activityLogBody.innerHTML='';analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
 if(!E.output.value)return;
 try{
