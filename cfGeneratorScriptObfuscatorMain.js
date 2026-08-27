@@ -1,7 +1,7 @@
 (function(){
 function cfGeneratorInit(){
 'use strict';
-var CF_JS_LAB_VERSION='v3.12-split-main';
+var CF_JS_LAB_VERSION='v3.13-split-main';
 var CF_SPLIT_ENGINES={obfuscator:window.CFObfuscatorEngine||null,deobfuscator:window.CFDeobfuscatorEngine||null,tools:window.CFCodeToolsEngine||null};;
 var CF_JS_LAB_CSS='https://codeflareblogspot.github.io/code/cfGeneratorScriptObfuscator.css?v=2.0.0';
 
@@ -99,7 +99,7 @@ root.innerHTML=`<div class="cfObTool" id="cfObTool" data-theme="auto">
     <label class="cfObTechItem"><input type="checkbox" data-tech="debug"><i></i><span><b>Debug Protection Lite</b><small>Tambahkan pemeriksaan debugger ringan tanpa loop agresif.</small><em>ADVANCED • TEST</em></span></label>
     <label class="cfObTechItem"><input type="checkbox" data-tech="selfDefend"><i></i><span><b>Self Defending Lite</b><small>Validasi signature wrapper sebelum decoder dijalankan.</small><em>ADVANCED • TEST</em></span></label>
     <label class="cfObTechItem"><input type="checkbox" data-tech="compact" checked><i></i><span><b>Compact Output</b><small>Padatkan source sebelum diproses.</small><em>STABLE • SMALLER</em></span></label>
-    <label class="cfObTechItem"><input type="checkbox" data-tech="debugLog"><i></i><span><b>Debug Log</b><small>Pertahankan marker CodeFlare dan console log untuk debugging output.</small><em>OPTIONAL • DEBUG</em></span></label>
+    <label class="cfObTechItem"><input type="checkbox" data-tech="debugLog"><i></i><span><b>Debug Mode</b><small>Pertahankan console log dan informasi debugging pada output.</small><em>OPTIONAL • DEBUG</em></span></label>
     <label class="cfObTechItem"><input type="checkbox" data-tech="domain"><i></i><span><b>Domain Lock</b><small>Batasi output agar aktif pada hostname tertentu.</small><em>STABLE • DISTRIBUTION</em></span></label>
   </div>
   <div class="cfObDomainRow">
@@ -1788,6 +1788,21 @@ current=t.code
 return current
 }
 
+function _initialObfuscatorCheck(src){
+src=String(src||'');
+if(!src.trim())return {type:'EMPTY',engine:'NONE',confidence:0,methods:[]};
+
+if(window.CFDeobfuscatorEngine&&typeof window.CFDeobfuscatorEngine.inspect==='function'){
+return window.CFDeobfuscatorEngine.inspect(src)
+}
+
+/* Fallback only when external engine has not loaded. */
+if(_a3(src))return {type:'CODEFLARE PROTECTED',engine:'CODEFLARE JS5',confidence:99,methods:['CODEFLARE NATIVE']};
+if(/eval\s*\(\s*function\s*\(p\s*,\s*a\s*,\s*c\s*,\s*k\s*,\s*e\s*,/i.test(src))return {type:'P.A.C.K.E.R / BASE62',engine:'PACKER',confidence:90,methods:['PACKER']};
+if(/_0x[a-f0-9]+/i.test(src))return {type:'MANGLED / STRING ARRAY',engine:'GENERIC OBFUSCATOR',confidence:80,methods:['MANGLED IDENTIFIER']};
+return {type:'NORMAL / UNKNOWN',engine:'GENERIC / UNKNOWN',confidence:50,methods:[]}
+}
+
 function analyze(){
 var s=E.input.value||'',len=s.length,lines=s?s.split(/\r?\n/).length:0;
 var el;
@@ -1797,12 +1812,12 @@ if((el=$('cfObLines')))el.textContent=lines.toLocaleString();
 if((el=$('cfObFunctions')))el.textContent=((s.match(/\bfunction\b|=>/g)||[]).length).toLocaleString();
 if((el=$('cfObVariables')))el.textContent=((s.match(/\b(?:var|let|const)\b/g)||[]).length).toLocaleString();
 if((el=$('cfObStringCount')))el.textContent=((s.match(/(['"`])(?:\\.|(?!\1)[\s\S])*?\1/g)||[]).length).toLocaleString();
-var pat='NORMAL / UNKNOWN',eng='GENERIC / UNKNOWN',comp='LOW',rec=95;
-if(_d3(s)){pat='MINIFIED LIBRARY';eng='LIBRARY / PLUGIN';comp='LOW';rec=96}
-if(_a3(s)){pat='CODEFLARE PROTECTED';eng='CODEFLARE JS5';comp='MEDIUM';rec=99}
-else if(/eval\(function\(p,a,c,k,e,/.test(s)){pat='P.A.C.K.E.R / BASE62';eng='PACKER COMPATIBLE';comp='HIGH';rec=82}
-else if(/\\x[0-9a-f]{2}|\\u[0-9a-f]{4}/i.test(s)){pat='HEX / UNICODE ESCAPE';comp='MEDIUM';rec=90}
-else if(/\b[A-Za-z_$][\w$]*\s*\[\s*(?:0x[0-9a-f]+|\d+(?:\s*[+\-*/%]\s*\d+)+)\s*\]/i.test(s)){pat='COMPUTED STRING ARRAY';eng='STATIC ARRAY LOOKUP';comp='MEDIUM';rec=94}else if(/_0x[a-f0-9]+/i.test(s)){pat='MANGLED IDENTIFIER';comp='MEDIUM';rec=78}
+var check=_initialObfuscatorCheck(s);
+var pat=check.type||'NORMAL / UNKNOWN',eng=check.engine||'GENERIC / UNKNOWN',comp='LOW',rec=check.confidence||50;
+if(_d3(s)&&pat==='NORMAL / UNKNOWN'){pat='MINIFIED LIBRARY';eng='LIBRARY / PLUGIN';comp='LOW';rec=96}
+if(pat==='CODEFLARE PROTECTED')comp='MEDIUM';
+else if(/PACKER/i.test(eng))comp='HIGH';
+else if(check.methods&&check.methods.length)comp='MEDIUM';
 if((el=$('cfObPattern')))el.textContent=pat;if((el=$('cfObSourceEngine')))el.textContent=eng;if((el=$('cfObComplexity')))el.textContent=comp;
 if((el=$('cfObRecommended')))el.textContent=S.mode==='obfuscate'?'OBFUSCATE':S.mode==='deobfuscate'?'DEOBFUSCATE - NORMALIZE':'CODE TOOLS';
 if((el=$('cfObRecoveryValue')))el.textContent=rec+'%';if((el=$('cfObRecoveryBar')))el.style.width=rec+'%';if((el=$('cfObAnalyzeState')))el.textContent=s?'ANALYZED':'WAITING INPUT'
@@ -1855,7 +1870,23 @@ E.input.addEventListener('input',function(){analyze();if(S.mode==='deobfuscate')
 if(E.passEnable)E.passEnable.addEventListener('change',function(){E.passBox.classList.toggle('active',this.checked);if(!this.checked){E.pass.classList.remove('cfObFieldError');E.pass2.classList.remove('cfObFieldError')}});
 [E.pass,E.pass2].forEach(function(el){if(el)el.addEventListener('input',function(){if(this.value.trim())this.classList.remove('cfObFieldError')})});
 tool.querySelectorAll('.cfObPassEye').forEach(function(b){b.addEventListener('click',function(){var i=b.parentNode.querySelector('input'),show=i.type==='password';i.type=show?'text':'password';b.querySelector('i').className=show?'fa fa-eye-slash':'fa fa-eye'})});
-E.paste.addEventListener('click',async function(){try{E.input.value=await navigator.clipboard.readText();analyze();say('PASTED')}catch(e){E.input.focus();say('USE CTRL+V')}});
+E.paste.addEventListener('click',async function(){
+try{
+E.input.value=await navigator.clipboard.readText();
+analyze();
+if(S.mode==='deobfuscate'){
+var check=_initialObfuscatorCheck(E.input.value);
+_h1(E.input.value);
+updateLayerPanel(E.input.value,'INITIAL CHECK');
+say('DETECTED - '+check.type+' / '+check.engine)
+}else{
+say('PASTED')
+}
+}catch(e){
+E.input.focus();
+say('USE CTRL+V')
+}
+});
 E.clear.addEventListener('click',function(){
 _lockFullNormalize();E.input.value='';S.normalizeFinal=false;S.layerIndex=0;S.layerHistory=[];S.normalizedBase='';S.normalizeBusy=false;S.bloggerMode=false;S.integrity={};S.normalizePassed=false;S.injectCompleted=false;S.tableCache={};S.originalSource='';S.originalRawSource='';S.injectSource='';S.injectTarget=null;S.dependencySnapshot=null;S.lastSafeOutput='';S.deobfuscateReady=false;if(E.normalizePanel)E.normalizePanel.classList.remove('is-final');if(E.normalizeState)E.normalizeState.textContent='Multi-pass decode, humanize identifier dan beautify hasil Deobfuscate.';if(E.normalize)E.normalize.innerHTML='<i class="fa fa-magic"></i> NORMALIZE OUTPUT';setOutput('','','READY');updateLayerPanel('','WAITING');if(E.deobSupport)E.deobSupport.querySelectorAll('.cfObDeobMethod').forEach(function(el){el.classList.remove('is-detected')});if(E.normalizeFull)E.normalizeFull.disabled=true;analyze();say('CLEARED')});
 E.copy.addEventListener('click',async function(){
