@@ -4,7 +4,7 @@ var appCFAstVer='2.8.9';
 /* End Version */
 /* Start Initial Date Value */
 if (navigator.canShare) {
-$('#fBtnAstShare > i').removeClass('fa-whatsapp').addClass('fa-share-alt');
+$('#fBtnAstShare > i').removeClass('fa-brands fa-whatsapp').addClass('fa-solid fa-share-nodes');
 }
 $("#fAstDate,#nowDateAst").datepicker({
 changeMonth: true,
