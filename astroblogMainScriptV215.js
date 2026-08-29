@@ -1,6 +1,6 @@
 //<![CDATA[
 /* Start Version */
-var appCFAstVer='2.8.9';
+var appCFAstVer='3.0.0';
 /* End Version */
 /* Start Initial Date Value */
 if (navigator.canShare) {
@@ -34,16 +34,16 @@ var contentAPT=new Array();
 contentAPT[0]="ASTROLOGI";
 contentAPT[1]="BIORITMIK";
 contentAPT[2]="ARTI NAMA";
-contentAPT[3]="PANDANGAN ISLAM";
+contentAPT[3]="REFLEKSI ISLAMI";
 contentAPT[4]="WARNA AURA";
 contentAPT[5]="ANGKA AJAIB";
 var contentAPF=new Array();
-contentAPF[0]='<i class="fa fa-cube" aria-hidden="true"></i>';
-contentAPF[1]='<i class="fa fa-line-chart" aria-hidden="true"></i>';
-contentAPF[2]='<i class="fa fa-user-circle" aria-hidden="true"></i>';
-contentAPF[3]='<i class="fa fa-moon-o" aria-hidden="true"></i>';
-contentAPF[4]='<i class="fa fa-podcast" aria-hidden="true"></i>';
-contentAPF[5]='<i class="fa fa-sun-o" aria-hidden="true"></i>';
+contentAPF[0]='<i class="fa-solid fa-cube" aria-hidden="true"></i>';
+contentAPF[1]='<i class="fa-solid fa-chart-line" aria-hidden="true"></i>';
+contentAPF[2]='<i class="fa-solid fa-circle-user" aria-hidden="true"></i>';
+contentAPF[3]='<i class="fa-solid fa-moon" aria-hidden="true"></i>';
+contentAPF[4]='<i class="fa-solid fa-tower-broadcast" aria-hidden="true"></i>';
+contentAPF[5]='<i class="fa-solid fa-sun" aria-hidden="true"></i>';
 var contentAPId=new Array();
 contentAPId[0]="fAstrologi";
 contentAPId[1]="fBioritmik";
@@ -105,7 +105,7 @@ calcBiorhythm();
 $("#btnDetailBioAst").on("click", function(){
 $("#"+contentAPId[contentAPN1]).hide("slide",{direction : 'right'}, 500);
 $("#titleHeaderAst").hide("slide",{direction : 'right'}, 500,
-function (){$("#titleHeaderAst").html('<i class="fa fa-line-chart" aria-hidden="true"></i> BIORITMIK');});
+function (){$("#titleHeaderAst").html('<i class="fa-solid fa-chart-line" aria-hidden="true"></i> BIORITMIK');});
 $("#fBioritmik").delay(800).show("slide", 500);
 $("#titleHeaderAst").delay(300).show("slide", 500);
 contentAPN1=1;
@@ -453,351 +453,9 @@ drawCanvasBioGraph();
 startDrawSine();
 }
 /* End Bioritmik Calculation */
-/* Start Primbon Javanese Reading */
-function getNeptuAst(data){
-var pDateAry=new Array();
-var pMonthAry=new Array();
-var pYearAry=new Array();
-var neptuAry=new Array();
-var pDate1,pDate2,pDate3,pMonth1,pMonth2,pMonth3,pYear1,pYear2,pYear3,pYear4,pYear5;
-var neptu1,neptu2,neptu3,neptu4,neptu5;
-strDate=String(data.getDate());
-strMonth=String(data.getMonth()+1);
-strYear=String(data.getFullYear());
-for (i = 0; i < strDate.length; i++){pDateAry[i]=strDate[i];}
-pDate1 = pDateAry[0];
-if (strDate.length > 1){pDate2=pDateAry[1];}
-else{pDate2=0}
-pDate3=parseInt(pDate1)+parseInt(pDate2);
-for (i = 0; i < strMonth.length; i++){pMonthAry[i]=strMonth[i];}
-pMonth1 = pMonthAry[0];
-if (strMonth.length > 1){pMonth2=pMonthAry[1];}
-else{pMonth2=0}
-pMonth3=parseInt(pMonth1)+parseInt(pMonth2);
-for (i = 0; i < strYear.length; i++){pYearAry[i]=strYear[i];}
-pYear1 = pYearAry[0];
-pYear2 = pYearAry[1];
-pYear3 = pYearAry[2];
-pYear4 = pYearAry[3];
-pYear5=parseInt(pYear1)+parseInt(pYear2)+parseInt(pYear3)+parseInt(pYear4);
-neptu1=parseInt(pDate3)+parseInt(pMonth3)+parseInt(pYear5);
-neptu1=neptu1.toString();
-for (i = 0; i < neptu1.length; i++){neptuAry[i]=neptu1[i];}
-neptu2 = neptuAry[0];
-if (neptuAry.length > 1){neptu3=neptuAry[1];}
-else{neptu3=0;}
-neptu4=parseInt(neptu2)+parseInt(neptu3);
-if (neptu4 > 9) {neptu4=neptu4.toString();
-for (i = 0; i < neptu4.length; i++){neptuAry[i]=neptu4[i];}
-neptu2 = neptuAry[0];
-if (neptuAry.length > 1){neptu3=neptuAry[1];}
-else{neptu3=0;}
-neptu5=parseInt(neptu2)+parseInt(neptu3);
-neptu4=neptu5;
-}
-if(astroBlogUserID==MD5(getHostName(window.location.href))&&astroBlogVer==astroBlogUserID){}else{alert("Maaf penggunaan widget ini tidak terdaftar !");}
-return neptu4;
-}
-function readDataPrimbon(){
-/*Primbon Reading*/
-var dataNeptuAst=getNeptuAst($('#fAstDate').datepicker('getDate'));
-var strNeptu = new Array();
-strNeptu[0]="Inilah potensi keberuntungan Anda, yang dihitung berdasarkan numerologi Jawa sejak tanggal lahir :";
-strNeptu[1]="Keberuntungan selalu menyinari hari-hari Anda ketika Anda tidak berharap atau berharap. Biasanya tepat saat Anda membutuhkannya. Namun, Anda tidak pernah terlalu bergantung padanya. Inilah sebabnya mengapa keberuntungan selalu bersamamu ...";
-strNeptu[2]="Anda cenderung berpikir semua orang lebih beruntung daripada Anda, tetapi ... jika Anda mendapatkan berkah dan dukungan dari orang lain, hampir tidak ada yang tidak dapat Anda lakukan.";
-strNeptu[3]="Anda mungkin makmur di semua bidang kehidupan Anda, jika Anda ingin bertahan cukup lama di satu bidang dan mencoba menyelesaikannya. Ini adalah satu-satunya cara untuk mendapatkan peluang paling menguntungkan Anda.";
-strNeptu[4]="Anda percaya, setiap orang memiliki kekayaannya sendiri, tetapi Anda adalah orang pertama yang menyadari bahwa keberuntungan akan datang kepada Anda. Keberuntungan juga bisa terjadi dalam bentuk hubungan cinta, terutama dalam hubungan cinta yang begitu.";
-strNeptu[5]="Keberuntungan pintu untuk cinta sejati dan karier yang baik akan terbuka untuk Anda jika Anda mengurangi dan berhenti berusaha terlalu keras untuk menyenangkan semua teman Anda.";
-strNeptu[6]="Anda mungkin tidak merasa beruntung dalam hubungan cinta, tetapi Anda cukup beruntung dikelilingi oleh orang-orang yang mencintai Anda.";
-strNeptu[7]="Keberuntungan memainkan peran dalam keajaiban kecil yang Anda alami. Terutama dalam hal cinta dan keuangan. Anda akan menemukan waktu untuk menindaklanjuti rapat.";
-strNeptu[8]="Hanya jika Anda membuat keputusan dengan hati dan otak, keberuntungan akan datang kepada Anda dalam bentuk karier dan uang.";
-strNeptu[9]="Lady Luck selalu ramah kepada Anda, memberi Anda kekuatan untuk menarik hampir semua orang yang Anda inginkan dalam hidup. Anda beruntung untuk seorang teman yang dekat dengan Anda.";
-var strNeptuWeton = new Array();
-strNeptuWeton[0]="Anda cukup beruntung, karena anda termasuk orang yang banyak disukai oleh orang lain. Jika ia Pria, ia akan sangat tangguh. Dan jika Wanita, ia dapat menjadi sangat anggun. Ia juga mempunyai rasa tanggung jawab yang tinggi. Disisi lain, anda punya budi pekerti yang halus dan sopan santun. Mau menerima dan suka memberi. Satu kelemahannya, jika mempunyai keinginan sulit untuk ditunda.";
-strNeptuWeton[1]="Anda termasuk orang yang berotak, cerdas dan tidak mudah terpengaruh oleh orang lain, suka apa saja yang ia lihat, suka menyendiri. Kekurangannya adalah kurang bisa bergaul dan suka pamrih dalam memberikan bantuan pada orang lain.";
-strNeptuWeton[2]="Anda termasuk orang yang cerdas, pandai mencari rejeki dan tidak boros. Berani berkorban, banyak bicara, suka memamerkan harta kekayaan dan yang perlu diingat adalah jika anda marah sangat menakutkan!";
-strNeptuWeton[3]="Anda termasuk orang yang memiliki pendirian teguh dan tidak mudah terpengaruh oleh orang lain, tidak banyak bicara namun berhati keras. Sayangnya, dalam beberapa hal sepertinya anda sedikit lemah dalam berpikir.";
-strNeptuWeton[4]="Anda termasuk orang yang cerdas, pandai bicara dan pandai dalam mencari rejeki sekalipun anda tidak pandai menyimpan uang (alias boros). Anda termasuk tipe orang yang suka menolong, namun demikian sifat anda yang mudah tersinggung perlu untuk dikendalikan.";
-strNeptuWeton[5]=strNeptuWeton[0];strNeptuWeton[6]=strNeptuWeton[1];strNeptuWeton[7]=strNeptuWeton[2];strNeptuWeton[8]=strNeptuWeton[3];strNeptuWeton[9]=strNeptuWeton[4];
-var pN = ["", "Pahing", "Pon", "Wage", "Kliwon","Legi"];
-var pScL = (((new Date(strYear+','+strMonth+','+strDate).getTime() - new Date(100, 0, 1).getTime()) / (24 * 60 * 60 * 1000)) % 5);
-var nameOfDay = new Date(strYear+','+strMonth+','+strDate);
-var nameForDay = weekdayAstroBlog[nameOfDay.getDay()];
-if(dataNeptuAst==0){var strNeptuText="Maaf tidak ada data, silakan periksa tanggal lahir anda !";}else{strNeptuText=strNeptu[dataNeptuAst];}
-$('#fAstWeton').html(nameForDay+' ['+pN[Math.round(pScL)]+']'+' | Neptu ['+dataNeptuAst+']');
-$("#wetonArea").html("Name : "+capital_letter($('#fAstName').val())+"<br>"+"Date of Birth : "+strDate+" - "+strMonth+" - "+strYear+"<br>"+"Neptu : "+dataNeptuAst+"<br><br>"+strNeptu[0]+"<br>"+strNeptuText+"<br><br>Pasaran : "+nameForDay+" ("+pN[Math.round(pScL)]+")<br>"+strNeptuWeton[Math.round(pScL)]);
-}
-/* End Primbon Javanese Reading */
-/* Start Zodiac Reading */
-var lunarType,lunarTypeNum;
-function getLunar(){
-var b1day=$('#fAstDate').datepicker('getDate').getDate();
-var b1month=$('#fAstDate').datepicker('getDate').getMonth()+1;
-if(b1day>21 && b1day<32){
-if(b1month==12){lunarType="Capricorn";}
-if(b1month==1){lunarType="Aquarius";}
-if(b1month==2){lunarType="Pisces";}
-if(b1month==3){lunarType="Aries";}
-if(b1month==4){lunarType="Taurus";}
-if(b1month==5){lunarType="Gemini";}
-if(b1month==6){lunarType="Cancer";}
-if(b1month==7){lunarType="Leo";}
-if(b1month==8){lunarType="Virgo";}
-if(b1month==9){lunarType="Libra";}
-if(b1month==10){lunarType="Scorpio";}
-if(b1month==11){lunarType="Sagittarius";}
-}
-if(b1day>0 && b1day<22){
-if(b1month==1){lunarType="Capricorn";}
-if(b1month==2){lunarType="Aquarius";}
-if(b1month==3){lunarType="Pisces";}
-if(b1month==4){lunarType="Aries";}
-if(b1month==5){lunarType="Taurus";}
-if(b1month==6){lunarType="Gemini";}
-if(b1month==7){lunarType="Cancer";}
-if(b1month==8){lunarType="Leo";}
-if(b1month==9){lunarType="Virgo";}
-if(b1month==10){lunarType="Libra";}
-if(b1month==11){lunarType="Scorpio";}
-if(b1month==12){lunarType="Sagittarius";}
-}
-$('#fAstZodiak').html(lunarType);
-/*Get Zodiac Image Type URL*/
-var lunarImg="";
-if(lunarType=="Capricorn"){lunarTypeNum=0;lunarImg="https://2.bp.blogspot.com/-cYB97SQYq6M/Vka6S-HDbQI/AAAAAAAAAWk/7Fkw8swx3Ys/s1600/Doll%2BZodiac%2BCapricorn.gif"}
-if(lunarType=="Aquarius"){lunarTypeNum=1;lunarImg="https://4.bp.blogspot.com/-7k1AuyH1Jdc/Vka6SKNqqpI/AAAAAAAAAWg/wEdg8VKXrXM/s1600/Doll%2BZodiac%2B%2BAquarius.gif"}
-if(lunarType=="Pisces"){lunarTypeNum=2;lunarImg="https://2.bp.blogspot.com/-eK7u8sM2iyM/Vka6TyfRyzI/AAAAAAAAAXU/BxC8z7Hc3ic/s1600/Doll%2BZodiac%2BPisces.gif"}
-if(lunarType=="Aries"){lunarTypeNum=3;lunarImg="https://4.bp.blogspot.com/-gf9RqE9bUuQ/Vka6SVa3bRI/AAAAAAAAAWc/sgCpRY_C4-8/s1600/Doll%2BZodiac%2BAries.gif"}
-if(lunarType=="Taurus"){lunarTypeNum=4;lunarImg="https://4.bp.blogspot.com/-WlQIsamt1cE/Vka6Uq7ek0I/AAAAAAAAAXY/0-tYQMwyShw/s1600/Doll%2BZodiac%2BTaurus.gif"}
-if(lunarType=="Gemini"){lunarTypeNum=5;lunarImg="https://4.bp.blogspot.com/-FKC1LSWo7iI/Vka6S-Jn6-I/AAAAAAAAAWo/zj8ixp9wQ6Y/s1600/Doll%2BZodiac%2BGemini.gif"}
-if(lunarType=="Cancer"){lunarTypeNum=6;lunarImg="https://3.bp.blogspot.com/-KrO0y0rc0Ng/Vka6SCk-eiI/AAAAAAAAAWY/IPsns0yISVw/s1600/Doll%2BZodiac%2BCancer.gif"}
-if(lunarType=="Leo"){lunarTypeNum=7;lunarImg="https://4.bp.blogspot.com/-EEc1BgqgWhY/Vka6TNfIASI/AAAAAAAAAWs/csFvMUciHxc/s1600/Doll%2BZodiac%2BLeo.gif"}
-if(lunarType=="Virgo"){lunarTypeNum=8;lunarImg="https://3.bp.blogspot.com/-lS-UAuattUA/Vka6U8zystI/AAAAAAAAAXg/Nx-LDiJN-GE/s1600/Doll%2BZodiac%2BVirgo.gif"}
-if(lunarType=="Libra"){lunarTypeNum=9;lunarImg="https://2.bp.blogspot.com/--5tEDVTC0os/Vka6TZpYK2I/AAAAAAAAAW4/E3Wg36pDTtY/s1600/Doll%2BZodiac%2BLibra.gif"}
-if(lunarType=="Scorpio"){lunarTypeNum=10;lunarImg="https://4.bp.blogspot.com/-GnBHufemxOk/Vka6UJFEE_I/AAAAAAAAAXM/UMEgQLLmiO0/s1600/Doll%2BZodiac%2BScorpio.gif"}
-if(lunarType=="Sagittarius"){lunarTypeNum=11;lunarImg="https://4.bp.blogspot.com/-fLLE-UiX9iU/Vka6T2sQg-I/AAAAAAAAAXI/Eips-CmM1x8/s1600/Doll%2BZodiac%2BSagittarius.gif"}
-var lunarUnicode=new Array();
-lunarUnicode[0]="&#x2651";
-lunarUnicode[1]="&#x2652";
-lunarUnicode[2]="&#x2653";
-lunarUnicode[3]="&#x2648";
-lunarUnicode[4]="&#x2649";
-lunarUnicode[5]="&#x264A";
-lunarUnicode[6]="&#x264B";
-lunarUnicode[7]="&#x264C";
-lunarUnicode[8]="&#x264D";
-lunarUnicode[9]="&#x264E";
-lunarUnicode[10]="&#x264F";
-lunarUnicode[11]="&#x2650";
-
-if(astroBlogUserID==MD5(getHostName(window.location.href))&&astroBlogVer==astroBlogUserID){
-$('#imgZodiak').html(lunarUnicode[lunarTypeNum]);
-$('#lunarSign').attr("src",lunarImg);
-}else{return;}
-/*Zodiac Reading*/
-var nameStrengths = new Array;
-nameStrengths[0]='Bertanggung jawab, teratur, disiplin, kontrol diri, selera humor rendah.';
-nameStrengths[1]='Progresif, asli, kemanusiaan, mandiri.';
-nameStrengths[2]='Intuitif, penyayang, artistik, lembut, bijaksana, bermusik.';
-nameStrengths[3]='Keberanian, tekad, kepercayaan diri, antusiasme.';
-nameStrengths[4]='Diandalkan, sabar, musikal, praktis.';
-nameStrengths[5]='Keingintahuan, kemampuan berbagi ide, mudah beradaptasi, penuh kasih sayang, baik hati.';
-nameStrengths[6]='Belas kasihan, kepekaan emosional, perlindungan sengit terhadap orang yang dicintai, keuletan.';
-nameStrengths[7]='Kehangatan, humor, kebanggaan, kegembiraan, kreativitas, gairah, kemurahan hati.';
-nameStrengths[8]='Praktis, setia, pekerja keras, analitis, baik hati.';
-nameStrengths[9]='Sosial, berpikiran adil, kooperatif, diplomatis, ramah.';
-nameStrengths[10]='Gairah, keras kepala, banyak akal, berani, teman sejati.';
-nameStrengths[11]='Selera humor yang besar, idealistis, murah hati.';
-
-var nameWeaknesses = new Array;
-nameWeaknesses[0]='Tahu segalanya, tak kenal ampun, merendahkan, mengharapkan yang terburuk.';
-nameWeaknesses[1]='Lari dari ekspresi emosional, tanpa kompromi, temperamental, menyendiri.';
-nameWeaknesses[2]='Dapat menjadi korban atau martir, takut, terlalu percaya, sedih, keinginan untuk melarikan diri dari kenyataan.';
-nameWeaknesses[3]='Ketidaksabaran, argumen konyol, membiarkan ketakutan membatasi pilihan.';
-nameWeaknesses[4]='Keras kepala, tanpa kompromi, posesif.';
-nameWeaknesses[5]='Menghamburkan energi di terlalu banyak tempat sekaligus, berubah-ubah dalam cinta, gelisah, rentang perhatian pendek.';
-nameWeaknesses[6]='Manipulatif, konflik tidak langsung, berpegang teguh pada masa lalu, tidak aman, berkemas.';
-nameWeaknesses[7]='Sombong, keras kepala, tidak fleksibel, egois, malas.';
-nameWeaknesses[8]='Khawatir, malu, terlalu kritis terhadap diri sendiri dan orang lain, semua bekerja dan tidak bermain.';
-nameWeaknesses[9]='Ragu-ragu, akan membawa dendam, menghindari konfrontasi, mengasihani diri sendiri.';
-nameWeaknesses[10]='Cemburu, tidak percaya, tertutup, keras, pedas.';
-nameWeaknesses[11]='Akan mengatakan apa pun, tidak peduli seberapa tidak sopan, menjanjikan lebih dari yang bisa disampaikan, bisa tidak sabar sampai pada titik kasar.';
-
-var nameCharismatic = new Array;
-nameCharismatic[0]='Membangun sedang, bisa mendapatkan bentuk dengan usaha tetapi cenderung agak lunak.';
-nameCharismatic[1]='Terlihat bagus, mata indah, wajah sudut, tubuh kurus.';
-nameCharismatic[2]='Lembut, terkadang rapuh hingga sedang. Wajah dengan mudah menunjukkan emosi.';
-nameCharismatic[3]='Tubuh atletis, sikap muda, kebutuhan untuk memimpin.';
-nameCharismatic[4]='Solid, tulang besar, kecenderungan menambah berat badan.';
-nameCharismatic[5]='Expressive eyes, quick, bright, often small-boned, refined features.';
-nameCharismatic[6]='Tubuh sedang, wajah bulat, payudara menonjol, kecenderungan mengambil alih.';
-nameCharismatic[7]='Sikap agung, kuat, kuat, berotot.';
-nameCharismatic[8]='Cara tertentu yang dilindungi undang-undang menandai Virgo klasik. Virgos pada umumnya sedang dalam sedikit membangun.';
-nameCharismatic[9]='Menarik, anggun, tubuh sedang, tidak ada fitur tajam.';
-nameCharismatic[10]='Pandangan intens di mata, berotot.';
-nameCharismatic[11]='Terbuka dan tertarik. Umumnya tinggi, kaki kuat. Pakaian untuk kenyamanan, bukan gaya. Wanita bertindak dengan cara "tomboy".';
-
-var nameLikes = new Array;
-nameLikes[0]='Keluarga, tradisi, keahlian berkualitas, status bersahaja, musik.';
-nameLikes[1]='Bersenang-senang dengan teman, berjuang demi tujuan, membantu orang lain, percakapan intelektual, pendengar yang baik.';
-nameLikes[2]='Tema spiritual, waktu sendirian, media visual, waktu tidur, romansa, musik, berenang.';
-nameLikes[3]='Pakaian yang nyaman, memimpin, tantangan fisik, olahraga individu.';
-nameLikes[4]='Berkebun, memasak, bekerja dengan tangan, musik, romansa, pakaian berkualitas tinggi.';
-nameLikes[5]='Musik, majalah, buku, musik, blog, obrolan dengan hampir semua orang, perjalanan singkat keliling kota.';
-nameLikes[6]='Bersantai di dekat atau di dalam air, seni, hobi rumahan, makan enak bersama teman, membantu orang yang dicintai.';
-nameLikes[7]='Teater, dikagumi, berlibur, bersenang-senang dengan teman, hal-hal mahal, warna-warna cerah.';
-nameLikes[8]='Kebersihan, hewan, makanan sehat, buku, alam.';
-nameLikes[9]='Harmoni, berbagi dengan orang lain, kelembutan, alam bebas.';
-nameLikes[10]='Kebenaran, fakta, menjadi benar, menggoda, berteman lama, hasrat besar, musuh yang layak.';
-nameLikes[11]='Bepergian, berada di luar ruangan, kebebasan, filsafat.';
-
-var nameDislikes = new Array;
-nameDislikes[0]='Hampir semuanya ada di beberapa titik.';
-nameDislikes[1]='Keterbatasan, kesepian, janji yang putus, situasi yang membosankan atau membosankan, orang-orang yang tidak sependapat dengannya.';
-nameDislikes[2]='Tahu segalanya, masa lalu kembali menghantui, dikritik, kekejaman dalam bentuk apa pun.';
-nameDislikes[3]='Tidak aktif, keterlambatan, pekerjaan yang tidak menggunakan bakat seseorang.';
-nameDislikes[4]='Perubahan mendadak, komplikasi, rasa tidak aman dari segala jenis, kain sintetis.';
-nameDislikes[5]='Pengulangan dan rutinitas, sendirian, dikurung.';
-nameDislikes[6]='Orang-orang asing, pengungkapan kehidupan pribadi, kritik terhadap Ibu.';
-nameDislikes[7]='Diabaikan, menghadapi kenyataan sulit, bukan menjadi raja atau ratu.';
-nameDislikes[8]='Mengambil tengah panggung, kekasaran, meminta bantuan.';
-nameDislikes[9]='Ketidakadilan, kekerasan, kepatuhan, dan pengumpanan.';
-nameDislikes[10]='Ketidakjujuran, orang pasif, mengungkapkan rahasia.';
-nameDislikes[11]='Detail, dibatasi, teori di luar tembok, orang-orang yang melekat.';
-
-var nameBestEnviro = new Array;
-nameBestEnviro[0]='Situasi kerja positif, lingkungan perkotaan dengan budaya dan gaya, di mana pun menjadi penanggung jawab.';
-nameBestEnviro[1]='Setiap orang berkumpul untuk bertukar ide.';
-nameBestEnviro[2]='Di atau dekat air, terutama laut. Bioskop.';
-nameBestEnviro[3]='Segala situasi yang membutuhkan tindakan, keberanian dalam menghadapi ketakutan, persaingan, dan kebebasan memilih. Individu Aries lebih baik di luar aktif daripada tinggal dekat dengan rumah.';
-nameBestEnviro[4]='Rumah terpencil yang dekat dengan alam. Makanan yang baik juga penting. Kecantikan dan kenyamanan adalah suatu keharusan.';
-nameBestEnviro[5]='Setiap lingkungan yang sibuk, tempat orang berkumpul untuk bergosip, toko buku, museum.';
-nameBestEnviro[6]='Kanker akan selalu paling nyaman di rumah, dekat dengan keluarga, hal-hal yang akrab, dan teman-teman tersayang.';
-nameBestEnviro[7]='Di bawah sinar matahari! Juga tempat di mana Leo memiliki kesempatan untuk menjadi kreatif atau bersinar di depan orang lain.';
-nameBestEnviro[8]='Virgo paling di rumah di perusahaan hewan dan dekat dengan alam. Virgo menyukai kekuasaan dan menikmati menjadi asisten pendamping atau yang sangat diperlukan.';
-nameBestEnviro[9]='Setiap tempat yang indah di mana perusahaan itu harmonis. Sangat sosial dan paling bahagia melakukan sesuatu di perusahaan orang lain.';
-nameBestEnviro[10]='Tempat gelap, sensual, situasi apa pun yang menawarkan kekuatan atau membangkitkan perasaan yang kuat.';
-nameBestEnviro[11]='Di luar, saat bepergian.';
-
-var iImg=new Array;
-iImg[3]='<i class="fa fa-fire" aria-hidden="true" style="color:red;"></i>';
-iImg[2]='<i class="fa fa-tint" aria-hidden="true" style="color:blue;"></i>';
-iImg[1]='<i class="fa fa-cloud" aria-hidden="true" style="color:skyblue;"></i>';
-iImg[0]='<i class="fa fa-square" aria-hidden="true" style="color:orange;"></i>';
-var imgElemenImg=[iImg[0],iImg[1],iImg[2],iImg[3],iImg[0],iImg[1],iImg[2],iImg[3],iImg[0],iImg[1],iImg[2],iImg[3]]
-var elemen=['Bumi','Udara','Air','Api','Bumi','Udara','Air','Api','Bumi','Udara','Air','Api'];
-var warna=['Coklat','Pirus','Hijau Laut','Merah','Merah Jambu','Hijau','Putih, Perak','Emas, Orange','Hijau, Coklat','Biru','Merah Kelam, Hitam','Ungu'];
-
-$('#fAstElemen').html(elemen[lunarTypeNum]);
-$('#imgElemen').html(imgElemenImg[lunarTypeNum]);
-$('#fAstColor').html(warna[lunarTypeNum]);
-
-var nameCharacteristics = new Array;
-nameCharacteristics[0]='Symbol : Kambing<br>Elemen : Bumi<br>Group : Teori<br>Polarity : Negative<br>Favorable Colors : Coklat<br>Opposite Sign : Cancer';
-nameCharacteristics[1]='Symbol: Pembawa Air<br>Elemen: Udara<br>Group: Teori<br>Polarity: Positive<br>Favorable Colors: Pirus<br>Opposite Sign: Leo';
-nameCharacteristics[2]='Symbol: Ikan<br>Elemen: Air<br>Group: Teori<br>Polarity: Negative<br>Favorable Colors: Hijau Laut<br>Opposite Sign: Virgo';
-nameCharacteristics[3]='Symbol: Domba Jantan<br>Elemen: Api<br>Group: Emosi<br>Polarity: Positive<br>Favorable Colors: Merah<br>Opposite Sign: Libra';
-nameCharacteristics[4]='Symbol: Banteng<br>Elemen: Bumi<br>Group: Emosi<br>Polarity: Negative<br>Favorable Colors: Merah Jambu<br>Opposite Sign: Scorpio';
-nameCharacteristics[5]='Symbol: Kembar<br>Elemen: Udara<br>Group: Emosi<br>Polarity: Positive<br>Favorable Colors: Hijau<br>Opposite Sign: Sagittarius';
-nameCharacteristics[6]='Symbol: Kepiting<br>Elemen: Air<br>Group: Emosi<br>Polarity: Negative<br>Favorable Colors: Putih, Perak<br>Opposite Sign: Capricorn';
-nameCharacteristics[7]='Symbol: Singa<br>Elemen: Api<br>Group: Intelek<br>Polarity: Positive<br>Favorable Colors: Emas, Orange<br>Opposite Sign: Aquarius';
-nameCharacteristics[8]='Symbol: Perawan<br>Elemen: Bumi<br>Group: Intelek<br>Polarity: Negative<br>Favorable Colors: Hijau, Coklat<br>Opposite Sign: Pisces';
-nameCharacteristics[9]='Symbol: Timbangan<br>Elemen: Udara<br>Group: Intelek<br>Polarity: Positive<br>Favorable Colors: Biru<br>Opposite Sign: Aries';
-nameCharacteristics[10]='Symbol: Kalajengking<br>Elemen: Air<br>Group: Intelek<br>Polarity: Negative<br>Favorable Colors: Merah Kelam, Hitam<br>Opposite Sign: Taurus';
-nameCharacteristics[11]='Symbol: Pemanah<br>Elemen: Api<br>Group: Teori<br>Polarity: Positive<br>Favorable Colors: Ungu<br>Opposite Sign: Gemini';
-
-var lunarText = new Array;
-lunarText[0]='Dalam hal profesionalisme dan nilai-nilai tradisional, Capricorn menang dengan mudah. Tanda praktis ini suka menangani kehidupan dengan cara yang paling konvensional, tanpa meninggalkan kebutuhan bisnis yang terlewat. Dianggap sebagai tanda-tanda yang paling serius, Capricorn memiliki kemandirian yang memungkinkan kemajuan besar baik secara pribadi maupun dalam pekerjaan.';
-lunarText[1]='Aquarius menampilkan diri mereka dalam salah satu dari dua cara. Satu di tangan, Anda akan melihat seseorang yang pemalu, dan pendiam. Di sisi lain, seorang Aquarian bisa menjadi ramai, eksentrik, dan energik. Keduanya adalah pemikir yang mendalam dengan cinta membantu orang lain. Sangat intelektual, ini adalah tanda kemerdekaan yang sengit yang menghargai intuisi yang ditempa dengan logika. Kedua tipe kepribadian memiliki kemampuan luar biasa untuk melihat kedua sisi argumen tanpa prasangka, membuat mereka pemecah masalah yang sangat baik. Sementara sangat terbiasa dengan energi di sekitar mereka, Aquarius memiliki kebutuhan yang mendalam untuk meluangkan waktu sendirian dan pergi untuk meremajakan diri mereka sendiri. Kata kunci untuk tanda ini adalah imajinasi. Aquarian dapat melihat dunia kemungkinan bahkan ketika tampaknya tidak ada.';
-lunarText[2]='"Memahami" adalah kata kunci yang paling tepat untuk tanda yang lembut dan penuh kasih sayang ini. Santai dan umumnya menerima orang lain di sekitar mereka, Pisceans sering ditemukan di perusahaan dari berbagai kepribadian yang berbeda. Kesediaan mereka untuk memberikan diri mereka secara emosional memberikan aura empati yang tenang. A Pisces nyaman berada di sekitar. Meskipun tidak mungkin menjadi pemimpin, kehadiran tanda-tanda ini kuat dan bersemangat dalam segala alasan yang mereka masukkan ke dalam hati mereka.';
-lunarText[3]='Sebagai tanda pertama zodiak, kehadiran seekor Aries hampir selalu menunjukkan awal dari sesuatu yang energik dan riuh. Tidak banyak yang menahan tanda ini. Mereka bersemangat, dinamis, cepat, dan kompetitif. Ketika datang untuk mendapatkan bola bergulir, Aries adalah yang terbaik. Memelopori segala sesuatu dari proyek yang berhubungan dengan pekerjaan hingga pesta dengan teman-teman, orang-orang ini memilih untuk melakukannya.';
-lunarText[4]='Taurus yang kuat dan dapat diandalkan memimpin dalam hal memetik hasil kerja keras. Pecinta segala sesuatu yang baik dan indah, Taurea mengelilingi diri mereka dengan keuntungan materi. Ini adalah tanda sensual, taktil. Sentuhan sangat penting dalam segala hal mulai dari pekerjaan hingga romansa. Stabil dan konservatif, orang-orang Taurus adalah yang paling dapat dipercaya dari zodiak. Meskipun kadang-kadang dipandang sebagai keras kepala, tanda ini akan berjalan lamban pada tugas sampai akhir, memastikan bahwa semuanya sesuai standar. Mereka sangat kreatif dan sangat menikmati membuat sesuatu dengan tangan mereka sendiri.';
-lunarText[5]='Keserbagunaan adalah kata kunci yang bagus untuk tanda ganda ini. Ekspresif dan cerdas, Gemini menghadirkan dua sisi khas pada kepribadiannya, dan Anda tidak akan pernah yakin dengan yang mana Anda akan berhadapan muka. Di satu sisi, Gemini bisa ramah, genit, komunikatif, dan siap untuk bersenang-senang, bersenang-senang, bersenang-senang. Namun ketika saudara kembar yang lain hadir, Anda dapat menemukan tanda udara ini kontemplatif, serius, gelisah, dan bahkan bimbang. Kedua saudara kembar ini mampu beradaptasi dengan keadaan kehidupan dengan baik, membuat mereka menjadi orang-orang hebat yang tahu. Hal-hal tidak pernah membosankan ketika Gemini ada di tempat kejadian.';
-lunarText[6]='Sangat intuitif dan sentimental, Cancer bisa menjadi salah satu tanda Zodiac paling menantang untuk diketahui. Emosi berjalan kuat untuk tanda ini, dan ketika datang ke keluarga dan rumah, tidak ada yang lebih penting. Bersimpati dan berempati, Cancerians sangat terbiasa dengan orang-orang di sekitar mereka. Pengabdian adalah kata kunci untuk tanda ini, membuat mereka menjadi orang-orang yang sangat sensitif.';
-lunarText[7]='Ketika Singa yang perkasa memasuki panggung utama, semua orang memperhatikan. Tanda dramatis, kreatif, dan keluar ini memiliki daya tarik kata kunci untuk alasan yang baik. Berapi-api dan percaya diri, pesona Leo hampir mustahil untuk ditolak. Apakah itu waktu yang dihabiskan bersama keluarga dan teman-teman atau upaya di tempat kerja, seorang Leo akan membawa banyak ke meja.';
-lunarText[8]='Dengan perhatian serius pada detail, Virgo adalah tanda zodiak yang paling didedikasikan untuk melayani. Perasaan manusiawi mereka yang mendalam menuntun mereka pada pengasuhan tidak seperti yang lain, sementara pendekatan metodis mereka terhadap kehidupan memastikan bahwa tidak ada yang terlewatkan. Virgo seringkali lembut dan halus, lebih memilih untuk mundur dan menganalisis sebelum bergerak maju.';
-lunarText[9]='"Saya menyeimbangkan" adalah frasa kunci untuk tanda ini, dan ketika harus menjaga semuanya tetap seimbang, seorang Libran akan memimpin kelompok ini. Cinta damai dan peradilan, tanda ini membenci sendirian. Kemitraan sangat penting bagi Libran, terutama yang pada tingkat pribadi. Dengan kepribadian mereka yang menang dan gaya kerja sama, mereka tidak cenderung sendirian lama!';
-lunarText[10]='Di bawah eksterior yang terkendali dan dingin, mengalahkan jantung Scorpio yang sangat intens. Bergairah, menembus, dan bertekad, tanda ini akan menyelidiki sampai mereka mencapai kebenaran. Scorpio mungkin tidak berbicara banyak atau menunjukkan emosi dengan mudah, namun yakinlah ada sejumlah besar aktivitas yang terjadi di bawah permukaan. Pemimpin yang luar biasa, Kalajengking selalu sadar. Ketika datang ke akal, tanda ini keluar di depan.';
-lunarText[11]='Ingin tahu dan bersemangat, Sagitarius adalah pengelana Zodiac. Pendekatan filosofis, berpikiran luas terhadap kehidupan memotivasi mereka untuk berkeliaran di mana-mana dalam mencari makna kehidupan. Ekstrover, optimis, dan antusias, hampir tidak mungkin menurunkan Sagitarius. Mereka suka perubahan. Faktanya, perubahan sangat penting untuk tanda ini untuk merasakan yang terbaik.';
-
-var tmpLunarText='<div style="text-align: justify;font-family:Verdana;font-size: 16px;color: #0b5394;">';
-tmpLunarText +='<u>'+lunarType+'</u>';
-tmpLunarText +='<br>Personality:</div><div>'+lunarText[lunarTypeNum]+'<br>';
-tmpLunarText +='</div><br><div style="text-align: justify;font-family:Verdana;font-size: 16px;color: #0b5394;">';
-tmpLunarText +='Keyword:</div><table border="0" width="100%"><tr>';
-tmpLunarText +='<td width="140px">Strengths</td><td>:</td><td>'+nameStrengths[lunarTypeNum]+'</td></tr><tr>';
-tmpLunarText +='<td>Weaknesses</td><td>:</td><td>'+nameWeaknesses[lunarTypeNum]+'</td></tr><tr>';
-tmpLunarText +='<td>Charismatic marks</td><td>:</td><td>'+nameCharismatic[lunarTypeNum]+'</td></tr><tr>';
-tmpLunarText +='<td>Likes</td><td>:</td><td>'+nameLikes[lunarTypeNum]+'</td></tr><tr>';
-tmpLunarText +='<td>Dislikes</td><td>:</td><td>'+nameDislikes[lunarTypeNum]+'</td></tr><tr>';
-tmpLunarText +='<td>Best environment</td><td>:</td><td>'+nameBestEnviro[lunarTypeNum]+'</td></tr>';
-tmpLunarText +='</table><br><div style="text-align: justify;font-family:Verdana;font-size: 16px;color: #0b5394;">';
-tmpLunarText +='Characteristics:</div><div>'+nameCharacteristics[lunarTypeNum]+'</div>';
-document.getElementById("lunarArea").innerHTML=tmpLunarText;
-}
-/* End Zodiac Reading */
-/* Start Shio Reading */
-function showShio(){
-var startYear=1900;
-var cNYstartDate = new Array(
-"1.31","2.19","2.08","1.29","2.16","2.04","1.25","2.13","2.02","1.22",
-"2.10","1.30","2.18","2.06","1.26","2.14","2.03","1.23","2.11","2.01",
-"2.20","2.08","1.28","2.16","2.05","1.25","2.13","2.02","1.23","2.10",
-"1.30","2.17","2.06","1.26","2.14","2.04","1.24","2.11","1.31","2.19",
-"2.08","1.27","2.15","2.05","1.25","2.13","2.02","1.22","2.10","1.29",
-"2.17","2.06","1.27","2.14","2.03","1.24","2.12","1.31","2.18","2.08",
-"1.28","2.15","2.05","1.25","2.13","2.02","1.21","2.09","1.30","2.17",
-"2.06","1.27","2.15","2.03","1.23","2.11","1.31","2.18","2.07","1.28",
-"2.16","2.05","1.25","2.13","2.02","2.20","2.09","1.29","2.17","2.06",
-"1.27","2.15","2.04","1.23","2.10","1.31","2.19","2.07","1.28","2.16", /*1900->1999*/
-"2.05","1.24","2.12","2.01","1.22","2.09","1.29","2.18","2.07","1.26", /* 2000-> */
-"2.14","2.03","1.23","2.10","1.31","2.19","2.08","1.28","2.16","2.05", /* 10-19 */
-"1.25","2.12","2.01","1.22","2.10","1.29","2.17","2.06","1.26","2.13"  /* 20-29 */
-);
-
-var shio = new Array(
-new Array("Tikus", "Tikus adalah hewan pertama dalam siklus zodiak Cina. Biasanya dianggap agresif, ambisius, mencurigakan, haus kekuasaan, jujur, murah hati, cepat marah dan cenderung menghabiskan waktu dengan bebas. Mereka yang lahir di bawah tanda Tikus imajinatif, menawan, dan benar-benar murah hati kepada orang yang mereka cintai. Namun, mereka memiliki kecenderungan untuk menjadi pemarah dan terlalu kritis. Mereka biasanya cocok untuk pekerjaan penjualan atau pekerjaan sebagai penulis, kritikus, atau humas. Tikus akan rukun dengan Naga dan Monyet, namun harus menghindari Kuda.", "https://4.bp.blogspot.com/-qKfCGYPvQNM/XVzFpHvu5WI/AAAAAAAABUg/Enlovy495IgchE2kZKktzL7M0URlsK8LwCLcBGAs/s80/tikus.gif"),
-new Array("Lembu", "Lembu adalah simbol individu yang kuat dengan kepribadian keras kepala dan keras kepala. Mereka yang lahir di bawah tanda adalah pemimpin alami yang biasanya berhasil ketika diberi kesempatan dan juga akan membuat orang tua yang luar biasa. Mereka jujur, menginspirasi, santai dan konservatif. Lembu akan berhasil sebagai ahli bedah, umum, atau penata rambut yang terampil. Sapi bergaul dengan Ular dan Ayam Jantan tetapi tidak dengan domba.", "https://3.bp.blogspot.com/-T_VCcbuV7ek/XVzFoHrKecI/AAAAAAAABUQ/7kTNs6eOgwk7GO38fcv3lZNAIhAODdUeACLcBGAs/s80/lembu.gif"),
-new Array("Macan", "Sebagai hewan yang bertarung, mereka yang lahir di bawah tanda harimau sensitif, agresif, tidak dapat diprediksi, menawan, emosional, berani, dan mampu mencintai dengan hebat. Seringkali mempertaruhkan diri mereka sendiri, mereka memiliki kehidupan yang riang. Harimau biasanya akan menonjol sebagai bos, penjelajah, pengemudi mobil balap, atau matador. Pernikahan yang bahagia bisa terjadi dengan Kuda atau Anjing tetapi tidak pernah dengan Monyet.", "https://3.bp.blogspot.com/-zrC_VogD47g/XVzFoYjIGAI/AAAAAAAABUU/FiVRp_YBQmsSlFctmGBFg1H7LJ05hwDLgCLcBGAs/s80/macan.gif"),
-new Array("Kelinci", "Mereka yang lahir di bawah tanda ini penuh kasih sayang, berbakat, wajib, selalu menyenangkan, menghargai keamanan dan ketenangan. Mereka memiliki kecenderungan untuk menjadi terlalu sentimental dan dangkal dan untuk menghindari konflik dan keterlibatan emosional. Berhati-hati dan konservatif, mereka biasanya tidak mengambil risiko dan sukses dalam bisnis. Mereka juga akan menjadi pengacara, diplomat, atau aktor yang baik. Mitra hidup terbaik mereka adalah Domba atau Babi, bukan Ayam Jantan.", "https://4.bp.blogspot.com/-EUFGYr-btdo/XVzFnc0TcbI/AAAAAAAABUM/YI0C-H_2IiQPNgcPCXj-2D5hy4gVCj8wQCLcBGAs/s80/kelinci.gif"),
-new Array("Naga", "Mereka yang lahir di bawah tanda dianggap cerdas, berbakat, suka memerintah, keras, norak, dan tidak setia, tetapi juga populer dan sukses, penuh vitalitas dan antusiasme. Mereka biasanya terlihat keras kepala di luar, tetapi lembut di dalam. Mereka dilahirkan untuk menjadi seniman, pendeta, politisi, atau pemimpin. Seekor naga akan kompatibel dengan monyet atau tikus. Namun, seekor anjing tidak akan menjadi pilihan yang baik.", "https://4.bp.blogspot.com/-CcIsmS5TvU0/XVzFozcZTYI/AAAAAAAABUc/vHwSkr69uvIvbNufvuAJ_3m5gxpYEdRbwCLcBGAs/s80/naga.gif"),
-new Array("Ular", "Mereka yang lahir di bawah tanda ini biasanya dianggap pintar, bersemangat, tekun, romantis, intens, kaya akan kebijaksanaan dan pesona, tetapi sia-sia. Wanita yang lahir di bawah Ular seringkali cantik. Ular akan sangat dibimbing oleh intuisi mereka. Mereka tentu saja akan memenangkan banyak uang, tetapi harus menghindari penundaan dan sikap pelit terhadap uang. Ular akan paling puas sebagai guru, filsuf, penulis, psikiater, atau peramal. Pernikahan dengan Ayam jantan atau Lembu bukan Babi akan menjadi yang terbaik.", "https://4.bp.blogspot.com/-8YzKMLMPe9w/XVzFpuaxuwI/AAAAAAAABUk/a455iNnNTjYz0kAeXDxUFeGmTi5s1c1pQCLcBGAs/s80/ular.gif"),
-new Array("Kuda", "Mereka pekerja keras, cerdas dan ramah, ceria dan populer, tetapi tidak sabar. Biasanya mereka menganggap diri mereka lebih unggul dari orang lain. Mereka memiliki sifat mementingkan diri yang kuat dan kecerdikan yang tajam dan harus menjaga agar tidak egois. Petualang, ilmuwan, penyair, atau politisi akan menjadi pekerjaan yang cocok untuk mereka. Kuda rukun dengan Macan dan Anjing, bukan Tikus.", "https://2.bp.blogspot.com/-QFOdlzEA_Xs/XVzFncviv6I/AAAAAAAABUI/btH6Rd2-bdI9F1DmgdsKSUXOPfv73tvOwCLcBGAs/s80/kuda.gif"),
-new Array("Domba", "Tanda itu menunjukkan seseorang yang kreatif, artistik, bersemangat, elegan, ramah, jujur, menawan tetapi pesimistis, pemalu, tidak teratur, dan rentan. Terlalu tergantung pada kenyamanan material, mereka mudah mengeluh dan tidak merespon dengan baik terhadap tekanan, tetapi akan menemukan solusi alami mereka sendiri untuk masalah ketika diberi ruang. Pekerjaan terbaik untuk seorang Domba adalah seorang aktor atau tukang kebun. Mereka kompatibel dengan Kelinci atau Babi dalam pernikahan, tetapi tidak dengan lembu.", "https://4.bp.blogspot.com/-sZvfmZWuMoU/XVzFnWVTqYI/AAAAAAAABUE/Hy-G5lQiU_Qo2QTeFn-P0j4uWz8T19IiwCLcBGAs/s80/domba.gif"),
-new Array("Monyet", "Monyet cerdas, inventif, pintar, menghibur tetapi juga berbahaya dan mudah putus asa. Karena sifat dan kepribadian magnetis mereka yang luar biasa, mereka selalu disukai dan berteman dekat. Namun, mereka tidak bisa dipercaya. Mereka harus menjaga agar tidak menjadi oportunis dan tidak mempercayai orang lain. Tanda menunjukkan keberhasilan dalam bidang apa pun yang mereka coba. Pertandingan terbaik adalah Naga atau Tikus sedangkan yang terburuk adalah Harimau.", "https://4.bp.blogspot.com/-e_sExACzkLE/XVzFonuw5DI/AAAAAAAABUY/TMn2tuWEuCYD5D2kO39sQiLBBMI-btQ6wCLcBGAs/s80/monyet.gif"),
-new Array("Ayam Jantan", "Ayam jantan berani, pekerja keras, cerdik, sombong, ceroboh, egois, dan eksentrik. Mereka haus akan pengetahuan, mengabdikan diri untuk bekerja dan pasti terlibat dalam pengambilan keputusan. Mereka terampil dalam apa yang mereka lakukan dan memperhatikan detail. Namun, mereka cenderung terlihat sombong kepada orang lain. Ayam jantan akan senang sebagai pemilik restoran, humas, tentara atau pelancong dunia. Tanda itu menjanjikan harmoni dengan Ular dan Sapi dan masalah dengan Kelinci.", "https://4.bp.blogspot.com/-MHfK0H-LkWY/XVzFmuYtvQI/AAAAAAAABUA/BtImP2f3vxg36ES8IgxtnfaMwxMypq5QwCLcBGAs/s80/ayam.gif"),
-new Array("Anjing", "Mereka yang lahir di bawah tanda ini jujur, pendiam, cerdas, murah hati, keras kepala, setia dan setia kepada mereka yang mereka cintai. Mereka adalah pendengar introvert, berdedikasi tetapi juga sinis dan cenderung membiarkan kecemasan eksternal mereka mendapatkan yang terbaik dari mereka. Kekhawatiran terus-menerus, lidah yang tajam, dan kecenderungan untuk menjadi pencari kesalahan akan selalu mengganggu mereka. Namun, mereka dilahirkan untuk menjadi sukses. Anjing akan menjadi pebisnis, aktivis, guru, atau agen rahasia yang luar biasa. Harimau dan Kuda dianggap sebagai pertandingan terbaik, dan Naga harus ditangani dengan hati-hati.", "https://4.bp.blogspot.com/-XjTnynx5NPs/XVzFmV5r1PI/AAAAAAAABT4/PyM4857OP8kM1z16f7NG1AyIWfGSyfX4QCLcBGAs/s80/anjing.gif"),
-new Array("Babi", "Babi itu jujur, dapat diandalkan, tulus, toleran, pemalu, penuh kasih sayang, baik hati, impulsif, dan pemarah. Mereka adalah sahabat yang hebat, intelektual dengan kebutuhan yang sangat kuat untuk menetapkan tujuan yang sulit dan melaksanakannya. Selain itu mereka sangat naif. Rasa haus mereka yang tak terpadamkan akan pengetahuan akan memudahkan kesuksesan mereka sedangkan pencarian mereka akan kenyamanan materi akan menggagalkannya. Babi juga akan mengorbankan hidup mereka untuk tujuan yang baik. Babi akan berhasil dalam urusan keuangan, atau sebagai penghibur, atau mungkin seorang pengacara. Babi harus mengetahui Babi lain dan kompatibel dengan Domba dan Kelinci.", "https://2.bp.blogspot.com/-zrPvmpJjEZA/XVzFms-Uj-I/AAAAAAAABT8/E844SoECOP0gQI1qYi_uGPM30D3z8fiYACLcBGAs/s80/babi.gif")
-);
-var y_select = String($('#fAstDate').datepicker('getDate').getFullYear());
-var m_select = String($('#fAstDate').datepicker('getDate').getMonth()+1);
-var d_select = String($('#fAstDate').datepicker('getDate').getDate());
-var descArea = document.getElementById("descArea");
-var cYear;
-var anYear;
-var edgeMonth,edgeDay;
-if((y_select!="")&&(m_select!="")&&(d_select!="")){
-edgeMonth=parseInt(cNYstartDate[y_select-1900].substring(0,cNYstartDate[y_select-1900].indexOf(".")));
-if(parseInt(m_select) < edgeMonth){
-cYear=y_select-1;
-}else{
-if(parseInt(m_select) == edgeMonth){
-edgeDay=parseFloat(cNYstartDate[y_select-1900].substring(parseInt(cNYstartDate[y_select-1900].indexOf("."))+1,cNYstartDate[y_select-1900].length));
-if( parseInt(d_select)<edgeDay){
-cYear=y_select-1;
-}else{cYear=y_select;}
-}else{ cYear=y_select;}
-}
-if(y_select<1900){
-alert("Maaf, tidak ada info untuk tanggal ini, karena sebelum 1900, menurut kalender Cina. Tahun baru Cina dimulai pada 31 Januari di Tahun 1900.");
-}else{
-anYear=(cYear-4)%12;
-$('#fAstShio').html(shio[anYear][0]);
-$('#imgShio').attr("src",shio[anYear][2]);
-descArea.innerHTML="<b><u>"+shio[anYear][0]+"</u></b><br>"+shio[anYear][1];
-document.getElementById('zodSign').src = shio[anYear][2];
-}}}
-/* End Shio Reading */
+/* Primbon engine moved to v3 block */
+/* Zodiac engine moved to v3 block */
+/* Shio engine moved to v3 block */
 /* Start Hijriah Conversion */
 function isGregLeapYear(year){
 return year%4 == 0 && year%100 != 0 || year%400 == 0;
@@ -846,7 +504,7 @@ var dateHijri = fixedToHijri(gregToFixed(y, m, d));
 $('#fAstHijriah').html(dateHijri+ " H ");
 /*$('#dateIslamicHijriah').html("Hijriah : "+dateHijri+ " H ");*/
 $('#dateIslamicHijriah').html('<center>'+'چوديفلاريبلوعسپوت'+'</center>');
-$("#dateIslamicMasehi").html("<center>"+$('#fAstDate').datepicker('getDate').getDate()+'-'+($('#fAstDate').datepicker('getDate').getMonth()+1)+'-'+$('#fAstDate').datepicker('getDate').getFullYear()+' <i class="fa fa-arrows-h" aria-hidden="true"></i> '+dateHijri+'</center>');
+$("#dateIslamicMasehi").html("<center>"+$('#fAstDate').datepicker('getDate').getDate()+'-'+($('#fAstDate').datepicker('getDate').getMonth()+1)+'-'+$('#fAstDate').datepicker('getDate').getFullYear()+' <i class="fa-solid fa-left-right" aria-hidden="true"></i> '+dateHijri+'</center>');
 }
 /* End Hijriah Conversion */
 /* Run Astrologi */
@@ -902,7 +560,7 @@ $('fAstName').focus();
 $('fAstName').select();
 return;
 }else{
-if ($("#fBtnAstSubmit").html()=='<i class="fa fa-desktop" aria-hidden="true"></i> Lihat Data'){
+if ($("#fBtnAstSubmit").html()=='<i class="fa-solid fa-display" aria-hidden="true"></i> Lihat Data'){
 $("#fBtnAstSubmit").html("Tutup");
 if($(window).innerWidth() < 900 || $(window).innerHeight() < 500){
 if (document.all && document.querySelector && !document.addEventListener){
@@ -945,7 +603,7 @@ startDrawSine();
 }}
 function closeBox(){
 $("#lihatAstroBlog").slideUp("slow");
-$("#fBtnAstSubmit").html('<i class="fa fa-desktop" aria-hidden="true"></i> Lihat Data');
+$("#fBtnAstSubmit").html('<i class="fa-solid fa-display" aria-hidden="true"></i> Lihat Data');
 if($("#lihatAstroBlog").data('draggable')){$("#lihatAstroBlog").draggable('destroy');}
 $('html,body').animate({scrollTop: $('.astroBlogMainUI').offset().top},'slow');
 }
@@ -998,199 +656,75 @@ resizeWindowAst();
 drawCanvasBioGraph();
 startDrawSine();
 });}
-function letterValue(str){
-var anum={
-a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, 
-l: 12, m: 13, n: 14,o: 15, p: 16, q: 17, r: 18, s: 10, t: 20, 
-u: 21, v: 22, w: 23, x: 24, y: 25, z: 26
-}
-if(str.length== 1) return anum[str] || ' ';
-return str.split('').map(letterValue);
-}
-function namaSpesial(){
-var strArti = new Array();
-strArti[11]="Tingkat spiritual tinggi, intuitif, tercerahkan, idealis, pemimpi.";
-strArti[22]="Berjiwa pembangun, pekerja keras, kuat, pemimpin.";
-var strDesc = new Array();
-strDesc[11]="Segala talenta adalah milik anda. Anda orang yang yakin dalam apa yang anda lakukan. Akan tetapi anda harus berusaha berjalan pada sisi positif dalam hidup karena kekuatan dari kepribadian itu bisa menjadikan anda orang yang sia-sia. Anda termasuk orang yang cerdas dan sangat pandai. Tidak memakan waktu yang lama bagi anda untuk bisa menguasai banyak hal yang menyangkut karir atau bisnis. Anda dapat meraih sukses besar dalam keuangan. Anda orang yang suka berhubungan dengan orang yang penting yang dapat menguntungkan. Anda terlahir untuk mengajarkan sesuatu hal yang baik untuk kepentingan orang lain.";
-strDesc[22]="Anda orang yang berambisi meraih kesuksesan. Melalui talenta dan tantangan yang cukup ketat, anda akhirnya dapat memenangkan banyak hal dalam karir, bisnis, maupun kehidupan pribadi. Anda belajar banyak hal dari kesulitan. Berhati-hatilah dengan tindakan anda, sehingga tidak menjadikan karma bagi hidup anda dikemudian hari. Anda orang yang mempesona dan mempunyai banyak energi untuk melakukan banyak hal. Anda tidak mengenal lelah dalam bekerja. Anda disarankan untuk lebih bersabar terhadap mereka yang tidak sehebat anda, karena anda cenderung menyukai kesempurnaan dan sangat idealis.";
-$("#artiNamaJudul").html("Karakter :<br />"+strArti[spesialNo]);
-$("#artiNamaDesc").html("Pada Umumnya :<br />"+strDesc[spesialNo]);
-}
-var spesialNo=0;
-function getArtiNama(){
-if(astroBlogUserID==MD5(getHostName(window.location.href))&&astroBlogVer==astroBlogUserID){
-var strName=$('#fAstName').val();
-if (strName == "" || strName == null || strName =="Nama Lengkap"){
-alert("Silakan anda ketikan nama lengkap anda terlebih dahulu !");
-$("#fAstName").trigger( "focus" );
-return;
-}
-if(strName.length == 1){
-alert("Nama anda belum lengkap silakan coba lagi !");
-$("#fAstName").trigger( "focus" );
-return;
-}
-strName=strName.toLowerCase().replace(/\s/g, '').split('');
-var strNameNum=0;var strNameNum1=0;var strNameNum2=0;var strNameNum3=0;var strNameNum4=0;
-for(var i=0;i<strName.length;i++){
-strNameNum1+=letterValue(strName[i]);
-}
-if(strNameNum1==11||strNameNum1==22){spesialNo=strNameNum1;namaSpesial();return;}
-var digits = strNameNum1.toString().split('');
-if(digits.length==4){strNameNum2=parseInt(digits[0])+parseInt(digits[1])+parseInt(digits[2])+parseInt(digits[3]);if(strNameNum2==11||strNameNum2==22){spesialNo=strNameNum2;namaSpesial();return;}}
-if(digits.length==3){strNameNum2=parseInt(digits[0])+parseInt(digits[1])+parseInt(digits[2]);if(strNameNum2==11||strNameNum2==22){spesialNo=strNameNum2;namaSpesial();return;}}
-if(digits.length==2){strNameNum2=parseInt(digits[0])+parseInt(digits[1]);if(strNameNum2==11||strNameNum2==22){spesialNo=strNameNum2;namaSpesial();return;}}
-if(digits.length==1){strNameNum2=parseInt(digits[0]);strNameNum=strNameNum2;if(strNameNum2==11||strNameNum2==22){spesialNo=strNameNum2;namaSpesial();return;}}
-if(strNameNum2 => 9){
-var digits1 = strNameNum2.toString().split('');
-if(digits1.length==3){strNameNum3=parseInt(digits1[0])+parseInt(digits1[1])+parseInt(digits1[2]);if(strNameNum3==11||strNameNum3==22){spesialNo=strNameNum3;namaSpesial();return;}}
-if(digits1.length==2){strNameNum3=parseInt(digits1[0])+parseInt(digits1[1]);if(strNameNum3==11||strNameNum3==22){spesialNo=strNameNum3;namaSpesial();return;}}
-if(digits1.length==1){strNameNum3=parseInt(digits1[0]);strNameNum=strNameNum3;if(strNameNum3==11||strNameNum3==22){spesialNo=strNameNum3;namaSpesial();return;}}
-}else{strNameNum=strNameNum1;}
-if(strNameNum3 => 9){
-var digits2 = strNameNum3.toString().split('');
-if(digits2.length==2){strNameNum4=parseInt(digits2[0])+parseInt(digits2[1]);if(strNameNum4==11||strNameNum4==22){spesialNo=strNameNum4;namaSpesial();return;}}
-if(digits2.length==1){strNameNum4=parseInt(digits2[0]);strNameNum=strNameNum4;if(strNameNum4==11||strNameNum4==22){spesialNo=strNameNum4;namaSpesial();return;}}
-}else{strNameNum=strNameNum3;}
-var strArti = new Array();
-strArti[1]="Pemrakarsa, pelopor, pemimpin, bebas, pekerja keras, individualis.";
-strArti[2]="Mudah bekerja sama, beradaptasi, bermitra, memperhatikan orang lain, penengah.";
-strArti[3]="Ekspresif, mudah berbicara, bersosialisasi, seni dan menikmati hidup.";
-strArti[4]="Mengutamakan prinsip, keteraturan, pelayanan, sulit menerima batasan dan perkembangan yang mapan.";
-strArti[5]="Ekspansif, visioner, petualang, menggunakan kebebasan dengan cara konstruktif.";
-strArti[6]="Bertanggung jawab, melindungi, merawat, bermasyarakat, seimbang, simpatik.";
-strArti[7]="Analitis, memahami, pengetahuan, senang belajar, bermeditasi, penuh kesadaran.";
-strArti[8]="Berusaha secara praktis, berorientasi terhadap status, pencari kekuasaan, bertujuan pada materi.";
-strArti[9]="Peduli sesama, dermawan, tidak mementingkan diri sendiri, patuh terhadap kewajiban, ekspresi kreatif.";
-strArti[11]="Tingkat spiritual tinggi, intuitif, tercerahkan, idealis, pemimpi.";
-strArti[22]="Berjiwa pembangun, pekerja keras, kuat, pemimpin.";
-var strDesc = new Array();
-strDesc[1]="Anda mempunyai kepercayaan diri, intelektualitas, dan daya kepemimpinan yang sangat tinggi. Anda juga termasuk orang yang mempunyai pandangan hidup yang luas. Ide-ide kreatif dapat menjadikan anda sebagai pencetus dan penentu suatu kreasi atau tindakan. Cobalah untuk tidak mudah bosan, berubah-ubah pikiran, kehilangan harapan, atau menjadi terlalu agresif dalam menindak-lanjuti hal yang sudah anda mulai atau rintis. Raihlah apa yang menjadi tujuan hidup anda. Anda penyuka petualangan dan hal-hal yang memicu adrenalin. Anda harus mempunyai hobi yang menarik dan menyenangkan. Karena anda mudah bosan, anda tidak menyukai hal-hal yang bersifat monoton dan biasa saja. Hindari emosi, keras kepala, dan mau menang sendiri karena kesuksesan anda terletak pada bagaimana cara anda dapat bersabar dan berdiplomasi dalam meraih apapun tanpa harus bertindak bosy (berlagak seperti bos) atau memaksakan kehendak karena anda sudah mempunyai daya kepemimpinan sejati yang harus diarahkan secara positif.";
-strDesc[2]="Anda memerlukan ketentraman, kasih sayang, dan pasangan. Anda rasakan ketiga hal ini dapat melengkapi kehidupan anda. Pikiran anda selalu terpusat pada hal-hal yang positif dan indah. Terkadang bisnis dan hiburan harus dikombinasikan untuk membuat anda lebih bisa mengekspresikan diri dan lebih rileks karena lingkungan tanpa tekanan merupakan keadaan yang anda anggap sangat penting bagi pencapaian dan pengekspresian diri dalam bisnis sekalipun. Anda disarankan untuk tidak terlalu sensitif terhadap hal-hal sepele atau membesar-besarkan hal yang (sepertinya) tidak berguna. Janganlah selalu menaruh rasa curiga pada seseorang. Anda sangat ekspresif dan dapat dengan mudah memenangkan banyak kesempatan bisnis. Anda dapat mencapai kesuksesan hidup melalui dukungan dan bantuan dari orang-orang disekitar. Anda menjadi sangat produktif dan tekun apabila anda sudah mengambil keputusan untuk masuk dalam suatu bisnis tertentu. Anda dapat memenangkan banyak percintaan dimana salah satunya (mungkin) pernah/dapat memberikan kerumitan yang belum pernah terbayangkan.";
-strDesc[3]="Anda menularkan banyak kegembiraan dan keceriaan dimanapun anda berada. Kelebihan dari karakter nama ini adalah dapat menghibur semua orang yang kesepian dan bersedih. Anda suka bercerita tentang apapun sedemikian menarik dan mempunyai rasa humor yang tinggi. Anda disarankan untuk benar-benar menentukan karir yang ingin ditekuni sejak awal. Anda tipe orang yang cenderung sangat fleksibel dengan berbagai kondisi sehingga pada akhirnya (terkadang) tidak fokus pada keinginan anda pribadi. Anda bukan orang yang menyukai pekerjaan rutinitas. Daya imajinasi anda dapat mengantar menuju gerbang sukses. Anda akan lebih cocok apabila terlibat dalam karir bidang entertainmen, fashion, travel, public relations atau desain, dimana anda dapat mengekspresikan talenta seni dan komunikasi. Berusahalah sedikit untuk lebih serius dalam memilih pasangan dan jalan hidup anda. Jangan sampai aktivitas-aktivitas yang padat dalam berbagai hal dapat membuat kebingungan dalam memilih apa yang terbaik bagi hidup anda.";
-strDesc[4]="Anda mempunyai karakter yang unik dan kuat. Tanpa anda sadari, banyak orang akan merasa sopan dan tampil apa adanya. Kegigihan anda dalam meraih kesuksesan karir tidak perlu diragukan lagi. Anda orang yang sangat berambisi untuk maju. Biasanya orang yang berkarakter nama ini adalah orang-orang yang menuju sukses dengan jerih payah mereka sendiri meski tidak ada orang yang membantu dalam perjalanan karir mereka. Akan tetapi, anda tetap menyenangi pekerjaan yang sifatnya rutinitas. Anda orang yang tidak pandai dalam bersosialisasi. Anda orang yang cukup puas dengan kehidupan yang serba menyendiri karena anda ingin mendapatkan keseimbngan antara keramaian dan ketenangan.";
-strDesc[5]="Anda tidak pernah mau tinggal diam dalam menjalani hidup. Selalu menemukan diri anda dalam kemajuan karir dan taraf hidup karena kerja keras sendiri. Travel, olahraga, atau petualangan adalah hal yang paling anda sukai. Dari waktu ke waktu, anda selalu merubah penampilan diri dan juga mengubah kepribadian anda kepada sesuatu yang lebih menunjang karir dan kemajuan pribadi. Anda selalu ingin mencari jawaban atas permasalahan dengan melacaknya sendiri. Anda mempunyai bakat menjadi detektif. Jagalah diri agar jangan sampai terlalu terpesona dengan cinta bahkan menjadi budak cinta. Karena anda cenderung menyukai lawan jenis (pasangan) begitu dalam sehingga terkadang tidak dapat menguasai diri anda sendiri. Anda termasuk orang yang agresif dalam menyikapi cinta. Anda juga termasuk orang yang gampang sekali cemburu.";
-strDesc[6]="Anda orang cukup dipandang dikomunitas anda. Selalu menjadi bahan perhatian. Anda juga selalu menjadi tamu yang paling ditunggu karena aura anda yang memberikan kenyamanan dan keceriaan bagi semua orang. Anda sangat pandai berbicara sehingga anda dianggap sangat menarik oleh banyak orang. Selain itu, ditunjang oleh kepribadian anda yang sangat berwibawa dan praktis dalam menjalankan karir dan usaha sehingga dapat menuju gerbang sukses dengan dukungan teman-teman yang dapat menguntungkan anda. Anda tentunya bukanlah orang yang pasif. Anda bertindak cepat dalam membantu sesama dan sangat peduli terhadap kepentingan masyarakat. Hindari dari aktivitas yang berlebih dengan teman-teman sehingga anda tidak dicap egois oleh pasangan karena terlalu banyak waktu dan usaha yang anda habiskan untuk teman-teman.";
-strDesc[7]="Anda orang yang memerlukan tempat dimana anda bisa merasa nyaman dengan yang lain. Anda terlalu menutup diri sehingga seringkali dengan mudah mengalami depresi. Keinginan anda untuk menemukan jawaban-jawaban tersembunyai adalah dengan bantuan supranatural atau hal-hal lain yang tidak disangka karena kepribadian anda yang memang sangat tertutup dan lebih baik tidak berbicara. Perasaan anda tidak terdeteksi oleh orang-orang disekitar karena anda tidak pernah membicarakan tentang diri secara benar. Percakapan anda hanya akan menjadi tidak bernilai. Ketahuilah bahwa anda perlu menjadi diri sendiri dan berusaha menjadi teman yang nyata bagi banyak orang.";
-strDesc[8]="Anda mempunyai bakat dalam mengelola usaha dan keuangan. Anda mempunyai banyak impian akan tetapi jarang sekali orang yang dapat memahami ambisi anda. Akan tetapi anda orang yang cukup bijaksana dan selalu adil dalam bertindak. Anda banyak terlihat ditempat-tempat yang mewah karena menyukai gaya hidup yang berkualitas. Berilah diri anda waktu untuk relaksasi dan menikmati kehidupan karena disamping akan jauh lebih sehat, anda juga lebih bahagia. Janganlah dengan jabatan dan keuangan yang dimiliki, anda dapat dengan mudah menjadi sombong, mau menang sendiri, dan menyalah gunakan kekuasaan. Anda juga tidak menjadi pendengar yang baik terhadap anjuran atau cerita orang lain. Tidak dapat dipungkiri bahwa anda adalah peraih sukses dan kebanyakan dapat meraih sukses gemilang.";
-strDesc[9]="Anda bukan tipe orang yang sombong. Anda menjadi bijaksana melalui berbagai macam pengalaman hidup yang sungguh-sungguh mengajarkan pelajaran untuk lebih mendekatkan diri kepada Tuhan dan berbuat baik bagi semua orang. Itu telah anda sadari betul, sehingga anda merasa tidak perlu untuk berbuat semena-mena atau menyombongkan diri. Anda orang yang sangat romantis dan dapat berkata-kata dengan indah. Anda juga menyukai bahasa dan kultur negara asing. Anda suka memberikan inspirasi kepada banyak orang. Sikap anda yang penuh dengan empati, keceriaan, dan penuh perhatian membuat anda manjadi tamu istimewa dalam setiap undangan. Anda orang yang cukup populer ditengah-tengah teman karena kebaikan yang mereka rasakan. Anda akan jauh lebih sukses apabila berkarir dalam hal-hal kemanusiaan, diplomat, translator, atau petinggi agama. Akan tetapi, apapun karir atau bisis yang anda pilih, itu semua akan berujung pada nilai-nilai kemanusiaan yang anda pegang tinggi karena sikap anda yang dermawan.";
-strDesc[11]="Segala talenta adalah milik anda. Anda orang yang yakin dalam apa yang anda lakukan. Akan tetapi anda harus berusaha berjalan pada sisi positif dalam hidup karena kekuatan dari kepribadian itu bisa menjadikan anda orang yang sia-sia. Anda termasuk orang yang cerdas dan sangat pandai. Tidak memakan waktu yang lama bagi anda untuk bisa menguasai banyak hal yang menyangkut karir atau bisnis. Anda dapat meraih sukses besar dalam keuangan. Anda orang yang suka berhubungan dengan orang yang penting yang dapat menguntungkan. Anda terlahir untuk mengajarkan sesuatu hal yang baik untuk kepentingan orang lain.";
-strDesc[22]="Anda orang yang berambisi meraih kesuksesan. Melalui talenta dan tantangan yang cukup ketat, anda akhirnya dapat memenangkan banyak hal dalam karir, bisnis, maupun kehidupan pribadi. Anda belajar banyak hal dari kesulitan. Berhati-hatilah dengan tindakan anda, sehingga tidak menjadikan karma bagi hidup anda dikemudian hari. Anda orang yang mempesona dan mempunyai banyak energi untuk melakukan banyak hal. Anda tidak mengenal lelah dalam bekerja. Anda disarankan untuk lebih bersabar terhadap mereka yang tidak sehebat anda, karena anda cenderung menyukai kesempurnaan dan sangat idealis.";
-$("#artiNamaJudul").html("Karakter :<br />"+strArti[strNameNum]);
-$("#artiNamaDesc").html("Pada Umumnya :<br />"+strDesc[strNameNum]);
-}
-}
-function getPandanganIslam(){
-var b1date=$('#fAstDate').datepicker('getDate').getDate();
-var strDateView = new Array();
-strDateView[1]="Surat Al Fatihah (Pembukaan)<br>Memiliki Karakter :<br>Menyukai hal baru, berbakat menjadi pemimpin, seorang pioneer (pelopor), idealis, cenderung ingin sempurna, pandai memanfaatkan kesempatan, egois, harus selalu jadi prioritas utama, sering mengulangi kesalahan yang sama, orang yang belum mengenalnya akan mengira sebagai sosok yang angkuh dan sulit ditaklukkan.";
-strDateView[2]="Al Baqarah (Sapi Betina)<br>Memiliki Karakter :<br>Pekerja keras, taat akan hukum dan aturan, memiliki  jiwa sosial dan kepedulian tinggi, menyukai hal-hal yang bersifat rutinitas, jika dia mampu ada cenderungan menjadi seorang dermawan, kurang inisiatif, sering dimanfaatkan orang lain serta gampang percaya kepada orang lain.";
-strDateView[3]="Al Imran (Keluarga Imran)<br>Memiliki Karakter :<br>Seorang pemimpin (walaupun dalam kelompok kecil), berhati-hati dalam bertindak, mengayomi, tegas, suka suasana perdebatan dan agak cerewet, jika wanita ia cenderung tomboy, ingin menang sendiri, seorang pemimpi dan sering berfantasi.";
-strDateView[4]="An Nisa (Wanita)<br>Memiliki Karakter :<br>Sensitif dan perasa, feminim, protektif terhadap keluarga, kreatif, kompak tapi mudah dipengaruhi, agak jahil (iseng), dan penggoda.";
-strDateView[5]="Al Maidah (Hidangan)<br>Memiliki Karakter :<br>Diperlukan banyak orang, menyukai perubahan, memiliki insting yang lumayan, cepat bosan, ingin dilayani, susah diatur.";
-strDateView[6]="Al Anaam (Binatang Ternak)<br>Memiliki Karakter :<br>Punya insting tajam, kurang mandiri, terkadang seenaknya sendiri, emosional, pemalu dan kurang percaya diri, dan cepat berubah pikiran.";
-strDateView[7]="Al A’Raaf (Tempat Tertinggi)<br>Memiliki Karakter :<br>Cermat dan teliti, mudah mengambil hati orang lain, penuh inspirasi, terlihat sombong, suka meremehkan dan cepat puas.";
-strDateView[8]="Al Anfaal (Harta Rampasan Perang)<br>Memiliki Karakter :<br>Optimis, mobilitas tinggi, menyukai perubahan, emosional, gampang berubah pendirian, saat marah suka menyakiti diri sendiri.";
-strDateView[9]="At Taubah (Pengampunan)<br>Memiliki Karakter :<br>Pemaaf, perfeksionis, mudah bergaul, tegas, tidak suka basa basi, tidak cepat puas, ingin selalu diperhatikan, keras kepala dan mudah goyah.";
-strDateView[10]="Yunus (Nabi Yunus)<br>Memiliki Karakter :<br>Cepat menyesuaikan, banyak cara keluar dari persoalan, setiap kemauan harus terpenuhi, licin dan cerdik, tidak bisa dikekang dan susah diatur, mudah menyangkal dan banyak alasan.";
-strDateView[11]="Huud (Nabi Hud)<br>Memiliki Karakter :<br>Dibutuhkan banyak orang, mudah menerima, berhati-hati dalam berbuat, tidak banyak kemauan, pasif, terkadang diremehkan, peka perasaan.";
-strDateView[12]="Yusuf (Nabi Yusuf)<br>Memiliki Karakter :<br>Percaya diri, optimisme tinggi, tekun, teliti, disukai banyak orang, emosional, tidak mudah percaya, tidak bisa menahan keinginan, ambisius.";
-strDateView[13]="Ar Ra’du (Guruh / Petir)<br>Memiliki Karakter :<br>Pemikir, dinamis, menyukai perbedaan, mudah menarik perhatia, logis, suka berdebat, tempramental, lambat memahami sesuatu.";
-strDateView[14]="Ibrahim (Nabi Ibrahim)<br>Memiliki Karakter :<br>Pembimbing yang baik, patuh pada aturan, keras dan tegas, banyak rencana, rela berkorban.";
-strDateView[15]="Al Hijr (Batu)<br>Memiliki Karakter :<br>Perfeksionis, keras kepala, telaten, gampang goyah pendiriannya, mudah dipengaruhi.";
-strDateView[16]="An Nahl (Lebah)<br>Memiliki Karakter :<br>Rajin dan tekun, ramah, peka pada suasana di sekitarnya, berjiwa sosial, pandai memanfaatkan kesempatan, rapi, cerewet, sensitif dan agak cengeng, pendendam.";
-strDateView[17]="Al Israa (Perjalanan Malam)<br>Memiliki Karakter :<br>Idealis, banyak ide, suka berkhayal, emosional, lebih produktif jika beraktivitas pada malam hari (kegiatan yang baik dan bermanfaat).";
-strDateView[18]="Al Kahfi (Penghuni-Penghuni Gua)<br>Memiliki Karakter :<br>Suka menolong, pengamat yang baik, pandai menyimpan rahasia, tidak mudah percaya, suka memendam masalah dan mengurung diri, susah ditebak maksudnya.";
-strDateView[19]="Maryam (Kisah Maryam)<br>Memiliki Karakter :<br>Pengasuh, kekanak-kanakan, menyukai anak-anak, suka mengajar, sabar, memiliki banyak cara menyelesaikan masalah, bicara berdasar bukti, sering difitnah.";
-strDateView[20]="Thaha (طه, Tā-Hā, Ta Ha)<br>Memiliki Karakter :<br>Misterius, suka bepergian, memegang teguh aturan, suka lari dari masalah.";
-strDateView[21]="Al Anbiyaa (Para Nabi)<br>Memiliki Karakter :<br>Bertanggung jawab, seorang pemimpin dan pemikir, pendengar yang baik, menerima apa adanya (ikhlas), tidak banyak kemauan.";
-strDateView[22]="Al Hajj (الحجّ, al-Hajj, Haji)<br>Memiliki Karakter :<br>Segala sesuatu harus sempurna, mudah dipengaruhi, gampang terpengaruh, terburu-buru ingin cepat sampai tujuan, menyukai keramaian, sering berfikir muluk.";
-strDateView[23]="Al mu’minuun (Orang-Orang Yang Beriman)<br>Memiliki Karakter :<br>Normatif, sensitif, feminim, fanatik terhadap sesuatu, mudah terpancing emosinya.";
-strDateView[24]="An Nuur (Cahaya )<br>Memiliki Karakter :<br>Mudah memberikan jalan keluar, cermat memilah masalah, pendengar setia, mudah tersinggung, suka mengungkit-ungkit, gampang menyalahkan.";
-strDateView[25]="Al Furqan (Pembeda)<br>Memiliki Karakter :<br>Punya skala prioritas, gemar membandingkan, ceplas ceplos, kurang inisiatif dan tidak banyak kemauan.";
-strDateView[26]="Asy Syuara (Musyawarah)<br>Memiliki Karakter :<br>Pandai mengambil hati, suka berbelit-belit, kurang berani untuk menyampaikan keinginan, agak cerewet, tidak banyak keinginan, kurang romantis.";
-strDateView[27]="An Naml (Binatang Semut)<br>Memiliki Karakter :<br>Insting kuat, memiliki perencanaan yang baik, pandai memanfaatkan peluang, susah bekerja sendiri, mudah panik, tidak bisa disalahkan, mudah tersinggung, tidak bisa ditentang.";
-strDateView[28]="Al Qashash (Cerita - Cerita)<br>Memiliki Karakter :<br>Berani menyampaikan keinginan dan pendapat, memegang komitmen, mudah bergaul, tidak pernah kehabisan bahan pembicaraan, pendendam, emosional, romantis, pencemburu.";
-strDateView[29]="Al Ankabuut (Laba - Laba)<br>Memiliki Karakter :<br>Banyak kenalan, sabar, dinamis, kurang menyukai keramaian, tidak berfikir panjang, kurang pandai memelihara  jaringan, bekerja kurang sistematis, mudah tersinggung.";
-strDateView[30]="Ar Ruum (Bangsa Romawi)<br>Memiliki Karakter :<br>Optimis, banyak akal, anggun, tempramental, suka bertindak semaunya dan ingin menang sendiri, pencemburu berat, setiap kemauannya harus dipenuhi.";
-strDateView[31]="Lukman (Kisah Tentang Luqman)<br>Memiliki Karakter :<br>Bijaksana, seorang pemimpin, melindungi komunitasnya, sabar, tekad kuat, otoriter, setiap perintahnya harus dituruti.";
-var strDayView = new Array();
-strDayView[0]="Orang yang terlahir pada hari minggu berarti bintangnya ialah bintang matahari, yang artinya anda adalah seseorang berkarakter sangat keras serta konsekuen dalam mengejar cita-cita, kemauan ataupun keinginan anda agar dapat menghidupi seluruh keluarga anda, hingga pertengahan usia, anda memiliki karir menanjak serta memiliki peran penting. Namun menjelang masa usianya berakhir, semangatnya makin menurun, hingga menjelang akhir hayatnya. Malaikat yang menjadi penunggu anda adalah Rofi-yail di atas dan Maimun di bawah. Yang membawa pengaruh bagi kemauan yang membara. Sedangkan perhiasan yang cocok adalah logam emas, sesuatu logam mulia yang bernilai tinggi, berguna bagi siapa saja, banyak orang ingin memilikinya.";
-strDayView[1]="Jika anda terlahir pada hari senin artinya bintang yang menaungi anda ialah bintang qomar, yang memiliki arti berwatak dingin, bersifat ‘basah’, anda dapat menghidupi dan menyenangkan orang lain dalam waktu kegelapan. Sebagaimana pancaran cahaya bulan, kebaikan kebajikan anda menanjak dan cemerlang hingga usia setengah tua, kemudian makin menurun hingga akhir hayatnya. Malaikat yang menungguinya adalah Jibril di atas dan Murroh di bawah. Logamnya perak, adalah putih bersih, namun keras dan adakalanya suka dilapisi oleh hal-hal yang mengindahkan baginya hingga memperdaya orang yang memandang.";
-strDayView[2]="Anda yang terlahir pada hari selasa berarti berbintang marikh yang artinya anda cendrung berwatak panas dan kering, segala kemauan anda selalu terburu-buru, keras hati dan sangat sulit untuk dicegah. Namun anda sangat mampu dan berguna, karena anda memiliki semangat untuk bekerja keras, kondisi ini pada akhirnya membawa anda pada prestasi yang gemilang di kehodupan kelak. Malaikat yang menjadi penunggunya adalah Sam’sail di atas dan Al Ahmar di bawah. Yang memberi pengaruh kerasnya kemauan dengan cita-cita yang tinggi itu. Logamnya tembaga sifatnya yang lebih meliputi segenap lapisan masyarakat, tidak mau membedakan antara sesama.";
-strDayView[3]="Jika anda terlahir pada hari rabu berarti bintang anda ialah bintang utarid, yang memiliki karakter panas dan dingin. Artinya anda mampu menjadi pendorong atau penyemangat manakala ada seseorang yang lemah, tetapi anda juga bisa menjadi seseorang pengekang kehendak yang begitu agresif dan ekstrim. Simpelnya anda bisa menjadi pengayom tetapi seketika bisa menjadi penghancur bila tidak sesuai dengan apa yang dikehendaki. Malaikat yang menjadi penunggunya adalah Mikail di atas dan Burqon di bawah, sebagai pemberi pengaruh atas sifatnya yang bisa kontradiksi dalam mengejar keseimbangan hidupnya.";
-strDayView[4]="Jika anda terlahir pada hari kamis berarti bintang anda ialah bintang Mustari yang artinya anda memiliki karakter panas namun basah, maksudnya ialah pekerjaan yang ditangani akan secara cepat dilakukan, jika anda memimpin anda akan memipin dengan berlaku keras namun bertanggung jawab atas segala halnya. Malaikat yang menjadi penunggunya adalah Shorfiya’il di atas dan Syamhurus di bawah, yang membawa daya atas sifatnya yang keras tetapi bertanggung jawab itu. Logamnya timah, yang membawa makna bahwa wujudnya sederhana dan berguna bagi masyarakat dan dapat sebagai perekat atau pemenuhan hal-hal yang kurang beres.";
-strDayView[5]="Jika anda terlahir pada hari Jum’at maka bintang anda ialah bintang Zuhri yang berarti anda mempunyai semangat dingin dan hati kering, yang menandakan bahwa anda ialah sosok yang pendiam, tidak begitu peduli dengan persoalan yang tidak menyangkut kepada diri anda, begitupun dengan mengejar kepentingan duniawi, tidak terburu nafsu dan kelak akan dapat dengan tenang, sejahtera lahir dan batin. Malaikat yang menjadi penunggunya adalah Isyail di atas dan Zub’ah di bawah yang membuat ia kuat kemauannya. Logam besi adalah sentosa, kuat, berat tetapi berdaya guna.";
-strDayView[6]="Jika anda lahir pada hari sabtu, maka bintang yang menaungi anda ialah Bintang Zuhel, yang memiliki arti bahwa anda mudah terburu-buru dalam mengejar kemajuan, tetapi anda juga bersikap sabar, menerima, rela berkorban dan baik terhadap sesama. Anda memiliki karakter ‘basah’ yang berarti selalu memberikan kedamaian pada orang lain, rezeki andapun cukup serta sehat sentosa selamanya. Malaikat yang menjadi penunggu anda adalah Kasfiyail di atas dan Almazhab di bawah, yang membawa pengaruh kebajikan dan kelestarian. Logamnya baja, yang mengandung firasat kemauan yang keras, tajam pikiran dan cerdas. ";
-$("#dateIslamicHijriah").html('<i class="fa fa-bookmark" aria-hidden="true"></i> ['+b1date+'] '+strDateView[b1date]);
-$("#dateIslamicView").html('<i class="fa fa-anchor" aria-hidden="true"></i> '+strDayView[$('#fAstDate').datepicker('getDate').getDay()]);
-}
-function getOrbital(){
-var strDate=$('#fAstDate').datepicker('getDate').getDate();
-var strMonth=$('#fAstDate').datepicker('getDate').getMonth();
-var strYear=$('#fAstDate').datepicker('getDate').getFullYear();
-var strDay=$('#fAstDate').datepicker('getDate').getDay();
-var strDateUse=strDate;
-var strMonthUse=strMonth+1;
-if (strDateUse < 10){strDateUse = '0' + strDateUse;}
-if (strMonthUse < 10){strMonthUse = '0' + strMonthUse;}
-var days=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
-var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-$("#angkaAstUntungTglLahir").html(strDateUse+"-"+strMonthUse+"-"+strYear);
-var x1=((Math.random()*100)+strDateUse)/2;
-var x2=((Math.random()*100)+strMonthUse)/2;
-var x3=((Math.random()*100)+strYear)/2;
-var x4=x1+x2+x3;
-for(var i=0;i < 5;i++){
-x4=Math.random()*x4;
-x4=Math.sqrt(x4);
-x4=x4.toString();
-x4=x4.substring(x4.length-2,x4.length);
-$("#angkaAstUntung"+(i+1)).html(x4);
-}
-}
+/* Name numerology engine moved to v3 block */
+/* Islamic reflection engine moved to v3 block */
+/* Lucky-number engine moved to v3 block */
 function getArtiHari(){
 var dayIndex=new Array();
-dayIndex[0]='MEGA <i class="fa fa-sort" aria-hidden="true"></i> SI OPTIMIS';
-dayIndex[1]='BUNGA <i class="fa fa-sort" aria-hidden="true"></i> SI RUPAWAN';
-dayIndex[2]='API <i class="fa fa-sort" aria-hidden="true"></i> SI KHARISMA';
-dayIndex[3]='DAUN <i class="fa fa-sort" aria-hidden="true"></i> SI DERMAWAN';
-dayIndex[4]='ANGIN <i class="fa fa-sort" aria-hidden="true"></i> SI PEKERJA';
-dayIndex[5]='AIR <i class="fa fa-sort" aria-hidden="true"></i> SI PEMURUNG';
-dayIndex[6]='BUMI <i class="fa fa-sort" aria-hidden="true"></i> SI PELANCONG';
+dayIndex[0]='MEGA <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI OPTIMIS';
+dayIndex[1]='BUNGA <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI RUPAWAN';
+dayIndex[2]='API <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI KHARISMA';
+dayIndex[3]='DAUN <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI DERMAWAN';
+dayIndex[4]='ANGIN <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI PEKERJA';
+dayIndex[5]='AIR <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI PEMURUNG';
+dayIndex[6]='BUMI <i class="fa-solid fa-right-left" aria-hidden="true"></i> SI PELANCONG';
 $("#fAstArtiHari").html(dayIndex[$('#fAstDate').datepicker('getDate').getDay()]);
 }
 
-function getAuraAst(){
-var strDate=$('#fAstDate').datepicker('getDate').getDate();
-var strMonth=$('#fAstDate').datepicker('getDate').getMonth();
-var strYear=$('#fAstDate').datepicker('getDate').getFullYear();
-var neptu1=getNeptuAst($('#nowDateAst').datepicker('getDate'));
-var neptu2=getNeptuAst($('#fAstDate').datepicker('getDate'));
-strDate2=$('#nowDateAst').datepicker('getDate').getDate();
-strMonth2=$('#nowDateAst').datepicker('getDate').getMonth();
-strYear2=$('#nowDateAst').datepicker('getDate').getFullYear();
-var color=['none','red','yellow','orange','green','blue','indigo','purple','pink','#cd7f32','#aaa9ad','#d4af37'];
-var warna=['','merah','kuning','orange','hijau','biru','indigo','ungu','pink','perunggu','perak','emas'];
-if(neptu1==22){neptu1=12;}
-if(neptu2==22){neptu2=12;}
-$('#warnaAuraTglHariIni').html(strDate2+'-'+strMonth2+'-'+strYear2);
-$('#warnaAuraHariIni').html(warna[neptu1]+' <span class="imgAst" style="background:'+color[neptu1]+';vertical-align:middle;float:right;"></span>');
-var rasio=Math.abs(neptu1-neptu2);
-if(rasio==0){rasio=neptu2}
-var auraAve=0;
-var strName=$('#fAstName').val();
-if(strName!=""&&strName!=null&&strName!="Nama Lengkap"){
-var strNameNum=getArtiNamaCalc(strName);
-if(strNameNum==22){strNameNum=12;}
-auraAve=Math.round((neptu1+neptu2+strNameNum)/3);
-auraAve=Math.abs(rasio-auraAve);
-if(auraAve==0){auraAve=rasio;}
-$('#warnaAuraPersonal').html(warna[strNameNum]+' <span class="imgAst" style="background:'+color[strNameNum]+';vertical-align:middle;float:right;"></span>');
-$('#warnaAuraTglLahir').html(strDate+'-'+strMonth+'-'+strYear);
-$('#warnaAuraDomain').html(warna[neptu2]+' <span class="imgAst" style="background:'+color[neptu2]+';vertical-align:middle;float:right;"></span>');
-$('#warnaAuraRasio').html(warna[rasio]+' <span class="imgAst" style="background:'+color[rasio]+';vertical-align:middle;float:right;"></span>');
-$('#warnaAuraAve').html(warna[auraAve]+' <span class="imgAst" style="background:'+color[auraAve]+';vertical-align:middle;float:right;"></span>');
-}}
+/* Aura engine moved to v3 block */
+/* ==========================================================
+   CodeFlare Astrology Engine v3.0.0 Override
+   Updated reading copy + safer calculations + FA7 ready
+   ========================================================== */
+function cfAstReduce(n){n=Math.abs(parseInt(n,10)||0);while(n>9&&n!==11&&n!==22){n=String(n).split('').reduce(function(a,b){return a+(parseInt(b,10)||0);},0);}return n;}
+function getArtiNamaCalc(str){var x=(str||'').toLowerCase();if(x.normalize)x=x.normalize('NFD').replace(/[\u0300-\u036f]/g,'');x=x.replace(/[^a-z]/g,'');var n=0;for(var i=0;i<x.length;i++)n+=x.charCodeAt(i)-96;return cfAstReduce(n);}
+function getZodiacIndex(m,d){var x=m*100+d;if(x>=1222||x<=119)return 0;if(x<=218)return 1;if(x<=320)return 2;if(x<=419)return 3;if(x<=520)return 4;if(x<=620)return 5;if(x<=722)return 6;if(x<=822)return 7;if(x<=922)return 8;if(x<=1022)return 9;if(x<=1121)return 10;return 11;}
+function getLunar(){
+var dt=$('#fAstDate').datepicker('getDate'),i=getZodiacIndex(dt.getMonth()+1,dt.getDate());lunarTypeNum=i;
+var z=[
+['Capricorn','&#x2651;','Bumi','Coklat','Cancer','Disiplin, realistis, bertanggung jawab, konsisten.','Terlalu serius, sulit melepas kontrol, cenderung memendam beban.','Capricorn biasanya berkembang lewat proses bertahap. Kekuatan utamanya adalah konsistensi dan kemampuan menjaga arah ketika hasil belum terlihat. Tantangannya adalah memberi ruang untuk istirahat, spontanitas, dan bantuan dari orang lain.','https://2.bp.blogspot.com/-cYB97SQYq6M/Vka6S-HDbQI/AAAAAAAAAWk/7Fkw8swx3Ys/s1600/Doll%2BZodiac%2BCapricorn.gif'],
+['Aquarius','&#x2652;','Udara','Pirus','Leo','Orisinal, independen, terbuka pada ide baru, objektif.','Terlihat berjarak, sulit ditebak, keras mempertahankan prinsip.','Aquarius sering melihat kemungkinan yang belum diperhatikan orang lain. Mereka nyaman dengan kebebasan berpikir. Tantangannya adalah tetap terhubung secara emosional, bukan hanya memahami sesuatu lewat logika.','https://4.bp.blogspot.com/-7k1AuyH1Jdc/Vka6SKNqqpI/AAAAAAAAAWg/wEdg8VKXrXM/s1600/Doll%2BZodiac%2B%2BAquarius.gif'],
+['Pisces','&#x2653;','Air','Hijau Laut','Virgo','Empatik, intuitif, imajinatif, peka suasana.','Batas pribadi mudah kabur, terlalu terbawa perasaan.','Pisces sering digambarkan peka dan imajinatif. Empati menjadi kekuatan besar, tetapi akan lebih sehat bila dibarengi batas pribadi dan kemampuan membedakan intuisi dari kekhawatiran.','https://2.bp.blogspot.com/-eK7u8sM2iyM/Vka6TyfRyzI/AAAAAAAAAXU/BxC8z7Hc3ic/s1600/Doll%2BZodiac%2BPisces.gif'],
+['Aries','&#x2648;','Api','Merah','Libra','Berani, cepat bertindak, antusias, kompetitif.','Tidak sabar, reaktif, kurang menikmati proses lambat.','Aries identik dengan dorongan untuk memulai. Energinya efektif ketika diarahkan pada target konkret. Tantangannya adalah tidak menganggap kecepatan selalu lebih penting daripada ketepatan.','https://4.bp.blogspot.com/-gf9RqE9bUuQ/Vka6SVa3bRI/AAAAAAAAAWc/sgCpRY_C4-8/s1600/Doll%2BZodiac%2BAries.gif'],
+['Taurus','&#x2649;','Bumi','Merah Jambu','Scorpio','Sabar, stabil, setia, praktis, konsisten.','Sulit berubah, terlalu nyaman dengan pola lama.','Taurus dikaitkan dengan kestabilan dan kemampuan mempertahankan ritme. Ketekunan menjadi kekuatan, sedangkan tantangannya adalah mengetahui kapan bertahan dan kapan perubahan justru diperlukan.','https://4.bp.blogspot.com/-WlQIsamt1cE/Vka6Uq7ek0I/AAAAAAAAAXY/0-tYQMwyShw/s1600/Doll%2BZodiac%2BTaurus.gif'],
+['Gemini','&#x264A;','Udara','Hijau','Sagittarius','Komunikatif, cepat belajar, adaptif, penuh rasa ingin tahu.','Mudah terdistraksi, cepat bosan, membuka terlalu banyak hal.','Gemini kuat dalam menghubungkan informasi dan orang. Pikiran yang cepat membuat mereka mudah beradaptasi. Tantangannya adalah memilih mana yang layak didalami agar energi tidak habis hanya untuk berpindah fokus.','https://4.bp.blogspot.com/-FKC1LSWo7iI/Vka6S-Jn6-I/AAAAAAAAAWo/zj8ixp9wQ6Y/s1600/Doll%2BZodiac%2BGemini.gif'],
+['Cancer','&#x264B;','Air','Putih, Perak','Capricorn','Peduli, protektif, intuitif, setia.','Mudah tersinggung, defensif, sulit melepas masa lalu.','Cancer dikaitkan dengan kebutuhan akan rasa aman dan hubungan yang tulus. Mereka kuat dalam merawat. Tantangannya adalah tidak mengubah kehati-hatian menjadi benteng yang menyulitkan komunikasi.','https://3.bp.blogspot.com/-KrO0y0rc0Ng/Vka6SCk-eiI/AAAAAAAAAWY/IPsns0yISVw/s1600/Doll%2BZodiac%2BCancer.gif'],
+['Leo','&#x264C;','Api','Emas, Oranye','Aquarius','Hangat, percaya diri, kreatif, murah hati.','Mudah tersentuh saat tidak dihargai, keras kepala.','Leo sering diasosiasikan dengan ekspresi diri dan keberanian tampil. Energi mereka besar ketika merasa dihargai. Tantangannya adalah membangun kepercayaan diri yang tidak sepenuhnya bergantung pada pengakuan orang lain.','https://4.bp.blogspot.com/-EEc1BgqgWhY/Vka6TNfIASI/AAAAAAAAAWs/csFvMUciHxc/s1600/Doll%2BZodiac%2BLeo.gif'],
+['Virgo','&#x264D;','Bumi','Hijau, Coklat','Pisces','Teliti, analitis, praktis, suka memperbaiki detail.','Terlalu kritis, mudah khawatir, perfeksionis.','Virgo kuat dalam menganalisis dan memperbaiki proses. Tantangannya adalah membedakan standar yang sehat dari perfeksionisme yang justru memperlambat langkah.','https://3.bp.blogspot.com/-lS-UAuattUA/Vka6U8zystI/AAAAAAAAAXg/Nx-LDiJN-GE/s1600/Doll%2BZodiac%2BVirgo.gif'],
+['Libra','&#x264E;','Udara','Biru','Aries','Diplomatis, kooperatif, sosial, peka keseimbangan.','Terlalu lama menimbang, sulit berkata tidak.','Libra pandai melihat lebih dari satu sudut pandang. Tantangannya adalah tetap mampu membuat keputusan walau tidak semua pihak dapat dibuat puas.','https://2.bp.blogspot.com/--5tEDVTC0os/Vka6TZpYK2I/AAAAAAAAAW4/E3Wg36pDTtY/s1600/Doll%2BZodiac%2BLibra.gif'],
+['Scorpio','&#x264F;','Air','Merah Gelap, Hitam','Taurus','Fokus, intuitif, berani menghadapi masalah, loyal.','Sulit percaya, intens, menyimpan kekecewaan terlalu lama.','Scorpio kuat ketika harus menghadapi situasi rumit dan mencari jawaban yang lebih dalam. Tantangannya adalah mengelola kecurigaan dan belajar membuka diri secara bertahap.','https://4.bp.blogspot.com/-GnBHufemxOk/Vka6UJFEE_I/AAAAAAAAAXM/UMEgQLLmiO0/s1600/Doll%2BZodiac%2BScorpio.gif'],
+['Sagittarius','&#x2650;','Api','Ungu','Gemini','Optimis, terbuka, suka belajar dan mencoba hal baru.','Kurang sabar pada detail, terlalu terus terang.','Sagittarius dikaitkan dengan eksplorasi dan pencarian wawasan baru. Tantangannya adalah tetap memperhatikan detail dan komitmen setelah rasa penasaran awal mulai berkurang.','https://4.bp.blogspot.com/-fLLE-UiX9iU/Vka6T2sQg-I/AAAAAAAAAXI/Eips-CmM1x8/s1600/Doll%2BZodiac%2BSagittarius.gif']];
+var a=z[i];lunarType=a[0];$('#fAstZodiak').html(a[0]);$('#imgZodiak').html(a[1]);$('#lunarSign').attr('src',a[8]);$('#fAstElemen').html(a[2]);$('#fAstColor').html(a[3]);
+var ic={Bumi:'fa-square',Udara:'fa-wind',Air:'fa-droplet',Api:'fa-fire'};$('#imgElemen').html('<i class="fa-solid '+ic[a[2]]+'" aria-hidden="true"></i>');
+var h='<div style="text-align:justify;font-family:Verdana;font-size:16px;"><u>'+a[0]+'</u><br>Kepribadian:</div><div>'+a[7]+'</div><br><div style="font-family:Verdana;font-size:16px;">Ringkasan:</div><table border="0" width="100%"><tr><td width="140">Kekuatan</td><td>:</td><td>'+a[5]+'</td></tr><tr><td>Tantangan</td><td>:</td><td>'+a[6]+'</td></tr><tr><td>Elemen</td><td>:</td><td>'+a[2]+'</td></tr><tr><td>Warna</td><td>:</td><td>'+a[3]+'</td></tr><tr><td>Zodiak berlawanan</td><td>:</td><td>'+a[4]+'</td></tr></table><br><small>Deskripsi zodiak bersifat hiburan/refleksi dan bukan pengukuran ilmiah kepribadian.</small>';document.getElementById('lunarArea').innerHTML=h;
+}
+function cfChineseYear(dt){try{var p=new Intl.DateTimeFormat('en-u-ca-chinese',{year:'numeric'}).formatToParts(dt);for(var i=0;i<p.length;i++)if(p[i].type==='relatedYear')return parseInt(p[i].value,10);}catch(e){}return dt.getFullYear();}
+function showShio(){var dt=$('#fAstDate').datepicker('getDate'),yr=cfChineseYear(dt),i=((yr-4)%12+12)%12;
+var a=[
+['Tikus','Cepat membaca situasi, adaptif, dan pandai menemukan jalan alternatif. Tantangannya adalah mengurangi kecemasan dan tidak terlalu memikirkan kemungkinan buruk. Secara tradisional sering dianggap selaras dengan Naga dan Monyet.','https://4.bp.blogspot.com/-qKfCGYPvQNM/XVzFpHvu5WI/AAAAAAAABUg/Enlovy495IgchE2kZKktzL7M0URlsK8LwCLcBGAs/s80/tikus.gif'],
+['Lembu','Konsisten, tahan menghadapi proses panjang, dan dapat diandalkan. Tantangannya adalah tidak memaksakan cara sendiri ketika situasi berubah. Secara tradisional sering dianggap selaras dengan Ular dan Ayam.','https://3.bp.blogspot.com/-T_VCcbuV7ek/XVzFoHrKecI/AAAAAAAABUQ/7kTNs6eOgwk7GO38fcv3lZNAIhAODdUeACLcBGAs/s80/lembu.gif'],
+['Macan','Berani, spontan, dan kuat ketika harus mengambil keputusan cepat. Tantangannya adalah membedakan keberanian dari keputusan impulsif. Secara tradisional sering dianggap selaras dengan Kuda dan Anjing.','https://3.bp.blogspot.com/-zrC_VogD47g/XVzFoYjIGAI/AAAAAAAABUU/FiVRp_YBQmsSlFctmGBFg1H7LJ05hwDLgCLcBGAs/s80/macan.gif'],
+['Kelinci','Diplomatis, peka, dan menghargai lingkungan tenang. Tantangannya adalah tidak menunda pembicaraan penting hanya demi menghindari konflik. Secara tradisional sering dianggap selaras dengan Kambing dan Babi.','https://4.bp.blogspot.com/-EUFGYr-btdo/XVzFnc0TcbI/AAAAAAAABUM/YI0C-H_2IiQPNgcPCXj-2D5hy4gVCj8wQCLcBGAs/s80/kelinci.gif'],
+['Naga','Penuh dorongan, percaya diri, dan nyaman membawa ide besar. Tantangannya adalah menjaga ekspektasi realistis dan memberi ruang bagi orang lain. Secara tradisional sering dianggap selaras dengan Tikus dan Monyet.','https://4.bp.blogspot.com/-CcIsmS5TvU0/XVzFozcZTYI/AAAAAAAABUc/vHwSkr69uvIvbNufvuAJ_3m5gxpYEdRbwCLcBGAs/s80/naga.gif'],
+['Ular','Observatif, strategis, dan tidak terburu-buru membuka rencana. Tantangannya adalah tidak membiarkan kecurigaan menghambat hubungan. Secara tradisional sering dianggap selaras dengan Lembu dan Ayam.','https://4.bp.blogspot.com/-8YzKMLMPe9w/XVzFpuaxuwI/AAAAAAAABUk/a455iNnNTjYz0kAeXDxUFeGmTi5s1c1pQCLcBGAs/s80/ular.gif'],
+['Kuda','Aktif, mandiri, dan mudah hidup ketika ruang gerak cukup luas. Tantangannya adalah mempertahankan konsistensi setelah antusiasme awal menurun. Secara tradisional sering dianggap selaras dengan Macan dan Anjing.','https://2.bp.blogspot.com/-QFOdlzEA_Xs/XVzFncviv6I/AAAAAAAABUI/btH6Rd2-bdI9F1DmgdsKSUXOPfv73tvOwCLcBGAs/s80/kuda.gif'],
+['Kambing','Kreatif, hangat, dan peka terhadap suasana. Tantangannya adalah tidak terlalu keras menilai diri ketika hasil belum sesuai harapan. Secara tradisional sering dianggap selaras dengan Kelinci dan Babi.','https://4.bp.blogspot.com/-sZvfmZWuMoU/XVzFnWVTqYI/AAAAAAAABUE/Hy-G5lQiU_Qo2QTeFn-P0j4uWz8T19IiwCLcBGAs/s80/domba.gif'],
+['Monyet','Cerdas, lincah, dan cepat menemukan solusi yang tidak biasa. Tantangannya adalah menghindari terlalu banyak eksperimen sekaligus. Secara tradisional sering dianggap selaras dengan Tikus dan Naga.','https://4.bp.blogspot.com/-e_sExACzkLE/XVzFonuw5DI/AAAAAAAABUY/TMn2tuWEuCYD5D2kO39sQiLBBMI-btQ6wCLcBGAs/s80/monyet.gif'],
+['Ayam','Teliti, terus terang, dan memiliki standar jelas. Tantangannya adalah menyampaikan koreksi tanpa terdengar terlalu tajam. Secara tradisional sering dianggap selaras dengan Lembu dan Ular.','https://4.bp.blogspot.com/-MHfK0H-LkWY/XVzFmuYtvQI/AAAAAAAABUA/BtImP2f3vxg36ES8IgxtnfaMwxMypq5QwCLcBGAs/s80/ayam.gif'],
+['Anjing','Setia, jujur, dan serius menjaga orang yang dianggap penting. Tantangannya adalah tidak membiarkan kewaspadaan berubah menjadi kekhawatiran terus-menerus. Secara tradisional sering dianggap selaras dengan Macan dan Kuda.','https://4.bp.blogspot.com/-XjTnynx5NPs/XVzFmV5r1PI/AAAAAAAABT4/PyM4857OP8kM1z16f7NG1AyIWfGSyfX4QCLcBGAs/s80/anjing.gif'],
+['Babi','Terbuka, tulus, dan mudah menunjukkan kepedulian. Tantangannya adalah tidak terlalu mudah percaya atau mengorbankan kebutuhan pribadi. Secara tradisional sering dianggap selaras dengan Kelinci dan Kambing.','https://2.bp.blogspot.com/-zrPvmpJjEZA/XVzFms-Uj-I/AAAAAAAABT8/E844SoECOP0gQI1qYi_uGPM30D3z8fiYACLcBGAs/s80/babi.gif']];
+var x=a[i];$('#fAstShio').html(x[0]);$('#imgShio').attr('src',x[2]);if(document.getElementById('descArea'))document.getElementById('descArea').innerHTML='<b><u>'+x[0]+'</u></b><br>'+x[1]+'<br><small>Shio bersifat tradisional/hiburan, bukan kepastian karakter atau masa depan.</small>';if(document.getElementById('zodSign'))document.getElementById('zodSign').src=x[2];}
+function getArtiNama(){if(astroBlogUserID!=MD5(getHostName(window.location.href))||astroBlogVer!=astroBlogUserID)return;var n=$('#fAstName').val();if(!n||n==='Nama Lengkap'||n.replace(/\s/g,'').length<2){alert('Silakan ketik nama lengkap Anda terlebih dahulu.');$('#fAstName').trigger('focus');return;}var k=getArtiNamaCalc(n),d={1:['Inisiatif, mandiri, berani memulai.','Anda nyaman ketika memiliki ruang mengambil keputusan sendiri. Potensi kepemimpinan akan lebih kuat jika dibarengi kesabaran dan kemampuan mendengar.'],2:['Kooperatif, peka, diplomatis.','Anda mudah menangkap suasana dan sering menjadi penghubung ketika ada perbedaan. Jaga batas pribadi agar keinginan menjaga harmoni tidak membuat kebutuhan sendiri selalu ditunda.'],3:['Ekspresif, komunikatif, kreatif.','Ide dan cara menyampaikan sesuatu menjadi modal utama. Tantangannya adalah menjaga fokus agar kreativitas tidak berhenti sebagai banyak rencana.'],4:['Terstruktur, konsisten, realistis.','Anda percaya pada proses jelas dan hasil terukur. Ketekunan adalah kelebihan besar; tetap sisakan ruang untuk perubahan.'],5:['Adaptif, suka eksplorasi, cepat belajar.','Perubahan sering menyalakan energi Anda. Agar hasil lebih terasa, tentukan prioritas sebelum membuka terlalu banyak arah.'],6:['Peduli, bertanggung jawab, protektif.','Anda mudah menjadi orang yang dipercaya. Kekuatan merawat orang lain perlu diseimbangkan dengan kemampuan berkata tidak.'],7:['Analitis, reflektif, suka memahami sampai ke akar.','Anda nyaman mengamati sebelum memutuskan. Tantangannya adalah tidak mengubah kehati-hatian menjadi jarak yang terlalu jauh dari orang lain.'],8:['Ambisius, strategis, berorientasi hasil.','Kemampuan mengatur target dapat menjadi kekuatan. Jaga agar ukuran keberhasilan tidak hanya berupa status atau materi.'],9:['Empatik, idealis, kreatif.','Anda tertarik pada sesuatu yang terasa bermakna. Empati menjadi kekuatan, tetapi pilih kontribusi yang realistis dan konsisten.'],11:['Intuitif, visioner, sensitif terhadap ide.','Dalam numerologi, 11 disebut angka master. Potensinya lebih terasa ketika ide besar diberi struktur dan sensitivitas dikelola dengan sehat.'],22:['Pembangun, sistematis, mampu mengubah visi menjadi rencana.','Dalam numerologi, 22 sering disebut master builder. Tantangannya adalah tidak menuntut kesempurnaan; proyek besar tumbuh melalui langkah kecil.']};var x=d[k]||d[9];$('#artiNamaJudul').html('Karakter :<br />'+x[0]);$('#artiNamaDesc').html('Pada Umumnya :<br />'+x[1]+'<br><small>Numerologi nama digunakan sebagai hiburan/refleksi, bukan pengukuran ilmiah.</small>');}
+function hijriDate(){var dt=$('#fAstDate').datepicker('getDate'),h='';try{h=new Intl.DateTimeFormat('id-ID-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(dt);}catch(e){h=String(fixedToHijri(gregToFixed(dt.getFullYear(),dt.getMonth()+1,dt.getDate())))+' H';}$('#fAstHijriah').html(h);$('#dateIslamicMasehi').html('<center>'+dt.getDate()+'-'+(dt.getMonth()+1)+'-'+dt.getFullYear()+' <i class="fa-solid fa-left-right" aria-hidden="true"></i> '+h+'</center>');}
+function getPandanganIslam(){var dt=$('#fAstDate').datepicker('getDate'),n=dt.getDate();var tema=['','Mulai dengan niat dan arah yang baik.','Bangun ketekunan melalui kebiasaan kecil.','Tetap teguh sambil terbuka pada nasihat.','Jaga keadilan dan tanggung jawab kepada orang terdekat.','Pegang komitmen dan jangan meremehkan janji.','Syukuri yang ada dan bedakan kebutuhan dari keinginan.','Jangan biarkan gengsi menutup kesempatan belajar.','Saat memperoleh sesuatu, ingat tanggung jawab penggunaannya.','Akui kesalahan lalu lanjutkan dengan perbaikan nyata.','Cari jalan keluar tanpa meninggalkan prinsip.','Konsistensi diuji ketika hasil belum terlihat.','Kesabaran dan integritas lebih kuat daripada membalas keadaan.','Perubahan besar dimulai dari perubahan diri.','Pertahankan nilai penting dengan hikmah dan keteladanan.','Evaluasi apa yang benar-benar perlu dipertahankan.','Kerja teratur dan manfaat kecil dapat memberi dampak besar.','Pengalaman baru bisa memperluas sudut pandang.','Saat terlalu bising, mengambil jarak sejenak bisa membantu menjaga kejernihan.','Kelembutan dan keteguhan dapat berjalan bersama.','Hadapi tanggung jawab secara bertahap.','Teladan lebih kuat daripada nasihat yang tidak dipraktikkan.','Perjalanan besar membutuhkan persiapan dan kesabaran.','Jaga amanah, ucapan, dan disiplin dalam hal kecil.','Pisahkan fakta, prasangka, dan asumsi.','Bedakan yang penting dari yang hanya terasa mendesak.','Gunakan kata-kata untuk sesuatu yang bermanfaat.','Perencanaan dan perhatian pada hal kecil dapat menghasilkan dampak besar.','Jadikan pengalaman sebagai pelajaran, bukan sekadar cerita.','Jangan membangun keputusan besar di atas asumsi rapuh.','Keadaan dapat berbalik; jangan cepat putus asa atau lengah.','Kebijaksanaan terlihat dari cara memberi nasihat dan menyadari batas diri.'];var hari=['Gunakan waktu untuk mengevaluasi arah dan menata niat.','Mulai dengan langkah kecil yang realistis.','Salurkan energi ke pekerjaan yang jelas dan kendalikan reaksi.','Perbanyak belajar dan dengarkan sebelum menyimpulkan.','Periksa tanggung jawab dan selesaikan urusan yang menggantung.','Perbanyak refleksi, syukur, doa, dan perhatian kepada orang lain.','Rapikan urusan pribadi, istirahat, dan siapkan pekan berikutnya.'];var note='<small><b>Catatan:</b> bagian ini bukan ramalan atau penentuan nasib dalam Islam. Tanggal hanya digunakan untuk memilih tema refleksi.</small><br><br>';$('#dateIslamicHijriah').html('<i class="fa-solid fa-bookmark" aria-hidden="true"></i> '+note+tema[n]);$('#dateIslamicView').html('<i class="fa-solid fa-compass" aria-hidden="true"></i> '+hari[dt.getDay()]);}
+function cfAstSeed(str){var h=2166136261;for(var i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function cfAstNext(seed){seed=(seed+0x6D2B79F5)|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return [((t^t>>>14)>>>0)/4294967296,seed];}
+function getOrbital(){var b=$('#fAstDate').datepicker('getDate'),t=$('#nowDateAst').datepicker('getDate')||new Date(),dd=('0'+b.getDate()).slice(-2),mm=('0'+(b.getMonth()+1)).slice(-2),yy=b.getFullYear();$('#angkaAstUntungTglLahir').html(dd+'-'+mm+'-'+yy);var seed=cfAstSeed(yy+'-'+mm+'-'+dd+'|'+t.getFullYear()+'-'+(t.getMonth()+1)+'-'+t.getDate()),u={};for(var i=0;i<5;i++){var r,x;do{x=cfAstNext(seed);seed=x[1];r=1+Math.floor(x[0]*99);}while(u[r]);u[r]=1;$('#angkaAstUntung'+(i+1)).html(('0'+r).slice(-2));}}
+function getAuraAst(){var b=$('#fAstDate').datepicker('getDate'),t=$('#nowDateAst').datepicker('getDate')||new Date(),c=['transparent','#e53935','#fdd835','#fb8c00','#43a047','#1e88e5','#3949ab','#8e24aa','#ec407a','#cd7f32','#aaa9ad','#d4af37'],w=['netral','merah','kuning','oranye','hijau','biru','indigo','ungu','merah muda','perunggu','perak','emas'];function q(n){return Math.abs(parseInt(n,10)||0)%w.length;}var a=q(getNeptuAst(t)),d=q(getNeptuAst(b));$('#warnaAuraTglHariIni').html(t.getDate()+'-'+(t.getMonth()+1)+'-'+t.getFullYear());$('#warnaAuraHariIni').html(w[a]+' <span class="imgAst" style="background:'+c[a]+';vertical-align:middle;float:right;"></span>');var r=q(Math.abs(a-d));if(!r)r=d;var nm=$('#fAstName').val();if(nm&&nm!=='Nama Lengkap'){var z=q(getArtiNamaCalc(nm)),av=q(Math.round((a+d+z)/3)-r);if(!av)av=r;$('#warnaAuraPersonal').html(w[z]+' <span class="imgAst" style="background:'+c[z]+';vertical-align:middle;float:right;"></span>');$('#warnaAuraTglLahir').html(b.getDate()+'-'+(b.getMonth()+1)+'-'+b.getFullYear());$('#warnaAuraDomain').html(w[d]+' <span class="imgAst" style="background:'+c[d]+';vertical-align:middle;float:right;"></span>');$('#warnaAuraRasio').html(w[r]+' <span class="imgAst" style="background:'+c[r]+';vertical-align:middle;float:right;"></span>');$('#warnaAuraAve').html(w[av]+' <span class="imgAst" style="background:'+c[av]+';vertical-align:middle;float:right;"></span>');}}
+
+function getNeptuAst(data){var x=String(data.getDate())+String(data.getMonth()+1)+String(data.getFullYear()),n=0;for(var i=0;i<x.length;i++)n+=parseInt(x[i],10)||0;while(n>9)n=String(n).split('').reduce(function(a,b){return a+(parseInt(b,10)||0);},0);return n;}
+function readDataPrimbon(){var b=$('#fAstDate').datepicker('getDate'),n=getNeptuAst(b),day=weekdayAstroBlog[b.getDay()];var luck=['','Energi angka 1 menekankan keberanian memulai. Peluang terasa lebih terbuka ketika keputusan cepat tetap diberi dasar yang jelas.','Energi angka 2 menonjolkan kerja sama dan kepekaan. Dukungan orang lain dapat membantu, tetapi keputusan akhir tetap perlu berasal dari pertimbangan sendiri.','Energi angka 3 berkaitan dengan komunikasi dan kreativitas. Ide akan lebih bernilai ketika dipilih, dirapikan, lalu benar-benar diselesaikan.','Energi angka 4 menekankan kestabilan. Kemajuan mungkin terasa lambat, tetapi langkah yang konsisten cenderung lebih kuat daripada perubahan mendadak.','Energi angka 5 membawa tema perubahan dan eksplorasi. Peluang baru menarik, namun jangan membuka terlalu banyak arah dalam waktu yang sama.','Energi angka 6 berkaitan dengan tanggung jawab dan hubungan. Menolong orang lain baik, tetapi tetap jaga batas agar energi pribadi tidak habis.','Energi angka 7 menekankan analisis dan refleksi. Gunakan waktu untuk memeriksa fakta sebelum mengambil kesimpulan atau keputusan besar.','Energi angka 8 menonjolkan target, pengelolaan, dan hasil nyata. Ambisi akan lebih sehat jika tidak mengorbankan hubungan dan waktu istirahat.','Energi angka 9 berkaitan dengan empati dan gambaran besar. Pilih satu bentuk kontribusi yang realistis agar niat baik dapat berubah menjadi dampak nyata.'];var wet=['Pembawaan cenderung hangat dan mudah diterima. Tantangannya adalah belajar menunda keinginan dan memberi waktu untuk mempertimbangkan pilihan.','Pendirian cukup mandiri dan tidak mudah ikut arus. Komunikasi terbuka membantu agar sikap tenang tidak terbaca sebagai jarak.','Kecermatan melihat peluang cukup baik. Ketegasan akan terasa lebih positif bila cara menyampaikannya tetap menghargai orang lain.','Pendirian kuat membantu bertahan dalam tekanan. Saat situasi buntu, sudut pandang baru justru dapat mempercepat penyelesaian.','Kemampuan bicara dan beradaptasi menjadi modal menarik. Pengelolaan emosi dan keuangan yang lebih teratur akan membantu menjaga kestabilan.'];var pas=['Legi','Pahing','Pon','Wage','Kliwon'];var raw=Math.round((((new Date(b.getFullYear(),b.getMonth(),b.getDate()).getTime()-new Date(100,0,1).getTime())/86400000)%5));if(raw<0)raw+=5;var pn=pas[raw];$('#fAstWeton').html(day+' ['+pn+'] | Neptu ['+n+']');$('#wetonArea').html('Nama : '+capital_letter($('#fAstName').val())+'<br>Tanggal Lahir : '+b.getDate()+' - '+(b.getMonth()+1)+' - '+b.getFullYear()+'<br>Neptu : '+n+'<br><br><small>Pembacaan primbon berikut disajikan sebagai tradisi/hiburan, bukan kepastian nasib.</small><br>'+luck[n]+'<br><br>Pasaran : '+day+' ('+pn+')<br>'+wet[raw]);}
+
+/* End v3 Override */
+
 //]]>
