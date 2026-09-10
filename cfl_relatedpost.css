@@ -1,6 +1,6 @@
 /* Related Post Style by CodeFlare Blogspot */
 /* Default Setting ----------------------- */
-:root{--rpColor:#0083da;}
+:root{--rpColor:var(--main-color,#0083da)}
 
 /* Main Division ------------------------ */
 #related_posts{
