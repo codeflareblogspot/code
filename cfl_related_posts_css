@@ -1,4 +1,4 @@
-:root{--rpColor:var(--main-color);--rpRadius:6px;--rpGap:4px;--rpImageHeight:150px;--rpHeight:193px;--rpSpeed:.45s}
+:root{--rpColor:var(--main-color,#0083da);--rpRadius:6px;--rpGap:4px;--rpImageHeight:150px;--rpHeight:193px;--rpSpeed:.45s}
 
 #related_posts{position:relative;display:block;width:100%;height:var(--rpHeight);margin:0;overflow:hidden;box-sizing:border-box;border:1px solid var(--rpColor);border-radius:var(--rpRadius);font-family:Roboto,sans-serif;font-size:15px;line-height:1.5}
 #related_posts *,#related_posts *:before,#related_posts *:after{box-sizing:border-box}
