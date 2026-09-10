@@ -1,4 +1,5 @@
-:root{--rpColor:var(--main-color,#0083da);--rpRadius:6px;--rpGap:4px;--rpImageHeight:150px;--rpHeight:193px;--rpSpeed:.45s}
+<style>
+:root{--rpColor:var(--main-color,#0083da);--rpRadius:6px;--rpGap:4px;--rpImageHeight:150px;--rpHeight:193px;--rpSpeed:.55s}
 
 #related_posts{position:relative;display:block;width:100%;height:var(--rpHeight);margin:0;overflow:hidden;box-sizing:border-box;border:1px solid var(--rpColor);border-radius:var(--rpRadius);font-family:Roboto,sans-serif;font-size:15px;line-height:1.5}
 #related_posts *,#related_posts *:before,#related_posts *:after{box-sizing:border-box}
@@ -10,28 +11,30 @@
 
 #related_posts .inner{position:relative;width:100%;height:100%;margin:0;padding:0;overflow:hidden}
 #related_posts .inner>a{display:block;width:100%;height:auto;text-decoration:none}
+
 #related_posts .inner strong{display:-webkit-box;margin:8px 8px 0;padding:0;overflow:hidden;font-size:15px;font-weight:700;line-height:1.35;text-align:left;-webkit-box-orient:vertical;-webkit-line-clamp:2;transition:color .2s ease}
-#related_posts p{display:-webkit-box;position:relative;margin:6px 8px 0;padding:0;overflow:hidden;font-size:14px;line-height:1.45;text-align:left;-webkit-box-orient:vertical;-webkit-line-clamp:3}
+#related_posts p{display:-webkit-box;position:static;margin:6px 8px 0;padding:0;overflow:hidden;font-size:14px;line-height:1.45;text-align:left;-webkit-box-orient:vertical;-webkit-line-clamp:3}
 
 #related_posts a{text-decoration:none}
 #related_posts a:link,#related_posts a:visited{color:var(--rpColor)}
 #related_posts li:hover .inner strong{color:var(--rpColor)}
 
-#related_posts .imageRP{position:relative;display:block;width:100%;height:var(--rpImageHeight);padding:3px;overflow:hidden;border:1px solid color-mix(in srgb,var(--rpColor) 25%,transparent);border-radius:4px;transition:transform var(--rpSpeed) cubic-bezier(.22,.61,.36,1),border-color .25s ease;will-change:transform}
+#related_posts .imageRP{position:relative;display:block;width:100%;height:var(--rpImageHeight);margin-top:0;padding:3px;overflow:hidden;border:1px solid rgba(127,127,127,.22);border-color:color-mix(in srgb,var(--rpColor) 25%,transparent);border-radius:4px;transition:margin-top var(--rpSpeed) cubic-bezier(.22,.61,.36,1),border-color .25s ease}
 #related_posts .imageRP:after{content:"";position:absolute;inset:3px;z-index:1;pointer-events:none;background:linear-gradient(to bottom,transparent 55%,rgba(0,0,0,.12));opacity:0;transition:opacity .25s ease}
-#related_posts .imageRP img{display:block;width:100%;height:100%;max-width:100%;border:0;border-radius:2px;object-fit:cover;transition:transform .55s cubic-bezier(.22,.61,.36,1)}
-#related_posts li:hover .imageRP{transform:translateY(calc(var(--rpImageHeight) * -1));border-color:var(--rpColor)}
+#related_posts .imageRP img{display:block;width:100%;height:100%;max-width:100%;border:0;border-radius:2px;object-fit:cover;transition:transform var(--rpSpeed) cubic-bezier(.22,.61,.36,1)}
+
+#related_posts li:hover .imageRP{margin-top:calc(var(--rpImageHeight) * -1);border-color:var(--rpColor)}
 #related_posts li:hover .imageRP img{transform:scale(1.04)}
 #related_posts li:hover .imageRP:after{opacity:1}
 
-#related_posts .date{position:absolute;z-index:4;top:6px;left:6px;min-width:34px;margin:0;padding:4px 5px 5px;border-radius:3px 3px 0 0;background:var(--rpColor);color:#fff;text-align:center;font-size:10px;line-height:1.15;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform var(--rpSpeed) cubic-bezier(.22,.61,.36,1),opacity .25s ease}
+#related_posts .date{position:absolute;z-index:5;top:6px;left:6px;min-width:34px;margin:0;padding:4px 5px 5px;border-radius:3px 3px 0 0;background:var(--rpColor);color:#fff;text-align:center;font-size:10px;line-height:1.15;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:margin-top var(--rpSpeed) cubic-bezier(.22,.61,.36,1),opacity .25s ease}
 #related_posts .date:before,#related_posts .date:after{content:"";position:absolute;top:100%;width:0;height:0;border-style:solid;border-width:5px 8px}
 #related_posts .date:before{left:0;border-color:var(--rpColor) transparent transparent var(--rpColor)}
 #related_posts .date:after{right:0;border-color:var(--rpColor) var(--rpColor) transparent transparent}
 #related_posts .date strong,#related_posts .date span{display:block;margin:0;padding:0}
 #related_posts .date strong{font-size:12px;font-weight:800;line-height:1.05}
 #related_posts .date span{font-size:9px;line-height:1.15}
-#related_posts li:hover .date{transform:translateY(calc(var(--rpImageHeight) * -1));opacity:0}
+#related_posts li:hover .date{margin-top:calc(var(--rpImageHeight) * -1);opacity:0}
 
 .rpTitleH2{position:relative;z-index:1;display:flex;align-items:center;width:100%;height:34px;margin:0;padding:5px 11px;overflow:hidden;background:var(--rpColor);color:#fff;font-size:15px;font-weight:700;line-height:1;text-align:left;cursor:pointer;box-shadow:inset 0 1px rgba(255,255,255,.2),inset 0 -1px rgba(0,0,0,.08);transition:padding-left .35s ease}
 .rpTitleH2 i{margin-right:7px;font-size:14px}
@@ -40,10 +43,10 @@
 #related_posts:hover>.rpTitleH2:before{transform:scaleX(1)}
 
 #related-posts-loadingtext{display:flex;align-items:center;justify-content:center;width:100%;height:158px;margin:0;padding:15px;color:var(--rpColor);font-size:15px;font-weight:700;text-align:center}
-#related-posts-loadingtext:before{content:"";width:17px;height:17px;margin-right:9px;border:2px solid color-mix(in srgb,var(--rpColor) 25%,transparent);border-top-color:var(--rpColor);border-radius:50%;animation:rpLoading .75s linear infinite}
+#related-posts-loadingtext:before{content:"";width:17px;height:17px;margin-right:9px;border:2px solid rgba(127,127,127,.22);border-color:color-mix(in srgb,var(--rpColor) 25%,transparent);border-top-color:var(--rpColor);border-radius:50%;animation:rpLoading .75s linear infinite}
 @keyframes rpLoading{to{transform:rotate(360deg)}}
 
-#related_posts li:not(:last-child):after{content:"";position:absolute;z-index:8;top:8px;right:calc(var(--rpGap) / -2);bottom:8px;width:1px;background:color-mix(in srgb,var(--rpColor) 16%,transparent);pointer-events:none}
+#related_posts li:not(:last-child):after{content:"";display:block;position:absolute;z-index:8;top:8px;right:calc(var(--rpGap) / -2);bottom:8px;width:1px;background:rgba(127,127,127,.16);background:color-mix(in srgb,var(--rpColor) 16%,transparent);pointer-events:none}
 
 @media screen and (max-width:700px){
 #related_posts{--rpHeight:188px;--rpImageHeight:145px}
@@ -64,3 +67,4 @@
 #related_posts .inner strong{font-size:13px}
 #related_posts p{font-size:12px}
 }
+</style>
