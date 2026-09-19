@@ -47,6 +47,15 @@ function normalizeURL(url){
   }
 }
 
+/* CLEAN LABEL */
+function cleanTag(tag){
+  return $.trim(
+    String(tag==null?"":tag)
+      .replace(/\s+/g," ")
+      .replace(/,+\s*$/,"")
+  );
+}
+
 /* CURRENT ARTICLE */
 var currentURL=normalizeURL(
   $('link[rel="canonical"]').attr("href")||location.href
@@ -148,12 +157,7 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    var safeThumb=escapeHTML(post.thumbnail);
-    if(/^https?:\/\/img\.codeflare\.net\//i.test(post.thumbnail)){
-      image='<img alt="'+title+'" src="'+safeThumb+'" data-cf-original="'+safeThumb+'"/>';
-    }else{
-      image='<img alt="'+title+'" src="'+safeThumb+'"/>';
-    }
+    image='<img alt="'+title+'" src="'+escapeHTML(post.thumbnail)+'"/>';
   }
 
   return '<li>'+
@@ -175,6 +179,69 @@ function createPostHTML(post){
       '</p>'+
     '</div>'+
   '</li>';
+}
+
+/* EXTRACT IMAGE FROM ARTICLE HTML */
+function extractArticleImage(html){
+  if(!html)return "";
+
+  var custom=String(html).match(
+    /https?:\/\/img\.codeflare\.net\/s\d+\/[^\s"'<>\\]+/i
+  );
+  if(custom&&custom[0])return custom[0];
+
+  var doc=$("<div>").html(html);
+
+  var og=doc.find('meta[property="og:image"]').attr("content")||
+         doc.find('meta[name="twitter:image"]').attr("content")||"";
+  if(og)return og;
+
+  var img=doc.find("img").first();
+  if(img.length){
+    return img.attr("src")||
+           img.attr("data-src")||
+           img.attr("data-original")||
+           img.attr("data-lazy-src")||
+           "";
+  }
+
+  return "";
+}
+
+/* LOAD IMAGE ONLY FOR POSTS WITH EMPTY THUMBNAIL */
+function loadMissingThumbnails(done){
+  var missing=[];
+
+  $.each(posts,function(_,post){
+    if(!post.thumbnail&&post.url){
+      missing.push(post);
+    }
+  });
+
+  if(!missing.length){
+    done();
+    return;
+  }
+
+  var left=missing.length;
+
+  function finish(){
+    left--;
+    if(left<=0)done();
+  }
+
+  $.each(missing,function(_,post){
+    $.ajax({
+      url:post.url,
+      dataType:"html",
+      cache:true,
+      success:function(html){
+        var image=extractArticleImage(html);
+        if(image)post.thumbnail=image;
+      },
+      complete:finish
+    });
+  });
 }
 
 /* RENDER */
@@ -211,7 +278,6 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
-  refreshCodeFlareImages();
 }
 
 /* GET POST URL */
@@ -227,99 +293,10 @@ function getPostURL(entry){
   return "";
 }
 
-/* CLEAN LABEL */
-function cleanTag(tag){
-  return $.trim(
-    String(tag==null?"":tag)
-      .replace(/\s+/g," ")
-      .replace(/,+\s*$/,"")
-  );
-}
-
-/* FIND CODEFLARE IMAGE FROM RAW FEED */
-function findCodeFlareImage(entry,content){
-  var raw=(content||"");
-
-  try{
-    raw+=" "+JSON.stringify(entry||{});
-  }catch(e){}
-
-  raw=raw
-    .replace(/&amp;/g,"&")
-    .replace(/&quot;/g,'"')
-    .replace(/&#39;/g,"'");
-
-  var match=raw.match(
-    /(?:https?:)?\/\/img\.codeflare\.net\/s\d+\/[^\s"'<>\\]+/i
-  );
-
-  if(!match||!match[0])return "";
-
-  var url=match[0];
-
-  if(url.indexOf("//")===0){
-    url=location.protocol+url;
-  }
-
-  return url;
-}
-
-function getAdaptiveImageSize(width){
-  width=parseInt(width,10)||parseInt(CONFIG.thumbnailSize,10)||200;
-  if(width<=128)return 128;
-  if(width<=256)return 256;
-  if(width<=320)return 320;
-  if(width<=640)return 640;
-  return 800;
-}
-
-function codeFlareSizedURL(url,size){
-  if(!url||!/^https?:\/\/img\.codeflare\.net\//i.test(url))return url||"";
-  return url.replace(/\/s\d+\//i,"/s"+size+"/");
-}
-
-function refreshCodeFlareImages(){
-  if(!container||!container.length)return;
-
-  container.find("img[data-cf-original]").each(function(){
-    var img=$(this);
-    var original=img.attr("data-cf-original")||"";
-    if(!original)return;
-
-    var box=img.closest(".imageRP");
-    var width=box.length?box.innerWidth():0;
-    if(!width)width=parseInt(CONFIG.thumbnailSize,10)||200;
-
-    var wanted=codeFlareSizedURL(
-      original,
-      getAdaptiveImageSize(width)
-    );
-
-    if(!wanted||wanted===img.attr("src"))return;
-
-    img.off("error.cfimg").one("error.cfimg",function(){
-      var self=$(this);
-      self.off("error.cfimg");
-      if(self.attr("src")!==original){
-        self.attr("src",original);
-      }
-    });
-
-    img.attr("src",wanted);
-  });
-}
-
 /* GET THUMBNAIL */
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
-  /* CUSTOM HOST: cari langsung dari raw feed */
-  var customImage=findCodeFlareImage(entry,content);
-  if(customImage){
-    return customImage;
-  }
-
-  /* BLOGGER MEDIA: pertahankan perilaku lama */
   if(entry.media$thumbnail&&entry.media$thumbnail.url){
     thumbnail=entry.media$thumbnail.url
       .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
@@ -335,7 +312,7 @@ function getThumbnail(entry,content){
         img.attr("data-src")||
         img.attr("data-original")||
         img.attr("data-lazy-src")||
-        thumbnail;
+        "";
     }
   }
 
@@ -426,7 +403,9 @@ function requestFeed(url){
       requestDone++;
 
       if(requestDone>=totalRequests){
-        renderPosts(false);
+        loadMissingThumbnails(function(){
+          renderPosts(false);
+        });
       }
     }
   });
@@ -596,8 +575,6 @@ $(window)
 
       if(newCount!==displayPosts){
         renderPosts(true);
-      }else{
-        refreshCodeFlareImages();
       }
 
     },150);
