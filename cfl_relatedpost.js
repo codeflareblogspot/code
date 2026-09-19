@@ -112,41 +112,6 @@ function getResponsivePostCount(){
   return count;
 }
 
-/* IMAGE SIZE / CODEFLARE HOST */
-function getImageSize(width){
-  width=parseInt(width,10)||parseInt(CONFIG.thumbnailSize,10)||200;
-  if(width<=128)return 128;
-  if(width<=256)return 256;
-  if(width<=320)return 320;
-  if(width<=640)return 640;
-  return 800;
-}
-
-function isCodeFlareImage(url){
-  return /^https?:\/\/img\.codeflare\.net\//i.test(url||"");
-}
-
-function resizeCodeFlareImage(url,size){
-  if(!isCodeFlareImage(url))return url||"";
-  return String(url).replace(/\/s(?:128|256|320|640|800)(?=\/)/i,"/s"+size);
-}
-
-function adjustRenderedImages(){
-  if(!list||!list.length)return;
-  list.find(".imageRP img[data-cf-original]").each(function(){
-    var img=$(this),box=img.closest(".imageRP");
-    var original=img.attr("data-cf-original")||"";
-    var width=Math.ceil(box.innerWidth()||img.width()||CONFIG.thumbnailSize);
-    var sized=resizeCodeFlareImage(original,getImageSize(width));
-
-    img.off("error.cfthumb").one("error.cfthumb",function(){
-      if(this.src!==original)this.src=original;
-    });
-
-    if(sized&&img.attr("src")!==sized)img.attr("src",sized);
-  });
-}
-
 /* ADD POST */
 function addPost(url,title,thumbnail,summary,year,day,month){
   if(!url||isCurrentPost(url))return;
@@ -175,6 +140,24 @@ function addPost(url,title,thumbnail,summary,year,day,month){
   posts.push(post);
 }
 
+/* IMAGE HTML - adaptive img.codeflare.net, source asli tetap fallback */
+function createImageHTML(src,title){
+  src=src||"";
+  if(!src)return "";
+
+  if(/^https?:\/\/img\.codeflare\.net\//i.test(src)&&/\/s\d+(?=\/)/i.test(src)){
+    var base=String(src);
+    var s128=base.replace(/\/s\d+(?=\/)/i,"/s128");
+    var s256=base.replace(/\/s\d+(?=\/)/i,"/s256");
+    var s320=base.replace(/\/s\d+(?=\/)/i,"/s320");
+    var s640=base.replace(/\/s\d+(?=\/)/i,"/s640");
+    var s800=base.replace(/\/s\d+(?=\/)/i,"/s800");
+    return '<img alt="'+title+'" src="'+escapeHTML(s800)+'" srcset="'+escapeHTML(s128)+' 128w, '+escapeHTML(s256)+' 256w, '+escapeHTML(s320)+' 320w, '+escapeHTML(s640)+' 640w, '+escapeHTML(s800)+' 800w" sizes="(max-width:128px) 128px,(max-width:256px) 256px,(max-width:320px) 320px,(max-width:640px) 640px,800px"/>';
+  }
+
+  return '<img alt="'+title+'" src="'+escapeHTML(src)+'"/>';
+}
+
 /* POST HTML */
 function createPostHTML(post){
   var title=escapeHTML(post.title);
@@ -183,12 +166,7 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    var thumb=post.thumbnail;
-    if(isCodeFlareImage(thumb)){
-      image='<img alt="'+title+'" data-cf-original="'+escapeHTML(thumb)+'" src="'+escapeHTML(resizeCodeFlareImage(thumb,getImageSize(CONFIG.thumbnailSize)))+'"/>';
-    }else{
-      image='<img alt="'+title+'" src="'+escapeHTML(thumb)+'"/>';
-    }
+    image=createImageHTML(post.thumbnail,title);
   }
 
   return '<li>'+
@@ -246,7 +224,6 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
-  adjustRenderedImages();
 }
 
 /* GET POST URL */
@@ -266,32 +243,26 @@ function getPostURL(entry){
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
-  /* Prioritaskan gambar img.codeflare.net dari isi artikel. */
+  /* Jika artikel memakai img.codeflare.net, ambil source asli dari content. */
   if(content){
     var temp=$("<div>").html(content);
-    var images=temp.find("img");
+    var imgs=temp.find("img");
 
-    images.each(function(){
-      var img=$(this);
-      var candidates=[
-        img.attr("src"),
-        img.attr("data-src"),
-        img.attr("data-original"),
-        img.attr("data-lazy-src")
-      ];
-
-      for(var i=0;i<candidates.length;i++){
-        if(isCodeFlareImage(candidates[i])){
-          thumbnail=candidates[i];
-          return false;
-        }
+    for(var i=0;i<imgs.length;i++){
+      var img=$(imgs[i]);
+      var src=img.attr("src")||img.attr("data-src")||img.attr("data-original")||img.attr("data-lazy-src")||"";
+      if(/^https?:\/\/img\.codeflare\.net\//i.test(src)){
+        thumbnail=src;
+        break;
       }
-    });
+    }
 
-    if(isCodeFlareImage(thumbnail))return thumbnail;
+    if(thumbnail&&/^https?:\/\/img\.codeflare\.net\//i.test(thumbnail)){
+      return thumbnail;
+    }
   }
 
-  /* Perilaku lama untuk thumbnail Blogger tetap dipertahankan. */
+  /* Engine lama Blogger tetap sama. */
   if(entry.media$thumbnail&&entry.media$thumbnail.url){
     thumbnail=entry.media$thumbnail.url
       .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
@@ -550,8 +521,6 @@ $(window)
 
       if(newCount!==displayPosts){
         renderPosts(true);
-      }else{
-        adjustRenderedImages();
       }
 
     },150);
