@@ -125,8 +125,8 @@ function isGitHubImage(url){
   if(!url)return false;
   try{
     var host=(new URL(String(url).replace(/&amp;/g,"&"),location.href)).hostname.toLowerCase();
-    return host==="github.com"||host==="raw.githubusercontent.com"||host==="user-images.githubusercontent.com"||host==="private-user-images.githubusercontent.com"||/(^|\.)githubusercontent\.com$/.test(host)||/(^|\.)github\.io$/.test(host);
-  }catch(e){return /(?:github\.com|githubusercontent\.com|github\.io)/i.test(String(url));}
+    return host==="img.codeflare.net"||host==="github.com"||host==="raw.githubusercontent.com"||host==="user-images.githubusercontent.com"||host==="private-user-images.githubusercontent.com"||/(^|\.)githubusercontent\.com$/.test(host)||/(^|\.)github\.io$/.test(host);
+   }catch(e){return /(?:img\.codeflare\.net|github\.com|githubusercontent\.com|github\.io)/i.test(String(url));}
 }
 
 function normalizeGitHubImage(url){
@@ -343,7 +343,7 @@ function getPostURL(entry){
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
-  /* External GitHub image in article content gets first priority. */
+  /* CodeFlare image host / GitHub image in article content gets first priority. */
   var githubImage=findGitHubImage(content);
   if(githubImage)return githubImage;
 
