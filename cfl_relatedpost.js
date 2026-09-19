@@ -149,7 +149,6 @@ function createPostHTML(post){
 
   if(post.thumbnail){
     var safeThumb=escapeHTML(post.thumbnail);
-
     if(/^https?:\/\/img\.codeflare\.net\//i.test(post.thumbnail)){
       image='<img alt="'+title+'" src="'+safeThumb+'" data-cf-original="'+safeThumb+'"/>';
     }else{
@@ -212,7 +211,7 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
-  updateCodeFlareImages();
+  refreshCodeFlareImages();
 }
 
 /* GET POST URL */
@@ -237,48 +236,36 @@ function cleanTag(tag){
   );
 }
 
-/* CODEFLARE IMAGE HOST */
-function getCodeFlareImage(content){
-  if(!content)return "";
+/* FIND CODEFLARE IMAGE FROM RAW FEED */
+function findCodeFlareImage(entry,content){
+  var raw=(content||"");
 
-  var temp=$("<div>").html(content);
-  var found="";
+  try{
+    raw+=" "+JSON.stringify(entry||{});
+  }catch(e){}
 
-  temp.find("img").each(function(){
-    var img=$(this);
-    var attrs=[
-      "src",
-      "data-src",
-      "data-original",
-      "data-lazy-src",
-      "data-lazy",
-      "data-srcset",
-      "srcset"
-    ];
+  raw=raw
+    .replace(/&amp;/g,"&")
+    .replace(/&quot;/g,'"')
+    .replace(/&#39;/g,"'");
 
-    for(var i=0;i<attrs.length;i++){
-      var value=img.attr(attrs[i])||"";
-      if(!value)continue;
+  var match=raw.match(
+    /(?:https?:)?\/\/img\.codeflare\.net\/s\d+\/[^\s"'<>\\]+/i
+  );
 
-      if(attrs[i]==="srcset"||attrs[i]==="data-srcset"){
-        value=$.trim(value.split(",")[0]||"").split(/\s+/)[0]||"";
-      }
+  if(!match||!match[0])return "";
 
-      if(/^https?:\/\/img\.codeflare\.net\//i.test(value)){
-        found=value;
-        return false;
-      }
-    }
+  var url=match[0];
 
-    if(found)return false;
-  });
+  if(url.indexOf("//")===0){
+    url=location.protocol+url;
+  }
 
-  return found;
+  return url;
 }
 
-function getImageSize(width){
+function getAdaptiveImageSize(width){
   width=parseInt(width,10)||parseInt(CONFIG.thumbnailSize,10)||200;
-
   if(width<=128)return 128;
   if(width<=256)return 256;
   if(width<=320)return 320;
@@ -286,17 +273,12 @@ function getImageSize(width){
   return 800;
 }
 
-function getCodeFlareSizeURL(url,size){
+function codeFlareSizedURL(url,size){
   if(!url||!/^https?:\/\/img\.codeflare\.net\//i.test(url))return url||"";
-
-  if(/\/s\d+\//i.test(url)){
-    return url.replace(/\/s\d+\//i,"/s"+size+"/");
-  }
-
-  return url;
+  return url.replace(/\/s\d+\//i,"/s"+size+"/");
 }
 
-function updateCodeFlareImages(){
+function refreshCodeFlareImages(){
   if(!container||!container.length)return;
 
   container.find("img[data-cf-original]").each(function(){
@@ -306,22 +288,18 @@ function updateCodeFlareImages(){
 
     var box=img.closest(".imageRP");
     var width=box.length?box.innerWidth():0;
+    if(!width)width=parseInt(CONFIG.thumbnailSize,10)||200;
 
-    if(!width){
-      width=img.width()||parseInt(CONFIG.thumbnailSize,10)||200;
-    }
-
-    var wanted=getCodeFlareSizeURL(
+    var wanted=codeFlareSizedURL(
       original,
-      getImageSize(width)
+      getAdaptiveImageSize(width)
     );
 
     if(!wanted||wanted===img.attr("src"))return;
 
-    img.off("error.cfthumb").one("error.cfthumb",function(){
+    img.off("error.cfimg").one("error.cfimg",function(){
       var self=$(this);
-      self.off("error.cfthumb");
-
+      self.off("error.cfimg");
       if(self.attr("src")!==original){
         self.attr("src",original);
       }
@@ -335,13 +313,14 @@ function updateCodeFlareImages(){
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
-  /* PRIORITAS GAMBAR CUSTOM HOST CODEFLARE */
-  var codeFlareImage=getCodeFlareImage(content);
+  /* CUSTOM HOST: cari langsung dari raw feed */
+  var customImage=findCodeFlareImage(entry,content);
+  if(customImage){
+    return customImage;
+  }
 
-  if(codeFlareImage){
-    thumbnail=codeFlareImage;
-
-  }else if(entry.media$thumbnail&&entry.media$thumbnail.url){
+  /* BLOGGER MEDIA: pertahankan perilaku lama */
+  if(entry.media$thumbnail&&entry.media$thumbnail.url){
     thumbnail=entry.media$thumbnail.url
       .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
       .replace(/\/s\d+(?:-c)?/i,"/s"+CONFIG.thumbnailSize);
@@ -523,7 +502,6 @@ function init(){
 
     $.each(CONFIG.tags,function(_,tag){
       tag=cleanTag(tag);
-
       if(tag&&$.inArray(tag,cleanTags)===-1){
         cleanTags.push(tag);
       }
@@ -619,7 +597,7 @@ $(window)
       if(newCount!==displayPosts){
         renderPosts(true);
       }else{
-        updateCodeFlareImages();
+        refreshCodeFlareImages();
       }
 
     },150);
