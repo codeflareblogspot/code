@@ -47,14 +47,8 @@ function normalizeURL(url){
   }
 }
 
-/* CLEAN LABEL */
-function cleanTag(tag){
-  return $.trim(
-    String(tag==null?"":tag)
-      .replace(/\s+/g," ")
-      .replace(/,+\s*$/,"")
-  );
-}
+/* LABEL */
+function cleanTag(tag){return $.trim(String(tag==null?"":tag).replace(/\s+/g," ").replace(/,+\s*$/,""))}
 
 /* CURRENT ARTICLE */
 var currentURL=normalizeURL(
@@ -157,7 +151,8 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    image='<img alt="'+title+'" src="'+escapeHTML(post.thumbnail)+'"/>';
+    var thumb=escapeHTML(post.thumbnail);
+    image=isCFImage(post.thumbnail)?'<img alt="'+title+'" src="'+thumb+'" data-cf-original="'+thumb+'"/>':'<img alt="'+title+'" src="'+thumb+'"/>';
   }
 
   return '<li>'+
@@ -179,69 +174,6 @@ function createPostHTML(post){
       '</p>'+
     '</div>'+
   '</li>';
-}
-
-/* EXTRACT IMAGE FROM ARTICLE HTML */
-function extractArticleImage(html){
-  if(!html)return "";
-
-  var custom=String(html).match(
-    /https?:\/\/img\.codeflare\.net\/s\d+\/[^\s"'<>\\]+/i
-  );
-  if(custom&&custom[0])return custom[0];
-
-  var doc=$("<div>").html(html);
-
-  var og=doc.find('meta[property="og:image"]').attr("content")||
-         doc.find('meta[name="twitter:image"]').attr("content")||"";
-  if(og)return og;
-
-  var img=doc.find("img").first();
-  if(img.length){
-    return img.attr("src")||
-           img.attr("data-src")||
-           img.attr("data-original")||
-           img.attr("data-lazy-src")||
-           "";
-  }
-
-  return "";
-}
-
-/* LOAD IMAGE ONLY FOR POSTS WITH EMPTY THUMBNAIL */
-function loadMissingThumbnails(done){
-  var missing=[];
-
-  $.each(posts,function(_,post){
-    if(!post.thumbnail&&post.url){
-      missing.push(post);
-    }
-  });
-
-  if(!missing.length){
-    done();
-    return;
-  }
-
-  var left=missing.length;
-
-  function finish(){
-    left--;
-    if(left<=0)done();
-  }
-
-  $.each(missing,function(_,post){
-    $.ajax({
-      url:post.url,
-      dataType:"html",
-      cache:true,
-      success:function(html){
-        var image=extractArticleImage(html);
-        if(image)post.thumbnail=image;
-      },
-      complete:finish
-    });
-  });
 }
 
 /* RENDER */
@@ -278,6 +210,7 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
+  optimizeCFImages();
 }
 
 /* GET POST URL */
@@ -293,29 +226,20 @@ function getPostURL(entry){
   return "";
 }
 
+/* IMAGE */
+function isCFImage(url){return /^https?:\/\/img\.codeflare\.net\//i.test(url||"")}
+function pickImageSize(w){w=parseInt(w,10)||parseInt(CONFIG.thumbnailSize,10)||200;if(w<=128)return 128;if(w<=256)return 256;if(w<=320)return 320;if(w<=640)return 640;return 800}
+function resizeCFImage(url,size){return isCFImage(url)?url.replace(/\/s\d+(?:-c)?\//i,"/s"+size+"/"):url}
+function findContentImage(content){if(!content)return"";var temp=$("<div>").html(content),fallback="",found="";temp.find("img").each(function(){var el=$(this),src=el.attr("src")||el.attr("data-src")||el.attr("data-original")||el.attr("data-lazy-src")||"";if(!src)return;if(!fallback)fallback=src;if(isCFImage(src)){found=src;return false}});return found||fallback}
+function optimizeCFImages(){if(!container||!container.length)return;container.find("img[data-cf-original]").each(function(){var img=$(this),original=img.attr("data-cf-original")||"";if(!original)return;var box=img.closest(".imageRP"),w=box.length?box.innerWidth():0,wanted=resizeCFImage(original,pickImageSize(w));if(!wanted||wanted===img.attr("src"))return;img.off("error.cfimg").one("error.cfimg",function(){var self=$(this);self.off("error.cfimg");if(self.attr("src")!==original)self.attr("src",original)}).attr("src",wanted)})}
+
 /* GET THUMBNAIL */
 function getThumbnail(entry,content){
-  var thumbnail=CONFIG.blankThumbnail||"";
-
+  var thumbnail=CONFIG.blankThumbnail||"",contentImage=findContentImage(content);
+  if(contentImage&&isCFImage(contentImage))return contentImage;
   if(entry.media$thumbnail&&entry.media$thumbnail.url){
-    thumbnail=entry.media$thumbnail.url
-      .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
-      .replace(/\/s\d+(?:-c)?/i,"/s"+CONFIG.thumbnailSize);
-
-  }else if(content){
-    var temp=$("<div>").html(content);
-    var img=temp.find("img").first();
-
-    if(img.length){
-      thumbnail=
-        img.attr("src")||
-        img.attr("data-src")||
-        img.attr("data-original")||
-        img.attr("data-lazy-src")||
-        "";
-    }
-  }
-
+    thumbnail=entry.media$thumbnail.url.replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize).replace(/\/s\d+(?:-c)?/i,"/s"+CONFIG.thumbnailSize);
+  }else if(contentImage)thumbnail=contentImage;
   return thumbnail;
 }
 
@@ -403,9 +327,7 @@ function requestFeed(url){
       requestDone++;
 
       if(requestDone>=totalRequests){
-        loadMissingThumbnails(function(){
-          renderPosts(false);
-        });
+        renderPosts(false);
       }
     }
   });
@@ -466,9 +388,7 @@ function init(){
       .slice(0,CONFIG.maxTags)
       .each(function(){
 
-        var tag=cleanTag(
-          $(this).text()
-        );
+        var tag=cleanTag($(this).text());
 
         if(tag&&$.inArray(tag,CONFIG.tags)===-1){
           CONFIG.tags.push(tag);
@@ -476,18 +396,7 @@ function init(){
       });
   }
 
-  if(CONFIG.tags&&$.isArray(CONFIG.tags)){
-    var cleanTags=[];
-
-    $.each(CONFIG.tags,function(_,tag){
-      tag=cleanTag(tag);
-      if(tag&&$.inArray(tag,cleanTags)===-1){
-        cleanTags.push(tag);
-      }
-    });
-
-    CONFIG.tags=cleanTags;
-  }
+  if(CONFIG.tags&&$.isArray(CONFIG.tags)){var cleaned=[];$.each(CONFIG.tags,function(_,tag){tag=cleanTag(tag);if(tag&&$.inArray(tag,cleaned)===-1)cleaned.push(tag)});CONFIG.tags=cleaned}
 
   var hasTags=
     CONFIG.tags&&
@@ -575,6 +484,8 @@ $(window)
 
       if(newCount!==displayPosts){
         renderPosts(true);
+      }else{
+        optimizeCFImages();
       }
 
     },150);
