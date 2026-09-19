@@ -11,6 +11,7 @@ var CONFIG={
   randomPosts:true,
   summaryLength:100,
   thumbnailSize:200,
+  thumbnailSizes:[128,256,320,640,800],
   showDate:true,
   relatedTitle:'<i class="fa fa-fire" aria-hidden="true"></i> Related Posts',
   recentTitle:'<i class="fa fa-fire" aria-hidden="true"></i> Recent Posts',
@@ -112,6 +113,96 @@ function getResponsivePostCount(){
   return count;
 }
 
+/* ADAPTIVE THUMBNAIL */
+function getThumbSize(width){
+  var sizes=CONFIG.thumbnailSizes&&CONFIG.thumbnailSizes.length?CONFIG.thumbnailSizes:[128,256,320,640,800];
+  var target=Math.max(1,Math.ceil(parseFloat(width)||parseInt(CONFIG.thumbnailSize,10)||200));
+
+  for(var i=0;i<sizes.length;i++){
+    if(target<=sizes[i])return sizes[i];
+  }
+
+  return sizes[sizes.length-1]||800;
+}
+
+function normalizeGitHubImage(url){
+  if(!url)return "";
+
+  url=String(url).trim();
+
+  try{
+    var u=new URL(url,location.href);
+    var host=u.hostname.toLowerCase();
+
+    if(host==="github.com"){
+      var parts=u.pathname.split("/").filter(Boolean);
+
+      if(parts.length>=5&&(parts[2]==="blob"||parts[2]==="raw")){
+        return "https://raw.githubusercontent.com/"+
+          parts[0]+"/"+parts[1]+"/"+parts[3]+"/"+parts.slice(4).join("/");
+      }
+    }
+  }catch(e){}
+
+  return url;
+}
+
+function resizeBloggerImage(url,size){
+  if(!url)return "";
+
+  return url
+    .replace(/=s\d+(?:-[a-z0-9-]+)?(?=($|[?&#]))/i,"=s"+size)
+    .replace(/\/s\d+(?:-[a-z0-9-]+)?(?=\/)/i,"/s"+size);
+}
+
+function resizeGitHubVariant(url,size){
+  if(!url)return "";
+
+  /*
+   * GitHub tidak mempunyai resize dinamis seperti Blogger.
+   * Jika repo menyediakan varian /s128/, /s256/, /s320/ dst
+   * atau nama file -s128.jpg / _s128.webp, engine akan memilihnya.
+   * Jika tidak ada varian, URL raw asli tetap dipakai.
+   */
+  return url
+    .replace(/\/s(?:128|256|320|640|800)(?=\/)/i,"/s"+size)
+    .replace(/([._-])s(?:128|256|320|640|800)(?=\.[a-z0-9]+(?:$|[?#]))/i,"$1s"+size);
+}
+
+function getSizedThumbnail(url,width){
+  if(!url)return CONFIG.blankThumbnail||"";
+
+  var size=getThumbSize(width);
+  var normalized=normalizeGitHubImage(url);
+  var host="";
+
+  try{
+    host=(new URL(normalized,location.href)).hostname.toLowerCase();
+  }catch(e){}
+
+  if(/(^|\.)githubusercontent\.com$/.test(host)||host==="github.com"){
+    return resizeGitHubVariant(normalized,size);
+  }
+
+  return resizeBloggerImage(normalized,size);
+}
+
+function updateRenderedThumbnails(){
+  if(!list||!list.length)return;
+
+  list.find(".imageRP img[data-thumb]").each(function(){
+    var img=$(this);
+    var box=img.closest(".imageRP");
+    var width=box.innerWidth()||img.width()||CONFIG.thumbnailSize;
+    var source=img.attr("data-thumb")||"";
+    var sized=getSizedThumbnail(source,width);
+
+    if(sized&&img.attr("src")!==sized){
+      img.attr("src",sized);
+    }
+  });
+}
+
 /* ADD POST */
 function addPost(url,title,thumbnail,summary,year,day,month){
   if(!url||isCurrentPost(url))return;
@@ -148,7 +239,8 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    image='<img alt="'+title+'" src="'+escapeHTML(post.thumbnail)+'"/>';
+    var thumb=escapeHTML(post.thumbnail);
+    image='<img alt="'+title+'" data-thumb="'+thumb+'" src="'+escapeHTML(getSizedThumbnail(post.thumbnail,CONFIG.thumbnailSize))+'"/>';
   }
 
   return '<li>'+
@@ -206,6 +298,7 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
+  updateRenderedThumbnails();
 }
 
 /* GET POST URL */
@@ -226,20 +319,24 @@ function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
   if(entry.media$thumbnail&&entry.media$thumbnail.url){
-    thumbnail=entry.media$thumbnail.url
-      .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
-      .replace(/\/s\d+(?:-c)?/i,"/s"+CONFIG.thumbnailSize);
-
+    thumbnail=entry.media$thumbnail.url;
   }else if(content){
     var temp=$("<div>").html(content);
     var img=temp.find("img").first();
 
     if(img.length){
-      thumbnail=img.attr("src")||thumbnail;
+      thumbnail=
+        img.attr("data-original")||
+        img.attr("data-src")||
+        img.attr("data-lazy-src")||
+        img.attr("src")||
+        thumbnail;
     }
   }
 
-  return thumbnail;
+  thumbnail=normalizeGitHubImage(thumbnail);
+
+  return getSizedThumbnail(thumbnail,CONFIG.thumbnailSize);
 }
 
 /* GET SUMMARY */
@@ -483,6 +580,8 @@ $(window)
 
       if(newCount!==displayPosts){
         renderPosts(true);
+      }else{
+        updateRenderedThumbnails();
       }
 
     },150);
