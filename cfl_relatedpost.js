@@ -117,39 +117,40 @@ function getResponsivePostCount(){
 function getThumbSize(width){
   var sizes=CONFIG.thumbnailSizes&&CONFIG.thumbnailSizes.length?CONFIG.thumbnailSizes:[128,256,320,640,800];
   var target=Math.max(1,Math.ceil(parseFloat(width)||parseInt(CONFIG.thumbnailSize,10)||200));
-
-  for(var i=0;i<sizes.length;i++){
-    if(target<=sizes[i])return sizes[i];
-  }
-
+  for(var i=0;i<sizes.length;i++)if(target<=sizes[i])return sizes[i];
   return sizes[sizes.length-1]||800;
+}
+
+function isGitHubImage(url){
+  if(!url)return false;
+  try{
+    var host=(new URL(String(url).replace(/&amp;/g,"&"),location.href)).hostname.toLowerCase();
+    return host==="github.com"||host==="raw.githubusercontent.com"||host==="user-images.githubusercontent.com"||host==="private-user-images.githubusercontent.com"||/(^|\.)githubusercontent\.com$/.test(host)||/(^|\.)github\.io$/.test(host);
+  }catch(e){return /(?:github\.com|githubusercontent\.com|github\.io)/i.test(String(url));}
 }
 
 function normalizeGitHubImage(url){
   if(!url)return "";
-
-  url=String(url).trim();
-
+  url=String(url).trim().replace(/&amp;/g,"&");
   try{
-    var u=new URL(url,location.href);
-    var host=u.hostname.toLowerCase();
-
+    var u=new URL(url,location.href),host=u.hostname.toLowerCase();
     if(host==="github.com"){
       var parts=u.pathname.split("/").filter(Boolean);
-
-      if(parts.length>=5&&(parts[2]==="blob"||parts[2]==="raw")){
-        return "https://raw.githubusercontent.com/"+
-          parts[0]+"/"+parts[1]+"/"+parts[3]+"/"+parts.slice(4).join("/");
+      /* github.com/user/repo/blob/branch/path/file.ext */
+      if(parts.length>=5&&parts[2]==="blob"){
+        return "https://raw.githubusercontent.com/"+parts[0]+"/"+parts[1]+"/"+parts[3]+"/"+parts.slice(4).join("/");
+      }
+      /* github.com/user/repo/raw/branch/path/file.ext */
+      if(parts.length>=5&&parts[2]==="raw"){
+        return "https://raw.githubusercontent.com/"+parts[0]+"/"+parts[1]+"/"+parts[3]+"/"+parts.slice(4).join("/");
       }
     }
   }catch(e){}
-
   return url;
 }
 
 function resizeBloggerImage(url,size){
   if(!url)return "";
-
   return url
     .replace(/=s\d+(?:-[a-z0-9-]+)?(?=($|[?&#]))/i,"=s"+size)
     .replace(/\/s\d+(?:-[a-z0-9-]+)?(?=\/)/i,"/s"+size);
@@ -157,50 +158,72 @@ function resizeBloggerImage(url,size){
 
 function resizeGitHubVariant(url,size){
   if(!url)return "";
-
   /*
-   * GitHub tidak mempunyai resize dinamis seperti Blogger.
-   * Jika repo menyediakan varian /s128/, /s256/, /s320/ dst
-   * atau nama file -s128.jpg / _s128.webp, engine akan memilihnya.
-   * Jika tidak ada varian, URL raw asli tetap dipakai.
+   * GitHub tidak menyediakan resize dinamis. Jadi URL hanya diganti jika
+   * source memang sudah memakai pola varian s128/s256/s320/s640/s800.
+   * Jika varian tujuan tidak ada, onerror akan kembali ke URL GitHub asli.
    */
-  return url
-    .replace(/\/s(?:128|256|320|640|800)(?=\/)/i,"/s"+size)
-    .replace(/([._-])s(?:128|256|320|640|800)(?=\.[a-z0-9]+(?:$|[?#]))/i,"$1s"+size);
+  if(/\/s(?:128|256|320|640|800)(?=\/)/i.test(url))
+    return url.replace(/\/s(?:128|256|320|640|800)(?=\/)/i,"/s"+size);
+  if(/([._-])s(?:128|256|320|640|800)(?=\.[a-z0-9]+(?:$|[?#]))/i.test(url))
+    return url.replace(/([._-])s(?:128|256|320|640|800)(?=\.[a-z0-9]+(?:$|[?#]))/i,"$1s"+size);
+  return url;
 }
 
 function getSizedThumbnail(url,width){
   if(!url)return CONFIG.blankThumbnail||"";
-
-  var size=getThumbSize(width);
-  var normalized=normalizeGitHubImage(url);
-  var host="";
-
-  try{
-    host=(new URL(normalized,location.href)).hostname.toLowerCase();
-  }catch(e){}
-
-  if(/(^|\.)githubusercontent\.com$/.test(host)||host==="github.com"){
-    return resizeGitHubVariant(normalized,size);
-  }
-
+  var size=getThumbSize(width),normalized=normalizeGitHubImage(url);
+  if(isGitHubImage(normalized))return resizeGitHubVariant(normalized,size);
   return resizeBloggerImage(normalized,size);
 }
 
 function updateRenderedThumbnails(){
   if(!list||!list.length)return;
-
   list.find(".imageRP img[data-thumb]").each(function(){
-    var img=$(this);
-    var box=img.closest(".imageRP");
+    var img=$(this),box=img.closest(".imageRP");
     var width=box.innerWidth()||img.width()||CONFIG.thumbnailSize;
-    var source=img.attr("data-thumb")||"";
-    var sized=getSizedThumbnail(source,width);
-
+    var source=img.attr("data-thumb")||"",sized=getSizedThumbnail(source,width);
     if(sized&&img.attr("src")!==sized){
+      img.attr("data-fallback",normalizeGitHubImage(source));
       img.attr("src",sized);
     }
   });
+}
+
+function getImageAttr(img){
+  var attrs=["data-original","data-src","data-lazy-src","data-url","src"];
+  for(var i=0;i<attrs.length;i++){
+    var v=img.attr(attrs[i]);
+    if(v&&v.indexOf("data:image/")!==0)return v;
+  }
+  var srcset=img.attr("srcset")||img.attr("data-srcset")||"";
+  if(srcset){
+    var first=$.trim(srcset.split(",")[0]||"").split(/\s+/)[0];
+    if(first)return first;
+  }
+  return "";
+}
+
+function findGitHubImage(content){
+  if(!content)return "";
+  var temp=$("<div>").html(content),found="";
+  temp.find("img").each(function(){
+    if(found)return false;
+    var img=$(this),attrs=["data-original","data-src","data-lazy-src","data-url","src","srcset","data-srcset"];
+    for(var i=0;i<attrs.length;i++){
+      var v=img.attr(attrs[i])||"";
+      if(attrs[i].indexOf("srcset")!==-1&&v)v=$.trim(v.split(",")[0]||"").split(/\s+/)[0];
+      if(v&&isGitHubImage(v)){found=normalizeGitHubImage(v);return false;}
+    }
+  });
+  if(found)return found;
+  temp.find("a[href]").each(function(){
+    var href=$(this).attr("href")||"";
+    if(isGitHubImage(href)&&(/\.(?:avif|webp|jpe?g|png|gif)(?:[?#].*)?$/i.test(href)||/github\.com\/user-attachments\/assets\//i.test(href))){
+      found=normalizeGitHubImage(href);return false;
+    }
+  });
+  return found;
 }
 
 /* ADD POST */
@@ -239,8 +262,10 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    var thumb=escapeHTML(post.thumbnail);
-    image='<img alt="'+title+'" data-thumb="'+thumb+'" src="'+escapeHTML(getSizedThumbnail(post.thumbnail,CONFIG.thumbnailSize))+'"/>';
+    var original=normalizeGitHubImage(post.thumbnail);
+    var thumb=escapeHTML(original);
+    var firstSrc=escapeHTML(getSizedThumbnail(original,CONFIG.thumbnailSize));
+    image='<img alt="'+title+'" data-thumb="'+thumb+'" data-fallback="'+thumb+'" src="'+firstSrc+'" onerror="var f=this.getAttribute(\'data-fallback\');if(f&&this.src!==f){this.onerror=null;this.src=f;}"/>';
   }
 
   return '<li>'+
@@ -318,25 +343,19 @@ function getPostURL(entry){
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
+  /* External GitHub image in article content gets first priority. */
+  var githubImage=findGitHubImage(content);
+  if(githubImage)return githubImage;
+
+  /* Keep existing Blogger media thumbnail behavior for normal posts. */
   if(entry.media$thumbnail&&entry.media$thumbnail.url){
     thumbnail=entry.media$thumbnail.url;
   }else if(content){
-    var temp=$("<div>").html(content);
-    var img=temp.find("img").first();
-
-    if(img.length){
-      thumbnail=
-        img.attr("data-original")||
-        img.attr("data-src")||
-        img.attr("data-lazy-src")||
-        img.attr("src")||
-        thumbnail;
-    }
+    var temp=$("<div>").html(content),img=temp.find("img").first();
+    if(img.length)thumbnail=getImageAttr(img)||thumbnail;
   }
 
-  thumbnail=normalizeGitHubImage(thumbnail);
-
-  return getSizedThumbnail(thumbnail,CONFIG.thumbnailSize);
+  return normalizeGitHubImage(thumbnail);
 }
 
 /* GET SUMMARY */
