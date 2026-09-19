@@ -140,24 +140,6 @@ function addPost(url,title,thumbnail,summary,year,day,month){
   posts.push(post);
 }
 
-/* IMAGE HTML - adaptive img.codeflare.net, source asli tetap fallback */
-function createImageHTML(src,title){
-  src=src||"";
-  if(!src)return "";
-
-  if(/^https?:\/\/img\.codeflare\.net\//i.test(src)&&/\/s\d+(?=\/)/i.test(src)){
-    var base=String(src);
-    var s128=base.replace(/\/s\d+(?=\/)/i,"/s128");
-    var s256=base.replace(/\/s\d+(?=\/)/i,"/s256");
-    var s320=base.replace(/\/s\d+(?=\/)/i,"/s320");
-    var s640=base.replace(/\/s\d+(?=\/)/i,"/s640");
-    var s800=base.replace(/\/s\d+(?=\/)/i,"/s800");
-    return '<img alt="'+title+'" src="'+escapeHTML(s800)+'" srcset="'+escapeHTML(s128)+' 128w, '+escapeHTML(s256)+' 256w, '+escapeHTML(s320)+' 320w, '+escapeHTML(s640)+' 640w, '+escapeHTML(s800)+' 800w" sizes="(max-width:128px) 128px,(max-width:256px) 256px,(max-width:320px) 320px,(max-width:640px) 640px,800px"/>';
-  }
-
-  return '<img alt="'+title+'" src="'+escapeHTML(src)+'"/>';
-}
-
 /* POST HTML */
 function createPostHTML(post){
   var title=escapeHTML(post.title);
@@ -166,7 +148,13 @@ function createPostHTML(post){
   var image="";
 
   if(post.thumbnail){
-    image=createImageHTML(post.thumbnail,title);
+    var safeThumb=escapeHTML(post.thumbnail);
+
+    if(/^https?:\/\/img\.codeflare\.net\//i.test(post.thumbnail)){
+      image='<img alt="'+title+'" src="'+safeThumb+'" data-cf-original="'+safeThumb+'"/>';
+    }else{
+      image='<img alt="'+title+'" src="'+safeThumb+'"/>';
+    }
   }
 
   return '<li>'+
@@ -224,6 +212,7 @@ function renderPosts(keepOrder){
   }
 
   list.html(html);
+  updateCodeFlareImages();
 }
 
 /* GET POST URL */
@@ -239,41 +228,135 @@ function getPostURL(entry){
   return "";
 }
 
+/* CLEAN LABEL */
+function cleanTag(tag){
+  return $.trim(
+    String(tag==null?"":tag)
+      .replace(/\s+/g," ")
+      .replace(/,+\s*$/,"")
+  );
+}
+
+/* CODEFLARE IMAGE HOST */
+function getCodeFlareImage(content){
+  if(!content)return "";
+
+  var temp=$("<div>").html(content);
+  var found="";
+
+  temp.find("img").each(function(){
+    var img=$(this);
+    var attrs=[
+      "src",
+      "data-src",
+      "data-original",
+      "data-lazy-src",
+      "data-lazy",
+      "data-srcset",
+      "srcset"
+    ];
+
+    for(var i=0;i<attrs.length;i++){
+      var value=img.attr(attrs[i])||"";
+      if(!value)continue;
+
+      if(attrs[i]==="srcset"||attrs[i]==="data-srcset"){
+        value=$.trim(value.split(",")[0]||"").split(/\s+/)[0]||"";
+      }
+
+      if(/^https?:\/\/img\.codeflare\.net\//i.test(value)){
+        found=value;
+        return false;
+      }
+    }
+
+    if(found)return false;
+  });
+
+  return found;
+}
+
+function getImageSize(width){
+  width=parseInt(width,10)||parseInt(CONFIG.thumbnailSize,10)||200;
+
+  if(width<=128)return 128;
+  if(width<=256)return 256;
+  if(width<=320)return 320;
+  if(width<=640)return 640;
+  return 800;
+}
+
+function getCodeFlareSizeURL(url,size){
+  if(!url||!/^https?:\/\/img\.codeflare\.net\//i.test(url))return url||"";
+
+  if(/\/s\d+\//i.test(url)){
+    return url.replace(/\/s\d+\//i,"/s"+size+"/");
+  }
+
+  return url;
+}
+
+function updateCodeFlareImages(){
+  if(!container||!container.length)return;
+
+  container.find("img[data-cf-original]").each(function(){
+    var img=$(this);
+    var original=img.attr("data-cf-original")||"";
+    if(!original)return;
+
+    var box=img.closest(".imageRP");
+    var width=box.length?box.innerWidth():0;
+
+    if(!width){
+      width=img.width()||parseInt(CONFIG.thumbnailSize,10)||200;
+    }
+
+    var wanted=getCodeFlareSizeURL(
+      original,
+      getImageSize(width)
+    );
+
+    if(!wanted||wanted===img.attr("src"))return;
+
+    img.off("error.cfthumb").one("error.cfthumb",function(){
+      var self=$(this);
+      self.off("error.cfthumb");
+
+      if(self.attr("src")!==original){
+        self.attr("src",original);
+      }
+    });
+
+    img.attr("src",wanted);
+  });
+}
+
 /* GET THUMBNAIL */
 function getThumbnail(entry,content){
   var thumbnail=CONFIG.blankThumbnail||"";
 
-  /* Jika artikel memakai img.codeflare.net, ambil source asli dari content. */
-  if(content){
-    var temp=$("<div>").html(content);
-    var imgs=temp.find("img");
+  /* PRIORITAS GAMBAR CUSTOM HOST CODEFLARE */
+  var codeFlareImage=getCodeFlareImage(content);
 
-    for(var i=0;i<imgs.length;i++){
-      var img=$(imgs[i]);
-      var src=img.attr("src")||img.attr("data-src")||img.attr("data-original")||img.attr("data-lazy-src")||"";
-      if(/^https?:\/\/img\.codeflare\.net\//i.test(src)){
-        thumbnail=src;
-        break;
-      }
-    }
+  if(codeFlareImage){
+    thumbnail=codeFlareImage;
 
-    if(thumbnail&&/^https?:\/\/img\.codeflare\.net\//i.test(thumbnail)){
-      return thumbnail;
-    }
-  }
-
-  /* Engine lama Blogger tetap sama. */
-  if(entry.media$thumbnail&&entry.media$thumbnail.url){
+  }else if(entry.media$thumbnail&&entry.media$thumbnail.url){
     thumbnail=entry.media$thumbnail.url
       .replace(/=s\d+(?:-c)?/i,"=s"+CONFIG.thumbnailSize)
       .replace(/\/s\d+(?:-c)?/i,"/s"+CONFIG.thumbnailSize);
 
   }else if(content){
-    var temp2=$("<div>").html(content);
-    var first=temp2.find("img").first();
+    var temp=$("<div>").html(content);
+    var img=temp.find("img").first();
 
-    if(first.length){
-      thumbnail=first.attr("src")||first.attr("data-src")||first.attr("data-original")||thumbnail;
+    if(img.length){
+      thumbnail=
+        img.attr("src")||
+        img.attr("data-src")||
+        img.attr("data-original")||
+        img.attr("data-lazy-src")||
+        thumbnail;
     }
   }
 
@@ -425,14 +508,28 @@ function init(){
       .slice(0,CONFIG.maxTags)
       .each(function(){
 
-        var tag=$.trim(
-          $(this).text().replace(/\s+/g," ")
+        var tag=cleanTag(
+          $(this).text()
         );
 
         if(tag&&$.inArray(tag,CONFIG.tags)===-1){
           CONFIG.tags.push(tag);
         }
       });
+  }
+
+  if(CONFIG.tags&&$.isArray(CONFIG.tags)){
+    var cleanTags=[];
+
+    $.each(CONFIG.tags,function(_,tag){
+      tag=cleanTag(tag);
+
+      if(tag&&$.inArray(tag,cleanTags)===-1){
+        cleanTags.push(tag);
+      }
+    });
+
+    CONFIG.tags=cleanTags;
   }
 
   var hasTags=
@@ -521,6 +618,8 @@ $(window)
 
       if(newCount!==displayPosts){
         renderPosts(true);
+      }else{
+        updateCodeFlareImages();
       }
 
     },150);
