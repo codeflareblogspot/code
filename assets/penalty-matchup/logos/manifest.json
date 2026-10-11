@@ -1,6 +1,6 @@
 {
   "purpose": "National football team crest asset verification; no flag substitutes",
-  "status": "1_uploaded_31_pending",
+  "status": "3_uploaded_29_pending",
   "teams": [
     {
       "id": "idn",
@@ -69,9 +69,9 @@
     {
       "id": "esp",
       "name": "Spain",
-      "status": "pending_manual_verification",
+      "status": "uploaded_source_identified",
       "logo_path": "assets/penalty-matchup/logos/esp.svg",
-      "source_url": null
+      "source_url": "https://github.com/shiyan-liu/shiyan-liu.github.io/blob/main/images/crests/spain.svg"
     },
     {
       "id": "ger",
@@ -83,9 +83,9 @@
     {
       "id": "eng",
       "name": "England",
-      "status": "pending_manual_verification",
+      "status": "uploaded_source_identified",
       "logo_path": "assets/penalty-matchup/logos/eng.svg",
-      "source_url": "https://commons.wikimedia.org/wiki/File:Arms_of_The_Football_Association_(include_star).svg"
+      "source_url": "https://github.com/shiyan-liu/shiyan-liu.github.io/blob/main/images/crests/england.svg"
     },
     {
       "id": "usa",
