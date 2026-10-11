@@ -1,6 +1,6 @@
 {
   "purpose": "National football team crest asset verification; no flag substitutes",
-  "status": "3_uploaded_29_pending",
+  "status": "31_uploaded_1_pending_indonesia",
   "teams": [
     {
       "id": "idn",
@@ -12,23 +12,23 @@
     {
       "id": "jpn",
       "name": "Japan",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/jpn.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/jpn.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/japan-national-team.png"
     },
     {
       "id": "kor",
       "name": "South Korea",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/kor.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/kor.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/south-korea-national-team.png"
     },
     {
       "id": "aus",
       "name": "Australia",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/aus.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/aus.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/australia-national-team.png"
     },
     {
       "id": "bra",
@@ -41,30 +41,30 @@
     {
       "id": "arg",
       "name": "Argentina",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/arg.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/arg.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/argentina-national-team.png"
     },
     {
       "id": "uru",
       "name": "Uruguay",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/uru.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/uru.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/uruguay-national-team.png"
     },
     {
       "id": "mex",
       "name": "Mexico",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/mex.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/mex.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/mexico-national-team.png"
     },
     {
       "id": "fra",
       "name": "France",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/fra.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/fra.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/france-national-team.png"
     },
     {
       "id": "esp",
@@ -76,9 +76,9 @@
     {
       "id": "ger",
       "name": "Germany",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/ger.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/ger.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/germany-national-team.png"
     },
     {
       "id": "eng",
@@ -90,142 +90,142 @@
     {
       "id": "usa",
       "name": "United States",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/usa.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/usa.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/usmnt-national-team.png"
     },
     {
       "id": "mar",
       "name": "Morocco",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/mar.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/mar.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/morocco-national-team.png"
     },
     {
       "id": "nga",
       "name": "Nigeria",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/nga.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/nga.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/Nigeria-national-team.png"
     },
     {
       "id": "ksa",
       "name": "Saudi Arabia",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/ksa.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/ksa.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/saudi-arabia-national-team.png"
     },
     {
       "id": "por",
       "name": "Portugal",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/por.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/por.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/portugal-national-team.png"
     },
     {
       "id": "ned",
       "name": "Netherlands",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/ned.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/ned.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/netherlands-national-team.png"
     },
     {
       "id": "bel",
       "name": "Belgium",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/bel.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/bel.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/belgium-national-team.png"
     },
     {
       "id": "cro",
       "name": "Croatia",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/cro.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/cro.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/croatia-national-team.png"
     },
     {
       "id": "ita",
       "name": "Italy",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/ita.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/ita.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/italy-national-team.png"
     },
     {
       "id": "sui",
       "name": "Switzerland",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/sui.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/sui.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/switzerland-national-team.png"
     },
     {
       "id": "den",
       "name": "Denmark",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/den.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/den.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/Denmark-national-team.png"
     },
     {
       "id": "sen",
       "name": "Senegal",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/sen.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/sen.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/senegal-national-team.png"
     },
     {
       "id": "egy",
       "name": "Egypt",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/egy.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/egy.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/egypt-national-team.png"
     },
     {
       "id": "gha",
       "name": "Ghana",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/gha.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/gha.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/ghana-national-team.png"
     },
     {
       "id": "cmr",
       "name": "Cameroon",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/cmr.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/cmr.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/cameroon-national-team.png"
     },
     {
       "id": "can",
       "name": "Canada",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/can.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/can.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/canada-national-team.png"
     },
     {
       "id": "crc",
       "name": "Costa Rica",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/crc.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/crc.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/Costa-Rica-national-team.png"
     },
     {
       "id": "chi",
       "name": "Chile",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/chi.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/chi.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/chile-national-team.png"
     },
     {
       "id": "col",
       "name": "Colombia",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/col.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/col.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/colombia-national-team.png"
     },
     {
       "id": "ecu",
       "name": "Ecuador",
-      "status": "pending_manual_verification",
-      "logo_path": "assets/penalty-matchup/logos/ecu.svg",
-      "source_url": null
+      "status": "uploaded_needs_rights_and_visual_review",
+      "logo_path": "assets/penalty-matchup/logos/ecu.png",
+      "source_url": "https://github.com/Sachawd/wc26-assets/blob/main/national-team-logos/ecuador-national-team.png"
     }
   ]
 }
