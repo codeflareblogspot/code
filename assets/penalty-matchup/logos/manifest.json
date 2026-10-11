@@ -1,6 +1,6 @@
 {
   "purpose": "National football team crest asset verification; no flag substitutes",
-  "status": "collection_in_progress",
+  "status": "1_uploaded_31_pending",
   "teams": [
     {
       "id": "idn",
@@ -33,9 +33,10 @@
     {
       "id": "bra",
       "name": "Brazil",
-      "status": "pending_manual_verification",
+      "status": "uploaded_source_identified",
       "logo_path": "assets/penalty-matchup/logos/bra.svg",
-      "source_url": null
+      "source_url": "https://commons.wikimedia.org/wiki/File:Brazilian_Football_Confederation_logo.svg",
+      "license_note": "Wikimedia Commons: public-domain simple logo; trademark rights may apply"
     },
     {
       "id": "arg",
