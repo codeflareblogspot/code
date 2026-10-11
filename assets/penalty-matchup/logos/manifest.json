@@ -1,0 +1,230 @@
+{
+  "purpose": "National football team crest asset verification; no flag substitutes",
+  "status": "collection_in_progress",
+  "teams": [
+    {
+      "id": "idn",
+      "name": "Indonesia",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/idn.svg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:NationalTeamFootballofIndonesia_Badge.svg"
+    },
+    {
+      "id": "jpn",
+      "name": "Japan",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/jpn.svg",
+      "source_url": null
+    },
+    {
+      "id": "kor",
+      "name": "South Korea",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/kor.svg",
+      "source_url": null
+    },
+    {
+      "id": "aus",
+      "name": "Australia",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/aus.svg",
+      "source_url": null
+    },
+    {
+      "id": "bra",
+      "name": "Brazil",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/bra.svg",
+      "source_url": null
+    },
+    {
+      "id": "arg",
+      "name": "Argentina",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/arg.svg",
+      "source_url": null
+    },
+    {
+      "id": "uru",
+      "name": "Uruguay",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/uru.svg",
+      "source_url": null
+    },
+    {
+      "id": "mex",
+      "name": "Mexico",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/mex.svg",
+      "source_url": null
+    },
+    {
+      "id": "fra",
+      "name": "France",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/fra.svg",
+      "source_url": null
+    },
+    {
+      "id": "esp",
+      "name": "Spain",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/esp.svg",
+      "source_url": null
+    },
+    {
+      "id": "ger",
+      "name": "Germany",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/ger.svg",
+      "source_url": null
+    },
+    {
+      "id": "eng",
+      "name": "England",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/eng.svg",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Arms_of_The_Football_Association_(include_star).svg"
+    },
+    {
+      "id": "usa",
+      "name": "United States",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/usa.svg",
+      "source_url": null
+    },
+    {
+      "id": "mar",
+      "name": "Morocco",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/mar.svg",
+      "source_url": null
+    },
+    {
+      "id": "nga",
+      "name": "Nigeria",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/nga.svg",
+      "source_url": null
+    },
+    {
+      "id": "ksa",
+      "name": "Saudi Arabia",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/ksa.svg",
+      "source_url": null
+    },
+    {
+      "id": "por",
+      "name": "Portugal",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/por.svg",
+      "source_url": null
+    },
+    {
+      "id": "ned",
+      "name": "Netherlands",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/ned.svg",
+      "source_url": null
+    },
+    {
+      "id": "bel",
+      "name": "Belgium",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/bel.svg",
+      "source_url": null
+    },
+    {
+      "id": "cro",
+      "name": "Croatia",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/cro.svg",
+      "source_url": null
+    },
+    {
+      "id": "ita",
+      "name": "Italy",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/ita.svg",
+      "source_url": null
+    },
+    {
+      "id": "sui",
+      "name": "Switzerland",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/sui.svg",
+      "source_url": null
+    },
+    {
+      "id": "den",
+      "name": "Denmark",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/den.svg",
+      "source_url": null
+    },
+    {
+      "id": "sen",
+      "name": "Senegal",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/sen.svg",
+      "source_url": null
+    },
+    {
+      "id": "egy",
+      "name": "Egypt",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/egy.svg",
+      "source_url": null
+    },
+    {
+      "id": "gha",
+      "name": "Ghana",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/gha.svg",
+      "source_url": null
+    },
+    {
+      "id": "cmr",
+      "name": "Cameroon",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/cmr.svg",
+      "source_url": null
+    },
+    {
+      "id": "can",
+      "name": "Canada",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/can.svg",
+      "source_url": null
+    },
+    {
+      "id": "crc",
+      "name": "Costa Rica",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/crc.svg",
+      "source_url": null
+    },
+    {
+      "id": "chi",
+      "name": "Chile",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/chi.svg",
+      "source_url": null
+    },
+    {
+      "id": "col",
+      "name": "Colombia",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/col.svg",
+      "source_url": null
+    },
+    {
+      "id": "ecu",
+      "name": "Ecuador",
+      "status": "pending_manual_verification",
+      "logo_path": "assets/penalty-matchup/logos/ecu.svg",
+      "source_url": null
+    }
+  ]
+}
